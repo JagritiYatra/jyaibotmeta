@@ -1,5 +1,6 @@
-// Comprehensive alumni search service with AI-powered relevance scoring
-// Handles keyword extraction, database queries, and intelligent result ranking for JY Alumni Bot
+// AI-Enhanced Alumni Search Service with intelligent reconnection system
+// File: src/services/searchService.js
+// ENHANCED VERSION - AI-powered relevance scoring and crisp profile rewriting
 
 const OpenAI = require('openai');
 const { getDatabase } = require('../config/database');
@@ -53,7 +54,7 @@ async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
         }
         
         const sanitizedQuery = sanitizeInput(query);
-        console.log(`🔍 Starting comprehensive search for: "${sanitizedQuery}"`);
+        console.log(`🔍 Starting AI-enhanced search for: "${sanitizedQuery}"`);
         
         // Step 1: AI-powered keyword extraction
         const keywords = await extractSearchKeywords(sanitizedQuery);
@@ -65,13 +66,16 @@ async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
             return generateNoResultsResponse(sanitizedQuery);
         }
         
-        // Step 3: AI-powered relevance scoring and selection
+        // Step 3: AI-powered relevance scoring and selection (top 3-4 only)
         const topResults = await selectTopResults(searchResults, sanitizedQuery, keywords);
         
-        // Step 4: Generate formatted response
-        const response = await generateSearchResponse(topResults, sanitizedQuery, searchResults.length);
+        // Step 4: AI-enhanced profile rewriting for better presentation
+        const enhancedResults = await enhanceProfilesWithAI(topResults, sanitizedQuery);
         
-        // Step 5: Log search for analytics
+        // Step 5: Generate clean, focused response
+        const response = await generateCleanSearchResponse(enhancedResults, sanitizedQuery);
+        
+        // Step 6: Log search for analytics
         await logUserQuery(userWhatsApp, sanitizedQuery, 'alumni_search', searchResults.length, topResults.length);
         
         return response;
@@ -93,7 +97,7 @@ async function extractSearchKeywords(query) {
             const startTime = Date.now();
             
             const response = await openai.chat.completions.create({
-                model: 'gpt-4o-mini', // Use faster model for keyword extraction
+                model: 'gpt-4o-mini',
                 messages: [{
                     role: "system",
                     content: `Extract relevant search keywords from user queries for professional alumni networking.
@@ -102,7 +106,7 @@ Rules:
 - Return 8-12 keywords/phrases that help find relevant professionals
 - Include synonyms, related terms, and domain-specific language
 - Focus on skills, roles, industries, and expertise areas
-- Return as JSON array of strings only, no other text or formatting
+- Return as JSON array of strings only, no other text
 
 Examples:
 "web development help" → ["web development", "frontend", "backend", "javascript", "react", "nodejs", "programming", "developer", "software", "coding"]
@@ -116,8 +120,6 @@ Examples:
             });
             
             let aiResponse = response.choices[0].message.content.trim();
-            
-            // Clean up response - remove markdown code blocks if present  
             aiResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/`/g, '');
             
             const aiKeywords = JSON.parse(aiResponse);
@@ -140,7 +142,7 @@ Examples:
     }
 }
 
-// Fallback keyword extraction using predefined mappings
+// Fallback keyword extraction
 function extractKeywordsFallback(query) {
     const normalizedQuery = query.toLowerCase();
     let keywords = [];
@@ -168,7 +170,7 @@ function extractKeywordsFallback(query) {
     return keywords;
 }
 
-// Enhanced database search with multiple query strategies
+// Enhanced database search
 async function performDatabaseSearch(keywords, userWhatsApp = null) {
     try {
         const db = getDatabase();
@@ -212,7 +214,7 @@ async function performDatabaseSearch(keywords, userWhatsApp = null) {
             ]
         };
         
-        // Execute search with projection for efficiency
+        // Execute search with projection
         const results = await db.collection('users')
             .find(searchQuery, {
                 projection: {
@@ -233,7 +235,7 @@ async function performDatabaseSearch(keywords, userWhatsApp = null) {
                     'metadata.lastActive': 1
                 }
             })
-            .limit(50) // Limit for performance
+            .limit(20) // Limit for performance
             .toArray();
         
         console.log(`📊 Database search completed: ${results.length} matches found`);
@@ -245,22 +247,21 @@ async function performDatabaseSearch(keywords, userWhatsApp = null) {
     }
 }
 
-// AI-powered selection of top results
-// AI-powered selection of top results
+// AI-powered selection of top results (3-4 only)
 async function selectTopResults(searchResults, originalQuery, keywords) {
     try {
         const config = getConfig();
-        const maxResults = config.bot.maxSearchResults || 6;
+        const maxResults = 4; // Fixed to 3-4 as per requirements
         
         if (searchResults.length <= maxResults) {
             return searchResults;
         }
         
-        // Use AI for intelligent selection if available
+        // Use AI for intelligent selection
         if (openai && searchResults.length > 0) {
             const startTime = Date.now();
             
-            // Prepare profiles for AI analysis (first 15 for token efficiency)
+            // Prepare profiles for AI analysis
             const profilesForAI = searchResults.slice(0, 15).map(user => ({
                 email: user.basicProfile?.email || 'no-email',
                 name: user.enhancedProfile?.fullName || user.basicProfile?.name || 'Name not available',
@@ -284,25 +285,22 @@ Ranking Criteria:
 3. Industry domain alignment
 4. Geographic relevance (if specified)
 5. Community contributions that match needs
-6. Profile completeness and activity
 
-Return ONLY a JSON array of the ${maxResults} most relevant profile emails in order of relevance, no other text or formatting:
+Return ONLY a JSON array of the ${maxResults} most relevant profile emails in order of relevance:
 ["email1@example.com", "email2@example.com", ...]`
                 }, {
                     role: "user",
                     content: `User query: "${originalQuery}"
 Keywords: ${keywords.join(', ')}
 
-Profiles to rank:
+Profiles:
 ${JSON.stringify(profilesForAI, null, 2)}`
                 }],
-                max_tokens: 300,
+                max_tokens: 200,
                 temperature: 0.1
             });
             
             let aiResponse = response.choices[0].message.content.trim();
-            
-            // Clean up response - remove markdown code blocks if present
             aiResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/`/g, '');
             
             const selectedEmails = JSON.parse(aiResponse);
@@ -326,17 +324,15 @@ ${JSON.stringify(profilesForAI, null, 2)}`
         
     } catch (error) {
         logError(error, { operation: 'selectTopResults' });
-        const config = getConfig(); // Fix: Get config here for fallback
-        return selectResultsFallback(searchResults, keywords, config.bot.maxSearchResults || 6);
+        return selectResultsFallback(searchResults, keywords, 4);
     }
 }
 
-// Fallback result selection using simple scoring
+// Fallback result selection
 function selectResultsFallback(searchResults, keywords, maxResults) {
     const scored = searchResults.map(user => {
         let score = 0;
         
-        // Score based on keyword matches
         const searchableText = [
             user.basicProfile?.about || '',
             user.basicProfile?.name || '',
@@ -360,12 +356,6 @@ function selectResultsFallback(searchResults, keywords, maxResults) {
         if (user.enhancedProfile?.linkedin) score += 1;
         if (user.enhancedProfile?.communityGives?.length > 0) score += 1;
         
-        // Recent activity bonus
-        if (user.metadata?.lastActive) {
-            const daysSinceActive = (Date.now() - new Date(user.metadata.lastActive)) / (1000 * 60 * 60 * 24);
-            if (daysSinceActive < 30) score += 1;
-        }
-        
         return { user, score };
     });
     
@@ -375,112 +365,121 @@ function selectResultsFallback(searchResults, keywords, maxResults) {
         .map(item => item.user);
 }
 
-
-// Generate formatted search response with rich bio information
-async function generateSearchResponse(topResults, originalQuery, totalMatches) {
+// AI-enhanced profile rewriting for better presentation
+async function enhanceProfilesWithAI(profiles, originalQuery) {
+    if (!openai || profiles.length === 0) {
+        return profiles;
+    }
+    
     try {
-        if (topResults.length === 0) {
+        const startTime = Date.now();
+        
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [{
+                role: "system",
+                content: `Rewrite the "about" sections of these alumni profiles to be crisp, professional, and human-like.
+
+Rules:
+- Keep it authentic and genuine
+- Make it 2-3 sentences max
+- Don't exaggerate or oversell
+- Focus on expertise and value they can provide
+- Maintain professional tone
+- Don't change names, emails, or LinkedIn URLs
+- Return JSON array with same structure but enhanced "about" field
+
+Format: [{"email": "...", "enhanced_about": "rewritten about section"}, ...]`
+            }, {
+                role: "user",
+                content: `Enhance these profiles for query: "${originalQuery}"
+
+Profiles:
+${JSON.stringify(profiles.map(profile => ({
+    email: profile.basicProfile?.email,
+    name: profile.enhancedProfile?.fullName || profile.basicProfile?.name,
+    current_about: profile.basicProfile?.about || '',
+    role: profile.enhancedProfile?.professionalRole,
+    domain: profile.enhancedProfile?.domain
+})), null, 2)}`
+            }],
+            max_tokens: 800,
+            temperature: 0.7
+        });
+        
+        let aiResponse = response.choices[0].message.content.trim();
+        aiResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/`/g, '');
+        
+        const enhancements = JSON.parse(aiResponse);
+        const duration = Date.now() - startTime;
+        
+        logAIOperation('profile_enhancement', response.usage?.total_tokens || 0, 'gpt-4o', duration);
+        
+        // Apply enhancements
+        const enhancedProfiles = profiles.map(profile => {
+            const enhancement = enhancements.find(e => e.email === profile.basicProfile?.email);
+            if (enhancement && enhancement.enhanced_about) {
+                return {
+                    ...profile,
+                    basicProfile: {
+                        ...profile.basicProfile,
+                        about: enhancement.enhanced_about
+                    }
+                };
+            }
+            return profile;
+        });
+        
+        console.log(`✨ AI enhanced ${enhancements.length} profiles`);
+        return enhancedProfiles;
+        
+    } catch (error) {
+        logError(error, { operation: 'enhanceProfilesWithAI' });
+        return profiles; // Return original on error
+    }
+}
+
+// Generate clean, focused search response
+async function generateCleanSearchResponse(results, originalQuery) {
+    try {
+        if (results.length === 0) {
             return generateNoResultsResponse(originalQuery);
         }
         
-        // Limit to top 3 results for better readability
-        const top3Results = topResults.slice(0, 3);
+        let response = '';
         
-        const profileSummaries = top3Results.map(user => {
+        results.forEach((user, index) => {
             const basicProfile = user.basicProfile || {};
             const enhancedProfile = user.enhancedProfile || {};
             
-            return {
-                name: enhancedProfile.fullName || basicProfile.name || 'Name not available',
-                email: basicProfile.email || 'Email not available',
-                about: basicProfile.about || '',
-                domain: enhancedProfile.domain || '',
-                role: enhancedProfile.professionalRole || '',
-                city: enhancedProfile.city || '',
-                state: enhancedProfile.state || '',
-                country: enhancedProfile.country || '',
-                linkedin: enhancedProfile.linkedin || basicProfile.linkedin || '',
-                phone: enhancedProfile.phone || '',
-                yatraImpact: enhancedProfile.yatraImpact || [],
-                communityGives: enhancedProfile.communityGives || [],
-                communityAsks: enhancedProfile.communityAsks || []
-            };
+            const name = enhancedProfile.fullName || basicProfile.name || 'Name not available';
+            const about = basicProfile.about || '';
+            const email = basicProfile.email || 'Email not available';
+            const linkedin = enhancedProfile.linkedin || basicProfile.linkedin || '';
+            
+            // Clean, simple format as per requirements
+            response += `*${name}*\n`;
+            
+            if (about && about.length > 10) {
+                response += `*About:* ${about}\n`;
+            }
+            
+            response += `📧 ${email}\n`;
+            
+            if (linkedin) {
+                response += `🔗 ${linkedin}`;
+            }
+            
+            // Add spacing between profiles (except for last one)
+            if (index < results.length - 1) {
+                response += '\n\n';
+            }
         });
-        
-        // Generate rich response with comprehensive bio
-        let response = `🌟 Found ${totalMatches} expert${totalMatches > 1 ? 's' : ''} for "${originalQuery}"\n\nTop ${top3Results.length} profiles:\n\n`;
-        
-        response += top3Results.map((user, index) => {
-            const profile = profileSummaries[index];
-            let profileText = `${index + 1}. **${profile.name}**\n`;
-            
-            // Professional Information
-            if (profile.role && profile.domain) {
-                profileText += `💼 ${profile.role} in ${profile.domain}\n`;
-            } else if (profile.role) {
-                profileText += `💼 ${profile.role}\n`;
-            } else if (profile.domain) {
-                profileText += `🏢 ${profile.domain}\n`;
-            }
-            
-            // Location (only if available)
-            const locationParts = [profile.city, profile.state, profile.country].filter(Boolean);
-            if (locationParts.length > 0) {
-                profileText += `📍 ${locationParts.join(', ')}\n`;
-            }
-            
-            // About/Bio (if available)
-            if (profile.about && profile.about.length > 10) {
-                const shortBio = profile.about.length > 150 ? 
-                    profile.about.substring(0, 150) + '...' : 
-                    profile.about;
-                profileText += `📋 ${shortBio}\n`;
-            }
-            
-            // Yatra Impact (if available)
-            if (profile.yatraImpact && profile.yatraImpact.length > 0) {
-                profileText += `🚆 Yatra Impact: ${profile.yatraImpact.slice(0, 2).join(', ')}\n`;
-            }
-            
-            // Community Contributions (if available)
-            if (profile.communityGives && profile.communityGives.length > 0) {
-                profileText += `🎁 Offers: ${profile.communityGives.slice(0, 2).join(', ')}\n`;
-            }
-            
-            // Contact Information
-            profileText += `📧 ${profile.email}\n`;
-            
-            if (profile.linkedin) {
-                profileText += `🔗 ${profile.linkedin}\n`;
-            }
-            
-            if (profile.phone) {
-                profileText += `📱 ${profile.phone}`;
-            }
-            
-            return profileText.trim();
-        }).join('\n\n');
-        
-        response += `\n\n🚀 Contact them directly for collaboration!`;
-        
-        if (totalMatches > 3) {
-            response += `\n\n💡 ${totalMatches - 3} more experts available - try more specific keywords.`;
-        }
-        
-        // Ensure response is under WhatsApp limit
-        if (response.length > 4000) {
-            response = `🌟 Found ${totalMatches} experts for "${originalQuery}"\n\nTop ${top3Results.length} matches:\n\n`;
-            response += top3Results.map((user, index) => {
-                const profile = profileSummaries[index];
-                return `${index + 1}. ${profile.name}\n📧 ${profile.email}${profile.role ? `\n💼 ${profile.role}` : ''}`;
-            }).join('\n\n');
-            response += '\n\n🚀 Contact them directly!';
-        }
         
         return response;
         
     } catch (error) {
-        logError(error, { operation: 'generateSearchResponse' });
+        logError(error, { operation: 'generateCleanSearchResponse' });
         return generateErrorResponse('response_generation_failed');
     }
 }
@@ -566,6 +565,7 @@ module.exports = {
     extractSearchKeywords,
     performDatabaseSearch,
     selectTopResults,
-    generateSearchResponse,
+    enhanceProfilesWithAI,
+    generateCleanSearchResponse,
     getSearchAnalytics
 };

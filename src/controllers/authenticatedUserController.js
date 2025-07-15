@@ -1,15 +1,15 @@
-// Authenticated user controller for JY Alumni Bot with STRICT 100% profile completion enforcement
+// Enhanced authenticated user controller with smart profile resumption for AI-enhanced alumni reconnection
 // File: src/controllers/authenticatedUserController.js
-// COMPLETE WORKING VERSION - Fixed canAccessSearch issue
+// ENHANCED VERSION - Smart hi trigger with profile resumption and streamlined UX
 
 const { getIncompleteFields, updateUserProfile, markProfileCompleted, getProfileCompletionPercentage, hasMinimumProfileCompletion, findUserByWhatsAppNumber, ENHANCED_PROFILE_FIELDS } = require('../models/User');
 const { comprehensiveAlumniSearch } = require('../services/searchService');
 const { checkDailyLimit } = require('../services/rateLimiter');
 const { handleCasualConversation } = require('./conversationController');
-const { validateProfileField, getFieldPrompt } = require('./profileController');
+const { validateProfileField, getFieldPrompt, generateResumeGreeting } = require('./profileController');
 const { logUserActivity, logError } = require('../middleware/logging');
 
-// Manual canAccessSearch function (since it's not in User model)
+// Manual canAccessSearch function
 function canAccessSearch(user) {
     const incompleteFields = getIncompleteFields(user);
     const completionPercentage = getProfileCompletionPercentage(user);
@@ -24,11 +24,11 @@ function canAccessSearch(user) {
     };
 }
 
-// Main handler for authenticated user interactions with STRICT 100% profile enforcement
+// Main handler for authenticated user interactions with smart profile resumption
 async function handleAuthenticatedUser(userMessage, intent, userSession, whatsappNumber) {
     try {
         const user = userSession.user_data;
-        const userName = user.basicProfile?.name || 'there';
+        const userName = user.basicProfile?.name || user.enhancedProfile?.fullName || 'there';
         
         logUserActivity(whatsappNumber, 'authenticated_user_interaction', {
             intent: intent.type,
@@ -37,18 +37,33 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
             userName: userName
         });
         
-        // Check profile completion status FIRST - STRICT 100% enforcement
+        // Check profile completion status
         const completionPercentage = getProfileCompletionPercentage(user);
         const incompleteFields = getIncompleteFields(user);
         const isProfileComplete = incompleteFields.length === 0;
         const searchAccess = canAccessSearch(user);
         
-        // PRIORITY 1: Handle profile updates in progress (BLOCK ALL OTHER ACTIONS)
+        // ENHANCED: Smart "Hi" trigger - resume profile completion with name greeting
+        if (intent.type === 'casual' && intent.subtype === 'greeting' && !isProfileComplete) {
+            const resumeGreeting = generateResumeGreeting(user);
+            
+            // Set up session to resume from next incomplete field
+            const nextField = incompleteFields[0];
+            userSession.waiting_for = `updating_${nextField}`;
+            userSession.current_field = nextField;
+            userSession.remaining_fields = incompleteFields.slice(1);
+            userSession.incomplete_fields = incompleteFields;
+            userSession.profile_completion_started = true;
+            
+            return resumeGreeting;
+        }
+        
+        // PRIORITY 1: Handle profile updates in progress
         if (userSession.waiting_for && userSession.waiting_for.startsWith('updating_')) {
             return await handleProfileFieldUpdate(userMessage, intent, userSession, whatsappNumber);
         }
         
-        // PRIORITY 2: STRICT SEARCH BLOCKING - NO SEARCH WITHOUT 100% COMPLETION
+        // PRIORITY 2: Search Intent Detection with profile completion check
         if (intent.type === 'search' || intent.type === 'skip_and_search') {
             if (!searchAccess.canAccess) {
                 // Force start profile completion
@@ -61,7 +76,7 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
                 userSession.incomplete_fields = incompleteFields;
                 userSession.search_blocked = true;
                 
-                return `🚫 **SEARCH BLOCKED - Profile Incomplete**
+                return `🚫 **Search Blocked - Profile Incomplete**
 
 Your profile: ${completionPercentage}% complete
 **⚠️ REQUIRED: 100% completion for search access**
@@ -79,7 +94,7 @@ ${await getFieldPrompt(firstField, userSession)}
             return await handleSearchRequest(intent, userSession, whatsappNumber, intent.type === 'skip_and_search');
         }
         
-        // PRIORITY 3: Handle profile completion choice (if waiting)
+        // PRIORITY 3: Handle profile completion choice
         if (userSession.waiting_for === 'profile_choice') {
             return await handleProfileChoice(userMessage, intent, userSession, whatsappNumber);
         }
@@ -164,7 +179,7 @@ Type "complete profile" to continue.`;
             userSession.incomplete_fields = incompleteFields;
             userSession.profile_completion_started = true;
             
-            return `👋 **Welcome back, ${userName}!**
+            return `👋 **Welcome back, *${userName}*!**
 
 Your profile: ${completionPercentage}% complete
 🔒 **Search requires 100% completion**
@@ -181,7 +196,7 @@ ${await getFieldPrompt(firstField, userSession)}`;
             userSession.ready = true;
             userSession.waiting_for = 'ready';
             
-            return `🌟 **Hi ${userName}!**
+            return `🌟 **Hi *${userName}*!**
 
 ✅ **Profile Complete** (100%)
 🔓 **Search Unlocked**
@@ -197,8 +212,8 @@ What expertise are you looking for today?
 Or describe what you need help with!`;
         }
         
-        // Fallback - should rarely reach here
-        return `Hi ${userName}! 👋
+        // Fallback
+        return `Hi *${userName}*! 👋
 
 I'm here to help you connect with our alumni network.`;
         
@@ -254,12 +269,12 @@ You can complete your profile anytime by saying "update profile".`;
     }
 }
 
-// Enhanced profile field update with better error handling and UX
+// Enhanced profile field update with smart validation
 async function handleProfileFieldUpdate(userMessage, intent, userSession, whatsappNumber) {
     try {
         const fieldName = userSession.waiting_for.replace('updating_', '');
         
-        // Handle stop commands (but discourage skipping)
+        // Handle stop commands
         if (intent.type === 'skip_profile' || userMessage.toLowerCase().includes('later') || userMessage.toLowerCase().includes('stop')) {
             const remainingFields = userSession.remaining_fields || [];
             const totalFields = userSession.incomplete_fields?.length || 1;
@@ -287,7 +302,7 @@ When ready to continue, type:
 What can I help you with in the meantime?`;
         }
         
-        // Block search during profile updates with clear messaging
+        // Block search during profile updates
         if (intent.type === 'search' || intent.type === 'skip_and_search') {
             const remainingFields = userSession.remaining_fields || [];
             const totalFields = userSession.incomplete_fields?.length || 1;
@@ -305,11 +320,10 @@ ${await getFieldPrompt(fieldName, userSession)}
 🔍 *Search unlocks after ALL fields are completed.*`;
         }
         
-        // Validate field input with enhanced error messages
+        // Enhanced validation with AI assistance
         const validation = await validateProfileField(fieldName, userMessage, userSession);
         
         if (!validation.valid) {
-            // Enhanced error message with retry count and help
             const retryCount = userSession.field_retry_count || 0;
             userSession.field_retry_count = retryCount + 1;
             
@@ -325,6 +339,12 @@ Type "help" for more assistance or try again.`;
             }
             
             return errorMessage;
+        }
+        
+        // Show correction message if AI corrected the input
+        let correctionMessage = '';
+        if (validation.corrected) {
+            correctionMessage = `\n\n🔧 *Corrected to: ${validation.corrected}*`;
         }
         
         // Reset retry count on successful validation
@@ -353,7 +373,7 @@ ${await getFieldPrompt(fieldName, userSession)}`;
         const currentStep = totalFields - remainingFields.length;
         const progressPercentage = Math.round((currentStep / totalFields) * 100);
         
-        let progressMessage = `✅ **${getFieldDisplayName(fieldName)} Saved!**
+        let progressMessage = `✅ **${getFieldDisplayName(fieldName)} Saved!**${correctionMessage}
 
 📊 **Progress:** ${currentStep}/${totalFields} (${progressPercentage}%)`;
         
@@ -361,7 +381,6 @@ ${await getFieldPrompt(fieldName, userSession)}`;
         if (remainingFields.length > 0) {
             const nextField = remainingFields[0];
             
-            // Update session for next field
             userSession.waiting_for = `updating_${nextField}`;
             userSession.current_field = nextField;
             userSession.remaining_fields = remainingFields.slice(1);
@@ -399,7 +418,8 @@ What expertise are you looking for today?
         logUserActivity(whatsappNumber, 'profile_field_updated', {
             field: fieldName,
             progress: `${currentStep}/${totalFields}`,
-            completed: remainingFields.length === 0
+            completed: remainingFields.length === 0,
+            corrected: !!validation.corrected
         });
         
         return progressMessage;
@@ -417,7 +437,6 @@ If this continues, contact support: support@jagritiyatra.com`;
 // Handle profile completion choice
 async function handleProfileChoice(userMessage, intent, userSession, whatsappNumber) {
     try {
-        // Block search if profile completion is required
         if (intent.type === 'search') {
             const user = userSession.user_data;
             const searchAccess = canAccessSearch(user);
@@ -513,7 +532,6 @@ async function handleAdditionalEmailChoice(userMessage, intent, userSession, wha
 
 This will be linked to your existing account for better connectivity.`;
         } else {
-            // Move to next field
             return await moveToNextProfileField(userSession, whatsappNumber);
         }
         
@@ -544,7 +562,6 @@ Please enter a valid email address:`;
 Please try a different email or type "skip" to continue.`;
         }
         
-        // Move to next field
         const nextMessage = await moveToNextProfileField(userSession, whatsappNumber);
         return `✅ Additional email linked successfully!
 
@@ -569,7 +586,6 @@ async function handleInstagramChoice(userMessage, intent, userSession, whatsappN
 
 Type "later" to skip this step.`;
         } else {
-            // Move to next field
             return await moveToNextProfileField(userSession, whatsappNumber);
         }
         
@@ -625,12 +641,12 @@ What can I help you find today?`;
 function getFieldHelpTips(fieldName) {
     const helpTips = {
         fullName: '• Use your real full name\n• Only letters, spaces, hyphens allowed\n• Example: "Rajesh Kumar Singh"',
-        city: '• Enter your current city name\n• Use real city names only\n• Examples: "Mumbai", "New York", "London"',
-        state: '• Enter your state/province\n• Use official state names\n• Examples: "Maharashtra", "California", "Ontario"',
-        country: '• Enter your country name\n• Use official country names\n• Examples: "India", "United States", "Canada"',
+        city: '• Enter your current city name\n• I can correct typos automatically\n• Examples: "Mumbai", "New York", "London"',
+        state: '• Enter your state/province\n• I can correct typos automatically\n• Examples: "Maharashtra", "California", "Ontario"',
+        country: '• Enter your country name\n• I can correct typos automatically\n• Examples: "India", "United States", "Canada"',
         phone: '• Include country code\n• Format: +91 9876543210\n• Or: 919876543210',
-        linkedin: '• Full LinkedIn URL required\n• Format: https://linkedin.com/in/yourprofile',
-        dateOfBirth: '• Format: DD-MM-YYYY\n• Example: 15-08-1995\n• Year between 1960-2010',
+        linkedin: '• Full LinkedIn URL or just username\n• I can create the URL for you\n• Examples: "johnsmith" or full URL',
+        dateOfBirth: '• Any date format works\n• Examples: 19/07/2000, July 19 2000\n• I'll understand and convert it',
         gender: '• Select 1, 2, or 3\n• 1 = Male, 2 = Female, 3 = Others',
         domain: '• Select number from list\n• Choose your primary industry',
         professionalRole: '• Select number from list\n• Choose your current role'
