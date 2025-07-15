@@ -1,11 +1,12 @@
 // New user registration controller for JY Alumni Bot
 // Handles email verification, OTP validation, and initial profile setup flow
 
-const { findUserByEmail, linkWhatsAppToUser } = require('../models/User');
+const { findUserByEmail, linkWhatsAppToUser, getIncompleteFields } = require('../models/User');
 const { generateAndSendOTP, verifyOTP } = require('../services/otpService');
 const { validateEmail, validateYesNo } = require('../utils/validation');
 const { logUserActivity, logError } = require('../middleware/logging');
 const { handleCasualConversation } = require('./conversationController');
+const { getFieldPrompt, getFieldDisplayName } = require('./profileController');
 
 // Main handler for new user interactions
 async function handleNewUser(userMessage, intent, userSession, whatsappNumber) {
@@ -48,9 +49,9 @@ async function handleNewUser(userMessage, intent, userSession, whatsappNumber) {
 
 // Handle initial welcome message
 function handleInitialWelcome(userSession) {
-    const welcomeMessage = `🚆 Welcome to JY Alumni Network!
+    const welcomeMessage = `🚆 Welcome to JY Alumni Relations Cell!
 
-I help you connect with 500+ changemakers and entrepreneurs from our community.
+I help you connect with 9000+ fellow Yatris and changemakers from our community.
 
 To get started, please share your registered email address:
 
@@ -303,18 +304,38 @@ Support: support@jagritiyatra.com`;
             linkedNumbers: linkResult.count
         });
         
-        return `✅ Verification successful!
+        // Check profile completion immediately after verification
+        const incompleteFields = getIncompleteFields(userData);
+        
+        if (incompleteFields.length === 0) {
+            // Profile is complete
+            return `✅ Verification successful!
 
-Welcome to JY Alumni Network, ${userName}! 🌟
+Welcome to JY Alumni Relations Cell, **${userName}**! 🌟
 
-You're now connected to our community of 500+ changemakers and entrepreneurs.
+Your profile is complete. Ready to connect with 9000+ fellow Yatris?
 
-What can I help you find today?
+What expertise are you looking for today?`;
+        } else {
+            // Profile incomplete - start completion process
+            const firstField = incompleteFields[0];
+            const totalFields = incompleteFields.length;
+            
+            userSession.waiting_for = `updating_${firstField}`;
+            userSession.current_field = firstField;
+            userSession.remaining_fields = incompleteFields.slice(1);
+            userSession.incomplete_fields = incompleteFields;
+            
+            return `✅ Verification successful!
 
-Examples:
-- "Need help with web development"
-- "Looking for marketing experts"
-- "Connect me with fintech entrepreneurs"`;
+Welcome to JY Alumni Relations Cell, **${userName}**! 🌟
+
+Your profile needs completion to connect with 9000+ fellow Yatris.
+
+**Step 1 of ${totalFields}:** ${getFieldDisplayName(firstField)}
+
+${await getFieldPrompt(firstField, userSession)}`;
+        }
         
     } catch (error) {
         logError(error, { operation: 'handleOTPVerification', whatsappNumber });

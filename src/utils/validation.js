@@ -1,6 +1,6 @@
 // Enhanced validation utilities with AI-powered validation and intelligent data capture
 // File: src/utils/validation.js
-// AI-ENHANCED VERSION - Smart date parsing, typo correction, and LinkedIn handling
+// AI-ENHANCED VERSION - Smart date parsing, typo correction, and SUPER SIMPLE LinkedIn handling
 
 const OpenAI = require('openai');
 const { getConfig } = require('../config/environment');
@@ -240,72 +240,32 @@ Examples:
     }
 }
 
-// Enhanced LinkedIn URL validation with smart URL creation
+// SUPER SIMPLE LinkedIn validation - accepts almost anything
 async function validateLinkedInURL(url, userContext = {}) {
     const cleanURL = sanitizeInput(url);
     
-    // Reject obvious junk inputs
-    if (['yes', 'no', 'ok', 'sure', 'later', 'skip'].includes(cleanURL.toLowerCase())) {
+    // Only reject if completely empty or obvious rejection words
+    if (!cleanURL || cleanURL.length < 2) {
         return { 
             valid: false, 
-            message: 'Please enter your LinkedIn URL or username, not a yes/no response.'
+            message: 'Please enter your LinkedIn URL or username.'
         };
     }
     
-    // Check if user is providing a username/handle
-    if (!cleanURL.includes('http') && !cleanURL.includes('linkedin.com')) {
-        if (cleanURL.length > 2 && cleanURL.length < 100 && /^[a-zA-Z0-9\-_]+$/.test(cleanURL)) {
-            const suggestedURL = `https://linkedin.com/in/${cleanURL}`;
-            return { 
-                valid: true, 
-                value: suggestedURL,
-                message: `LinkedIn URL created from username: ${suggestedURL}`
-            };
-        }
-    }
-    
-    // Validate LinkedIn URL pattern
-    if (!cleanURL.toLowerCase().includes('linkedin.com')) {
+    // Reject only obvious non-answers
+    const rejectWords = ['no', 'none', 'skip', 'later', 'pass'];
+    if (rejectWords.includes(cleanURL.toLowerCase())) {
         return { 
             valid: false, 
             message: 'Please enter your LinkedIn URL or username.\n\nExample: https://linkedin.com/in/yourname'
         };
     }
     
-    try {
-        let urlToValidate = cleanURL;
-        
-        // Add https:// if missing
-        if (!urlToValidate.startsWith('http')) {
-            urlToValidate = 'https://' + urlToValidate;
-        }
-        
-        const urlObj = new URL(urlToValidate);
-        
-        if (!urlObj.hostname.includes('linkedin.com')) {
-            return { 
-                valid: false, 
-                message: 'URL must be from linkedin.com'
-            };
-        }
-        
-        // Check for profile URL pattern
-        if (!urlObj.pathname.includes('/in/')) {
-            return { 
-                valid: false, 
-                message: 'Please use your LinkedIn profile URL that contains "/in/"'
-            };
-        }
-        
-        const cleanedURL = urlToValidate.split('?')[0]; // Remove query parameters
-        return { valid: true, value: cleanedURL };
-        
-    } catch (error) {
-        return { 
-            valid: false, 
-            message: 'Invalid URL format. Please enter a valid LinkedIn URL.'
-        };
-    }
+    // Accept EVERYTHING else - just store whatever they give us
+    return { 
+        valid: true, 
+        value: cleanURL
+    };
 }
 
 // Enhanced name validation

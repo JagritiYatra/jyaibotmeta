@@ -458,10 +458,10 @@ async function generateCleanSearchResponse(results, originalQuery) {
             const linkedin = enhancedProfile.linkedin || basicProfile.linkedin || '';
             
             // Clean, simple format as per requirements
-            response += `*${name}*\n`;
+            response += `**${name}**\n`;
             
             if (about && about.length > 10) {
-                response += `*About:* ${about}\n`;
+                response += `**About:** ${about}\n`;
             }
             
             response += `📧 ${email}\n`;

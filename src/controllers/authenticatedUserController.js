@@ -76,18 +76,15 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
                 userSession.incomplete_fields = incompleteFields;
                 userSession.search_blocked = true;
                 
-                return `🚫 **Search Blocked - Profile Incomplete**
+                return `📋 **Profile Completion Needed**
 
-Your profile: ${completionPercentage}% complete
-**⚠️ REQUIRED: 100% completion for search access**
+Hi **${userName}**! To connect with 9000+ fellow Yatris, please complete your profile.
 
-Missing ${totalFields} field${totalFields > 1 ? 's' : ''}. Let's complete them now:
+Missing ${totalFields} field${totalFields > 1 ? 's' : ''}. Let's continue:
 
 **Step 1 of ${totalFields}:** ${getFieldDisplayName(firstField)}
 
-${await getFieldPrompt(firstField, userSession)}
-
-🔒 *Search will be unlocked only after completing ALL fields.*`;
+${await getFieldPrompt(firstField, userSession)}`;
             }
             
             // Profile complete - proceed with search
@@ -179,7 +176,7 @@ Type "complete profile" to continue.`;
             userSession.incomplete_fields = incompleteFields;
             userSession.profile_completion_started = true;
             
-            return `👋 **Welcome back, *${userName}*!**
+            return `👋 **Welcome back, ${userName}!**
 
 Your profile: ${completionPercentage}% complete
 🔒 **Search requires 100% completion**
@@ -196,10 +193,10 @@ ${await getFieldPrompt(firstField, userSession)}`;
             userSession.ready = true;
             userSession.waiting_for = 'ready';
             
-            return `🌟 **Hi *${userName}*!**
+            return `🌟 **Hi ${userName}!**
 
-✅ **Profile Complete** (100%)
-🔓 **Search Unlocked**
+✅ **Profile Complete**
+🔓 **Ready to connect with 9000+ fellow Yatris**
 
 What expertise are you looking for today?
 
@@ -213,7 +210,7 @@ Or describe what you need help with!`;
         }
         
         // Fallback
-        return `Hi *${userName}*! 👋
+        return `Hi **${userName}**! 👋
 
 I'm here to help you connect with our alumni network.`;
         
@@ -293,7 +290,7 @@ async function handleProfileFieldUpdate(userMessage, intent, userSession, whatsa
             return `⏸️ **Profile Update Paused**
 
 Progress: ${currentStep}/${totalFields} fields completed
-🔒 **Search remains locked until 100% completion**
+📋 **Complete profile to connect with 9000+ fellow Yatris**
 
 When ready to continue, type:
 • "complete profile" 
@@ -308,16 +305,16 @@ What can I help you with in the meantime?`;
             const totalFields = userSession.incomplete_fields?.length || 1;
             const currentStep = totalFields - remainingFields.length + 1;
             
-            return `🔒 **Profile Completion Required First**
+            return `📋 **Profile Completion Needed**
 
-Please complete this field to unlock search.
+Please complete this field to connect with fellow Yatris.
 
 **Current: Step ${currentStep} of ${totalFields}**
 **Field:** ${getFieldDisplayName(fieldName)}
 
 ${await getFieldPrompt(fieldName, userSession)}
 
-🔍 *Search unlocks after ALL fields are completed.*`;
+🔗 *Full access after profile completion.*`;
         }
         
         // Enhanced validation with AI assistance
@@ -394,8 +391,8 @@ ${await getFieldPrompt(nextField, userSession)}`;
             
             progressMessage += `\n\n🎉 **PROFILE COMPLETED!**
 
-✅ **100% Complete - Search Now Unlocked!**
-🌟 **Welcome to the full JY Alumni Network!**
+✅ **Welcome to JY Alumni Relations Cell!**
+🌟 **Ready to connect with 9000+ fellow Yatris**
 
 What expertise are you looking for today?
 
@@ -646,7 +643,7 @@ function getFieldHelpTips(fieldName) {
         country: '• Enter your country name\n• I can correct typos automatically\n• Examples: "India", "United States", "Canada"',
         phone: '• Include country code\n• Format: +91 9876543210\n• Or: 919876543210',
         linkedin: '• Full LinkedIn URL or just username\n• I can create the URL for you\n• Examples: "johnsmith" or full URL',
-        dateOfBirth: '• Any date format works\n• Examples: 19/07/2000, July 19 2000\n• I'll understand and convert it',
+        dateOfBirth: '• Any date format works\n• Examples: 19/07/2000, July 19 2000\n• I will understand and convert it',
         gender: '• Select 1, 2, or 3\n• 1 = Male, 2 = Female, 3 = Others',
         domain: '• Select number from list\n• Choose your primary industry',
         professionalRole: '• Select number from list\n• Choose your current role'

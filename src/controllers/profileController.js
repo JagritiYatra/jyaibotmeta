@@ -60,18 +60,15 @@ I'll understand and save it correctly.`,
 
             country: `Enter your country:
 
-Example: India
-(I'll correct any typos automatically)`,
+Example: India`,
 
             city: `Enter your city:
 
-Example: Mumbai
-(I'll correct any typos automatically)`,
+Example: Mumbai`,
 
             state: `Enter your state/province:
 
-Example: Maharashtra
-(I'll correct any typos automatically)`,
+Example: Maharashtra`,
 
             phone: `Enter your phone number with country code:
 
@@ -84,12 +81,13 @@ Format: +[code] [number]`,
 
             linkedin: `Enter your LinkedIn profile:
 
-You can send:
-• Full URL: https://linkedin.com/in/yourname
-• Just username: yourname
-• Profile link from LinkedIn app
+Examples:
+• https://linkedin.com/in/yourname
+• linkedin.com/in/yourname  
+• yourlinkedinusername
+• Any LinkedIn URL
 
-I'll create the proper URL for you.`,
+Just paste whatever LinkedIn link/username you have.`,
 
             instagram: `Do you have Instagram to share?
 
@@ -282,14 +280,25 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 };
 
             case 'linkedin':
-                // Enhanced LinkedIn validation with smart URL creation
+                // FIXED: Very relaxed LinkedIn validation
                 const linkedinResult = await validateLinkedInURL(cleanValue);
-                if (!linkedinResult.valid && userSession.attempts[fieldName] > 1) {
+                
+                // Show helpful message if corrected
+                if (linkedinResult.valid && linkedinResult.corrected) {
                     return {
-                        valid: false,
-                        message: 'Send your LinkedIn URL or just your username\n\nExample: johnsmith'
+                        valid: true,
+                        value: linkedinResult.value,
+                        corrected: linkedinResult.corrected
                     };
                 }
+                
+                if (!linkedinResult.valid && userSession.attempts[fieldName] > 2) {
+                    return {
+                        valid: false,
+                        message: 'Please enter any LinkedIn URL or username:\n\n• https://linkedin.com/in/yourname\n• yourlinkedinusername\n• Any LinkedIn link you have'
+                    };
+                }
+                
                 return linkedinResult;
 
             case 'instagram':
@@ -446,17 +455,21 @@ function generateResumeGreeting(user) {
     const incompleteFields = getIncompleteFields(user);
     
     if (incompleteFields.length === 0) {
-        return `Hi *${name}*! 👋
+        return `Hi **${name}**! 👋
 
-Your profile is complete. What can I help you find today?`;
+Your profile is complete. Ready to connect with 9000+ fellow Yatris?
+
+What expertise are you looking for today?`;
     }
     
     const nextField = incompleteFields[0];
     const remainingCount = incompleteFields.length;
     
-    return `Hi *${name}*! 👋
+    return `Hi **${name}**! 👋
 
-Let's continue your profile - ${remainingCount} field${remainingCount > 1 ? 's' : ''} remaining.
+Let's complete your profile to connect with 9000+ fellow Yatris.
+
+**Remaining:** ${remainingCount} field${remainingCount > 1 ? 's' : ''}
 
 **Next:** ${getFieldDisplayName(nextField)}
 
