@@ -1,0 +1,116 @@
+{
+  "sessionId": "9db03658-f680-484a-a7d8-fdc55c63b733",
+  "userId": "+919999999999",
+  "startedAt": "2025-07-18T07:06:16.992Z",
+  "lastActivity": "2025-07-18T07:06:17.096Z",
+  "conversationFlow": [
+    {
+      "id": "e5580a8c-a87a-4074-bd05-9656ec8b4f13",
+      "timestamp": "2025-07-18T07:06:16.994Z",
+      "userMessage": "web developers in Mumbai",
+      "botResponse": "Here are 5 web developers in Mumbai...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "web developers in Mumbai",
+        "searchResults": [
+          "Dev1",
+          "Dev2",
+          "Dev3",
+          "Dev4",
+          "Dev5"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "9d5460f2-2d03-45dd-9e20-7e21332716ff",
+      "timestamp": "2025-07-18T07:06:17.095Z",
+      "userMessage": "any more profiles",
+      "botResponse": "Here are more web developers...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "e5580a8c-a87a-4074-bd05-9656ec8b4f13",
+        "searchQuery": "web developers in Mumbai",
+        "searchResults": [
+          "Dev6",
+          "Dev7",
+          "Dev8"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "992c10b1-2ec4-4e4f-9e2b-25d0f4b7d669",
+      "timestamp": "2025-07-18T07:06:17.096Z",
+      "userMessage": "show me senior developers",
+      "botResponse": "Here are senior web developers...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "9d5460f2-2d03-45dd-9e20-7e21332716ff",
+        "searchQuery": "senior web developers in Mumbai",
+        "searchResults": [
+          "SeniorDev1",
+          "SeniorDev2"
+        ],
+        "profilesShown": []
+      }
+    }
+  ],
+  "currentContext": {
+    "topic": "senior web developers in Mumbai",
+    "searchQuery": "senior web developers in Mumbai",
+    "searchResults": [
+      "SeniorDev1",
+      "SeniorDev2"
+    ],
+    "followUpCount": 2,
+    "relatedQueries": []
+  },
+  "searchHistory": [
+    {
+      "query": "web developers in Mumbai",
+      "timestamp": "2025-07-18T07:06:16.994Z",
+      "resultsCount": 5,
+      "followedBy": []
+    },
+    {
+      "query": "web developers in Mumbai",
+      "timestamp": "2025-07-18T07:06:17.096Z",
+      "resultsCount": 3,
+      "followedBy": []
+    },
+    {
+      "query": "senior web developers in Mumbai",
+      "timestamp": "2025-07-18T07:06:17.096Z",
+      "resultsCount": 2,
+      "followedBy": []
+    }
+  ],
+  "profileInterests": {
+    "domains": {},
+    "skills": {
+      "developer": 3
+    },
+    "locations": {
+      "mumbai": 3
+    },
+    "roles": {}
+  },
+  "behaviorMetrics": {
+    "totalSearches": 3,
+    "followUpSearches": 2,
+    "profileViews": 0,
+    "averageSessionLength": 0,
+    "topicsExplored": {}
+  },
+  "aiMemory": {
+    "userPreferences": {},
+    "communicationStyle": null,
+    "interests": [],
+    "learnings": []
+  }
+}

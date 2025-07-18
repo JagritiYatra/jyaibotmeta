@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(touch:*)",
+      "Bash(sed:*)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": []
+  }
+}

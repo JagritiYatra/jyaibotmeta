@@ -1,0 +1,42 @@
+{
+  "userId": "+16465894168",
+  "memoryId": "6da80b94-b59c-4870-804f-3b94e15b829d",
+  "createdAt": "2025-07-18T07:55:43.658Z",
+  "lastUpdated": "2025-07-18T07:55:43.661Z",
+  "conversations": [
+    {
+      "id": "8cd8da7e-4960-44f1-bf33-bbc0f11287f5",
+      "timestamp": "2025-07-18T07:55:43.659Z",
+      "userMessage": "*Get inspiration from success stories*\n\nNow that you're set up on the WhatsApp Business platform, it's time to think about what you'd like to accomplish first. Learn about how you can send promos, capture and nurture leads, and streamline customer support through these success stories!\n\nLearn more: https://business.whatsapp.com/resources/success-stories?lang=en_US",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "search",
+        "topic": "*Get inspiration from success stories*\n\nNow that you're set up on the WhatsApp Business platform, it's time to think about what you'd like to accomplish first. Learn about how you can send promos, capture and nurture leads, and streamline customer support through these success stories!\n\nLearn more: https://business.whatsapp.com/resources/success-stories?lang=en_US",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    }
+  ],
+  "topics": {
+    "*Get inspiration from success stories*\n\nNow that you're set up on the WhatsApp Business platform, it's time to think about what you'd like to accomplish first. Learn about how you can send promos, capture and nurture leads, and streamline customer support through these success stories!\n\nLearn more: https://business.whatsapp.com/resources/success-stories?lang=en_US": 1
+  },
+  "preferences": {
+    "communicationStyle": null,
+    "interests": [],
+    "searchPatterns": [
+      "*Get inspiration from success stories*\n\nNow that you're set up on the WhatsApp Business platform, it's time to think about what you'd like to accomplish first. Learn about how you can send promos, capture and nurture leads, and streamline customer support through these success stories!\n\nLearn more: https://business.whatsapp.com/resources/success-stories?lang=en_US"
+    ]
+  },
+  "insights": {
+    "totalInteractions": 1,
+    "averageMessageLength": 0,
+    "mostActiveTime": null,
+    "frequentQueries": [],
+    "profileCompletionJourney": []
+  },
+  "relationships": {
+    "searchedProfiles": [],
+    "interestedIn": [],
+    "connectionsMade": []
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "userId": "+918147284140",
+  "memoryId": "fd902db2-5542-4d56-85fb-92f735c3a331",
+  "createdAt": "2025-07-18T06:47:26.339Z",
+  "lastUpdated": "2025-07-18T06:57:44.316Z",
+  "conversations": [
+    {
+      "id": "c40d0103-2119-4e70-a90f-55ad35a3a8b0",
+      "timestamp": "2025-07-18T06:47:26.341Z",
+      "userMessage": "Hi",
+      "botResponse": "Hi **Akash Jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n1 field remaining.\n\nReady to continue?\n\nLet's start with:\n\n**Address**\n\nPlease provide your address:",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "ec8d4e69-31ee-4ed0-b4d8-e1bd0d4227d7",
+      "timestamp": "2025-07-18T06:47:45.796Z",
+      "userMessage": "Xrbia township pune",
+      "botResponse": "❌ Technical issue. Please try again or type \"skip\".",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "071dc2bb-0ddb-4ab2-a7e6-ab0bed8582a0",
+      "timestamp": "2025-07-18T06:56:44.074Z",
+      "userMessage": "Hi",
+      "botResponse": "Please enter your complete address (city, state, country).\n\n💡 Having trouble? You can type \"skip\" to move to the next field.",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "2ddf4642-7944-4a28-9b39-ede7ee51b3dc",
+      "timestamp": "2025-07-18T06:57:16.700Z",
+      "userMessage": "Athani Karnataka India",
+      "botResponse": "✅ **Complete Address Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "81402ef7-2842-4808-b3bd-648961c58f6f",
+      "timestamp": "2025-07-18T06:57:44.314Z",
+      "userMessage": "Web developer",
+      "botResponse": "**Shivani Sahu**\n**About:** Shivani Sahu is a skilled frontend developer dedicated to honing her craft and expanding her expertise through new ventures such as blogging and networking.\n📧 shivaniofficial1904@gmail.com\n🔗 https://www.linkedin.com/in/shivani-sahu-167766229\n\n**Abhishek Saini**\n**About:** Abhishek Saini is a professional software developer who collaborates with founders worldwide, offering his expertise as a freelancer to create innovative solutions.\n📧 abhisheksaini1219@gmail.com\n🔗 https://www.linkedin.com/in/abhishek-saini-9885941bb\n\n**Guram Balaji**\n**About:** Guram Balaji is a seasoned software developer with seven years of freelance experience, adept at merging business insights with technological advancements across various platforms.\n📧 gurambalaji2000@gmail.com\n🔗 https://www.linkedin.com/in/gurram-balaji-86994a270\n\n**Siddharth Adawale**\n**About:** Siddharth Adawale is a passionate software developer focused on crafting impactful solutions, particularly for Tier 2 and 3 businesses, while leveraging technology to address real-world challenges.\n📧 siddharth.adawale@mitaoe.ac.in\n",
+      "context": {
+        "intent": "search",
+        "topic": "Web developer",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    }
+  ],
+  "topics": {
+    "casual": 1,
+    "profile_input": 3,
+    "Web developer": 1
+  },
+  "preferences": {
+    "communicationStyle": null,
+    "interests": [],
+    "searchPatterns": [
+      "Web developer"
+    ]
+  },
+  "insights": {
+    "totalInteractions": 5,
+    "averageMessageLength": 0,
+    "mostActiveTime": null,
+    "frequentQueries": [],
+    "profileCompletionJourney": []
+  },
+  "relationships": {
+    "searchedProfiles": [],
+    "interestedIn": [],
+    "connectionsMade": []
+  }
+}

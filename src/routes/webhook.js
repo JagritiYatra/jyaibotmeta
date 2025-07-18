@@ -15,12 +15,32 @@ const { handleAuthenticatedUser } = require('../controllers/authenticatedUserCon
 const { handleNewUser } = require('../controllers/newUserController');
 const { checkAdvancedRateLimit } = require('../services/rateLimiter');
 const UserMemoryService = require('../services/userMemoryService');
+const { logUserQuery } = require('../services/analyticsService');
 
 // Main webhook endpoint for Twilio WhatsApp with enhanced processing
 router.post('/', asyncHandler(async (req, res) => {
-    const { Body, From, ProfileName, MessageSid } = req.body;
+    const { Body, From, ProfileName, MessageSid, MessageStatus, SmsStatus } = req.body;
     
-    // Validate required fields
+    // Handle Twilio status callbacks (sent, delivered, read, failed) - but NOT received
+    const status = MessageStatus || SmsStatus;
+    if (status && ['sent', 'delivered', 'read', 'failed'].includes(status)) {
+        const fromNumber = From ? From.replace('whatsapp:', '') : 'unknown';
+        
+        console.log(`📊 Message status update: ${MessageSid} - ${status} (${fromNumber})`);
+        
+        // Log status update for analytics
+        if (MessageSid) {
+            await logUserQuery(fromNumber, '', 'message_status', 0, 0, {
+                messageId: MessageSid,
+                status: status,
+                statusType: 'delivery_status'
+            });
+        }
+        
+        return res.status(200).send('');
+    }
+    
+    // Validate required fields for actual messages
     if (!Body || !From) {
         console.log('⚠️ Invalid webhook payload - missing Body or From');
         logError(new Error('Invalid webhook payload'), { 

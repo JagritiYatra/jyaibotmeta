@@ -1,0 +1,25 @@
+{
+  "userId": "+919876543210",
+  "memoryId": "48520c5d-8f60-4042-a2e5-bf77122b853f",
+  "createdAt": "2025-07-18T07:40:33.152Z",
+  "lastUpdated": "2025-07-18T07:40:33.152Z",
+  "conversations": [],
+  "topics": {},
+  "preferences": {
+    "communicationStyle": null,
+    "interests": [],
+    "searchPatterns": []
+  },
+  "insights": {
+    "totalInteractions": 0,
+    "averageMessageLength": 0,
+    "mostActiveTime": null,
+    "frequentQueries": [],
+    "profileCompletionJourney": []
+  },
+  "relationships": {
+    "searchedProfiles": [],
+    "interestedIn": [],
+    "connectionsMade": []
+  }
+}

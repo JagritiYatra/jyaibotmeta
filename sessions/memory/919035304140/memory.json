@@ -2,7 +2,7 @@
   "userId": "+919035304140",
   "memoryId": "78aa4e5a-67f0-4e27-8c05-26962c945707",
   "createdAt": "2025-07-18T05:44:34.873Z",
-  "lastUpdated": "2025-07-18T05:58:31.495Z",
+  "lastUpdated": "2025-07-18T09:59:44.760Z",
   "conversations": [
     {
       "id": "38e5d3e4-3b4e-41b7-b457-4dadf0ec30e7",
@@ -111,25 +111,1041 @@
         "sessionState": "updating_state",
         "fieldBeingUpdated": "state"
       }
+    },
+    {
+      "id": "21fff2ec-dd89-4d1e-b95f-a436857f7152",
+      "timestamp": "2025-07-18T06:09:26.487Z",
+      "userMessage": "hi",
+      "botResponse": "Hi **Akash jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n**Remaining:** 7 fields\n\n**Next:** Complete Address\n\n[object Promise]",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "ec5fbf48-9ad2-48e3-825e-4e4a51c8568b",
+      "timestamp": "2025-07-18T06:09:58.300Z",
+      "userMessage": "at post ananthpur taluk athani district belagavi",
+      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 2 of 7**\n**Field:** Complete Address\n\nEnter your complete address:\n\nPlease include: City, State/Province, Country\n\nExamples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka, India\n• New York, NY, USA\n• London, England, UK\n\nJust type your full location details in any format!\n\n🔗 *Full access after profile completion.*",
+      "context": {
+        "intent": "search",
+        "topic": "at post ananthpur taluk athani district belagavi",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "e2b05f40-8fe6-49ad-a3ec-474dfa2355e3",
+      "timestamp": "2025-07-18T06:10:20.316Z",
+      "userMessage": "city state",
+      "botResponse": "✅ **Complete Address Saved!**\n\n📊 **Progress:** 1/7 (14%)\n\n**Step 2 of 7:** Phone Number\n\nEnter your phone number with country code:\n\nExamples:\n+91 9876543210\n+1 2025551234\n+44 7911123456\n\nFormat: +[code] [number]",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_phone",
+        "fieldBeingUpdated": "phone"
+      }
+    },
+    {
+      "id": "f60f1012-f149-4d03-a55d-ae2b01938640",
+      "timestamp": "2025-07-18T06:10:32.707Z",
+      "userMessage": "8970894140",
+      "botResponse": "✅ **Phone Number Saved!**\n\n📊 **Progress:** 2/7 (29%)\n\n**Step 3 of 7:** Industry Domain\n\nSelect your industry domain:\n\n1. Agriculture\n2. Technology\n3. Healthcare\n4. Education\n5. Finance\n6. Manufacturing\n7. Energy & Sustainability\n8. Transportation & Logistics\n9. Retail & E-commerce\n10. Media & Entertainment\n11. Real Estate & Construction\n12. Telecommunications\n13. Automotive\n14. Aerospace & Defense\n15. Tourism & Hospitality\n16. Food & Beverage\n17. Legal & Compliance\n18. Human Resources & Workforce Development\n19. Social Impact & Nonprofit\n20. Cybersecurity\n\nReply with: 1-20",
+      "context": {
+        "intent": "numeric_input",
+        "topic": "numeric_input",
+        "sessionState": "updating_domain",
+        "fieldBeingUpdated": "domain"
+      }
+    },
+    {
+      "id": "ddf32ebd-e3ba-4651-921f-6d18b6081c40",
+      "timestamp": "2025-07-18T06:10:39.158Z",
+      "userMessage": "20",
+      "botResponse": "✅ **Industry Domain Saved!**\n\n📊 **Progress:** 3/7 (43%)\n\n**Step 4 of 7:** LinkedIn Profile\n\nEnter your LinkedIn profile:\n\nExamples:\n• https://linkedin.com/in/yourname\n• linkedin.com/in/yourname  \n• yourlinkedinusername\n• Any LinkedIn URL\n\nJust paste whatever LinkedIn link/username you have.",
+      "context": {
+        "intent": "numeric_input",
+        "topic": "numeric_input",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "dea94abd-6991-48df-9b7d-dde30ae7e1af",
+      "timestamp": "2025-07-18T06:11:05.698Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 5 of 7**\n**Field:** LinkedIn Profile\n\nEnter your LinkedIn profile:\n\nExamples:\n• https://linkedin.com/in/yourname\n• linkedin.com/in/yourname  \n• yourlinkedinusername\n• Any LinkedIn URL\n\nJust paste whatever LinkedIn link/username you have.\n\n🔗 *Full access after profile completion.*",
+      "context": {
+        "intent": "search",
+        "topic": "https://www.linkedin.com/in/classictechak/",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "47240b06-e9d8-40d1-bcd2-3641a8298b8e",
+      "timestamp": "2025-07-18T06:32:18.543Z",
+      "userMessage": "hi",
+      "botResponse": "Hi **Akash jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n4 fields remaining.\n\nReady to continue?\n\nLet's continue with the next field:\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "376012e3-216b-4b8d-a920-a806e82941f2",
+      "timestamp": "2025-07-18T06:32:32.902Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "search",
+        "topic": "https://www.linkedin.com/in/classictechak/",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "f56b58bd-240a-4938-a394-2ae39390e09c",
+      "timestamp": "2025-07-18T06:32:40.805Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "search",
+        "topic": "https://www.linkedin.com/in/classictechak/",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "4571f10a-fcb5-4dab-858b-3f3f8f1d344e",
+      "timestamp": "2025-07-18T06:32:45.944Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "search",
+        "topic": "https://www.linkedin.com/in/classictechak/",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "a7ace2d1-bb12-4d2d-96df-1140e3a47d81",
+      "timestamp": "2025-07-18T06:32:50.759Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "search",
+        "topic": "https://www.linkedin.com/in/classictechak/",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "08ff7365-b43d-445e-a873-a7c35fb2eeb2",
+      "timestamp": "2025-07-18T06:32:55.583Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "search",
+        "topic": "https://www.linkedin.com/in/classictechak/",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "d33a294d-34dc-4920-9a54-1349c4ce6098",
+      "timestamp": "2025-07-18T06:34:56.712Z",
+      "userMessage": "hi",
+      "botResponse": "Hi **Akash jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n4 fields remaining.\n\nReady to continue?\n\nLet's continue with the next field:\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "0078dd07-56ef-42ac-92fa-8f7d5d1e88af",
+      "timestamp": "2025-07-18T06:35:20.489Z",
+      "userMessage": "https://linkedin.com/in/yourname",
+      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "search",
+        "topic": "https://linkedin.com/in/yourname",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "01517606-01ca-481d-862e-b94559869486",
+      "timestamp": "2025-07-18T06:43:44.431Z",
+      "userMessage": "hi",
+      "botResponse": "✅ **LinkedIn Profile Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 2/4\n\n**Yatra Impact**\n\nHow did Yatra help you personally? (Select multiple)\n\n1. Started Enterprise Post-Yatra\n2. Found Clarity in Journey\n3. Received Funding / Grant\n\nExamples: 1 or 1,2 or 1,2,3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_yatraImpact",
+        "fieldBeingUpdated": "yatraImpact"
+      }
+    },
+    {
+      "id": "99d0842a-39a6-4a7b-91cd-d333b8a63bf2",
+      "timestamp": "2025-07-18T07:02:04.367Z",
+      "userMessage": "Hi",
+      "botResponse": "Please select 1-3 options.\n\nExample: 1,2 or 1,2,3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_yatraImpact",
+        "fieldBeingUpdated": "yatraImpact"
+      }
+    },
+    {
+      "id": "0cb5969a-d675-47ea-86ab-05e6d6f2f778",
+      "timestamp": "2025-07-18T07:02:28.286Z",
+      "userMessage": "1",
+      "botResponse": "✅ **Yatra Impact Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜\n**Progress:** 3/4\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "42741efe-0a6b-40b9-9757-c36fedafa123",
+      "timestamp": "2025-07-18T07:03:15.008Z",
+      "userMessage": "11",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n**Progress:** 4/4\n\n**Community Contributions**\n\nWhat can you give to the community? (Select up to 3)\n\n1. Mentorship & Guidance\n2. Industry Insights & Best Practices\n3. Community Building & Networking\n4. Legal & Compliance Advice\n5. Technology & Digital Support\n6. Amplification of Ideas & Stories\n7. Market Access & Collaborations\n8. Skill Development Workshops\n9. Job & Internship Opportunities\n10. Investment & Funding Opportunities\n\nExample: 1,3,7",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityGives",
+        "fieldBeingUpdated": "communityGives"
+      }
+    },
+    {
+      "id": "ba354541-b81a-47fa-9e90-3143c44ad4d6",
+      "timestamp": "2025-07-18T07:04:16.164Z",
+      "userMessage": "0",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "numeric_input",
+        "topic": "numeric_input",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "59fceb11-1681-4d64-9a39-3d1774c0ebd0",
+      "timestamp": "2025-07-18T07:05:34.663Z",
+      "userMessage": "What",
+      "botResponse": "Please select 1-3 options.\n\nExample: 1,3,7\n\n💡 Having trouble? You can type \"skip\" to move to the next field.",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityGives",
+        "fieldBeingUpdated": "communityGives"
+      }
+    },
+    {
+      "id": "bac817be-22ae-4c20-ab92-822950052fcd",
+      "timestamp": "2025-07-18T07:05:54.312Z",
+      "userMessage": "1",
+      "botResponse": "✅ **Community Contributions Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "3c239a0d-4ab0-47ff-adfb-cc001538fb29",
+      "timestamp": "2025-07-18T07:06:11.026Z",
+      "userMessage": "Web developer",
+      "botResponse": "🔒 **Search Access Locked**\n\nHi swapnil! To protect our alumni privacy, we need verified profiles.\n\n📊 **Your Progress:** 93%\n⏱️ **Time to Complete:** ~1 minutes\n🎯 **Fields Remaining:** 1\n\nLet's quickly complete your profile:\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5\n\n💡 Type \"skip\" anytime to pause",
+      "context": {
+        "intent": "search",
+        "topic": "Web developer",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "368c181f-05f2-410e-9e4b-96e5a5ebe726",
+      "timestamp": "2025-07-18T07:07:35.806Z",
+      "userMessage": "10",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "473b89a6-53fe-4d92-bc8e-f24b00e547ae",
+      "timestamp": "2025-07-18T08:03:08.976Z",
+      "userMessage": "hi",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "aa6e3979-2ebb-4085-a3b3-ca9f70feb1d5",
+      "timestamp": "2025-07-18T08:03:22.926Z",
+      "userMessage": "jadhavakashofficial@gmail.com",
+      "botResponse": "❌ Email \"jadhavakashofficial@gmail.com\" not found in our alumni database.\n\nPlease check:\n- Spelling is correct\n- You're using the same email from your JY application\n- Try alternative email addresses you might have used\n\nType \"change\" to enter a different email\n\nNeed help? Contact support@jagritiyatra.com",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "4cb35f53-f016-47b8-a4a0-65ab10c31f51",
+      "timestamp": "2025-07-18T08:04:31.486Z",
+      "userMessage": "jadhavakashofficial@gmail.com",
+      "botResponse": "✅ Verification code sent to jadhavakashofficial@gmail.com\n\nPlease enter the 6-digit code from your email:\n\n⏰ Code expires in 10 minutes\n\nOptions:\n- Type \"resend\" for a new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "2f230d0c-f30e-4ee4-b44e-6a6fa3e5474c",
+      "timestamp": "2025-07-18T08:04:49.118Z",
+      "userMessage": "578198",
+      "botResponse": "✅ Verification successful!\n\nWelcome to JY Alumni Relations Cell, **Kartik More**! 🌟\n\nYour profile needs completion to connect with 9000+ fellow Yatris.\n\n**Step 1 of 12:** Full Name\n\nPlease enter your full name:\n\nExample: Rajesh Kumar Singh",
+      "context": {
+        "intent": "otp_verification",
+        "topic": "otp_verification",
+        "sessionState": "updating_fullName",
+        "fieldBeingUpdated": "fullName"
+      }
+    },
+    {
+      "id": "f83affcc-db93-411c-9267-8ec6bf0676d9",
+      "timestamp": "2025-07-18T08:05:01.673Z",
+      "userMessage": "Akash Jadhav",
+      "botResponse": "✅ **Full Name Saved!**\n\n✨ Excellent start!\n\n🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 2/12\n\n**Gender**\n\nSelect your gender:\n\n1. Male\n2. Female  \n3. Others\n\nReply: 1, 2, or 3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_gender",
+        "fieldBeingUpdated": "gender"
+      }
+    },
+    {
+      "id": "6c9fdd98-ee17-4fb1-951c-d90b3c62d6b8",
+      "timestamp": "2025-07-18T08:05:10.980Z",
+      "userMessage": "male",
+      "botResponse": "Please select 1, 2, or 3:\n\n1. Male\n2. Female\n3. Others",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_gender",
+        "fieldBeingUpdated": "gender"
+      }
+    },
+    {
+      "id": "a6f0b932-5544-4cb6-afa2-6764bb00f70b",
+      "timestamp": "2025-07-18T08:05:17.892Z",
+      "userMessage": "2",
+      "botResponse": "✅ **Gender Saved!**\n\n✨ Excellent start!\n\n🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 3/12\n\n**Professional Role**\n\nSelect your professional role:\n\n1. Entrepreneur\n2. Student\n3. Working Professional\n4. Startup Founder\n5. NGO Founder\n6. Researcher\n7. Freelancer\n8. Consultant\n\nReply: 1-8",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_professionalRole",
+        "fieldBeingUpdated": "professionalRole"
+      }
+    },
+    {
+      "id": "b3f02e5d-a170-4aab-b287-c7108153b40d",
+      "timestamp": "2025-07-18T08:05:24.222Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Professional Role Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 4/12\n\n**Date of Birth**\n\nEnter your date of birth:\n\nFormat: DD MM YYYY\nExamples: 19 07 2000, 19/07/2000, 19-07-2000\n\nAny date format works - I'll understand it.",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "ab0b6278-4ef9-42a0-a109-b6004684aa7a",
+      "timestamp": "2025-07-18T08:05:36.942Z",
+      "userMessage": "19/07/2000",
+      "botResponse": "✅ **Date of Birth Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜\n**Progress:** 5/12\n\n**Country**\n\nEnter your country:\n\nExample: India",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_country",
+        "fieldBeingUpdated": "country"
+      }
+    },
+    {
+      "id": "d5162c75-5109-42c9-afad-bc8f9fae3118",
+      "timestamp": "2025-07-18T08:05:42.200Z",
+      "userMessage": "india",
+      "botResponse": "✅ **Country Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 6/12\n\n**Complete Address**\n\nEnter your complete address:\n\nPlease include: City, State/Province, Country\n\nExamples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka, India\n• New York, NY, USA\n• London, England, UK\n\nJust type your full location details in any format!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "b3ace9f6-9afb-43e7-a9d6-865f2191318a",
+      "timestamp": "2025-07-18T08:05:58.751Z",
+      "userMessage": "chembur , mumbai , india",
+      "botResponse": "✅ **Complete Address Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 7/12\n\n**Mobile Number**\n\nEnter your mobile number with country code:\n\nExamples:\n+91 9876543210\n+1 2025551234\n+44 7911123456",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_phone",
+        "fieldBeingUpdated": "phone"
+      }
+    },
+    {
+      "id": "042fcde9-2fd8-482f-8bea-32b6e4bc4ebf",
+      "timestamp": "2025-07-18T08:06:08.278Z",
+      "userMessage": "9876543210",
+      "botResponse": "✅ **Mobile Number Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜\n**Progress:** 8/12\n\n**Industry Domain**\n\nSelect your industry domain:\n\n1. Agriculture\n2. Technology\n3. Healthcare\n4. Education\n5. Finance\n6. Manufacturing\n7. Energy & Sustainability\n8. Transportation & Logistics\n9. Retail & E-commerce\n10. Media & Entertainment\n11. Real Estate & Construction\n12. Telecommunications\n13. Automotive\n14. Aerospace & Defense\n15. Tourism & Hospitality\n16. Food & Beverage\n17. Legal & Compliance\n18. Human Resources & Workforce Development\n19. Social Impact & Nonprofit\n20. Cybersecurity\n\nReply: 1-20",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_domain",
+        "fieldBeingUpdated": "domain"
+      }
+    },
+    {
+      "id": "482caaf8-4d1a-421d-8650-6eed362c5fb1",
+      "timestamp": "2025-07-18T08:06:13.699Z",
+      "userMessage": "20",
+      "botResponse": "✅ **Industry Domain Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜\n**Progress:** 9/12\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "6730cc1a-02a2-4bd4-814c-80726586eeb0",
+      "timestamp": "2025-07-18T08:06:35.104Z",
+      "userMessage": "https://www.linkedin.com/in/classictechak/",
+      "botResponse": "✅ **LinkedIn Profile Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜\n**Progress:** 10/12\n\n**Yatra Impact**\n\nHow did Yatra help you personally? (Select multiple)\n\n1. Started Enterprise Post-Yatra\n2. Found Clarity in Journey\n3. Received Funding / Grant\n\nExamples: 1 or 1,2 or 1,2,3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_yatraImpact",
+        "fieldBeingUpdated": "yatraImpact"
+      }
+    },
+    {
+      "id": "654ca2af-d3ba-4c1a-a56f-f6eed52056d2",
+      "timestamp": "2025-07-18T08:06:44.985Z",
+      "userMessage": "3",
+      "botResponse": "✅ **Yatra Impact Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜\n**Progress:** 11/12\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "208894f7-c5b0-4699-a86e-2aad9650173d",
+      "timestamp": "2025-07-18T08:06:51.006Z",
+      "userMessage": "1,4",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🎯 Almost there! Final stretch!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n**Progress:** 12/12\n\n**Community Contributions**\n\nWhat can you give to the community? (Select up to 3)\n\n1. Mentorship & Guidance\n2. Industry Insights & Best Practices\n3. Community Building & Networking\n4. Legal & Compliance Advice\n5. Technology & Digital Support\n6. Amplification of Ideas & Stories\n7. Market Access & Collaborations\n8. Skill Development Workshops\n9. Job & Internship Opportunities\n10. Investment & Funding Opportunities\n\nExample: 1,3,7",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityGives",
+        "fieldBeingUpdated": "communityGives"
+      }
+    },
+    {
+      "id": "8d0f6184-cf25-45a2-9311-7f24cfaaf1f1",
+      "timestamp": "2025-07-18T08:06:59.497Z",
+      "userMessage": "1,3",
+      "botResponse": "✅ **Community Contributions Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "2a98e7e0-f112-4377-913e-26cb1bd74f06",
+      "timestamp": "2025-07-18T08:07:10.762Z",
+      "userMessage": "i need help in web development",
+      "botResponse": "🔒 **Search Access Locked**\n\nHi Kartik! To protect our alumni privacy, we need verified profiles.\n\n📊 **Your Progress:** 93%\n⏱️ **Time to Complete:** ~1 minutes\n🎯 **Fields Remaining:** 1\n\nLet's quickly complete your profile:\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5\n\n💡 Type \"skip\" anytime to pause",
+      "context": {
+        "intent": "search",
+        "topic": "i need help in web development",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "40d4076e-f994-4ad5-bd48-0176819c0b86",
+      "timestamp": "2025-07-18T08:07:29.581Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "2a788131-97cd-48ed-93c6-b40eeaffbd7a",
+      "timestamp": "2025-07-18T08:07:38.197Z",
+      "userMessage": "i need help in web development",
+      "botResponse": "🔒 **Search Access Locked**\n\nHi Kartik! To protect our alumni privacy, we need verified profiles.\n\n📊 **Your Progress:** 93%\n⏱️ **Time to Complete:** ~1 minutes\n🎯 **Fields Remaining:** 1\n\nLet's quickly complete your profile:\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5\n\n💡 Type \"skip\" anytime to pause",
+      "context": {
+        "intent": "search",
+        "topic": "i need help in web development",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "ec2072eb-102c-4735-bb72-263b4f6e6721",
+      "timestamp": "2025-07-18T08:40:35.773Z",
+      "userMessage": "Hi",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "da8ddc04-3f05-493a-876a-be28e0efe972",
+      "timestamp": "2025-07-18T08:41:56.008Z",
+      "userMessage": "Jadhavakashofficial@gmail.com",
+      "botResponse": "❌ Email \"Jadhavakashofficial@gmail.com\" not found in our alumni database.\n\nPlease check:\n- Spelling is correct\n- You're using the same email from your JY application\n- Try alternative email addresses you might have used\n\nType \"change\" to enter a different email\n\nNeed help? Contact support@jagritiyatra.com",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "dee16c50-ad87-4b80-85bd-f4c28f581a79",
+      "timestamp": "2025-07-18T08:44:27.513Z",
+      "userMessage": "Jadhavakashofficial@gmail.com",
+      "botResponse": "✅ Verification code sent to Jadhavakashofficial@gmail.com\n\nPlease enter the 6-digit code from your email:\n\n⏰ Code expires in 10 minutes\n\nOptions:\n- Type \"resend\" for a new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "a293e0ba-6af6-4c58-a822-a0bb0d2284e9",
+      "timestamp": "2025-07-18T08:45:07.241Z",
+      "userMessage": "16192",
+      "botResponse": "❌ Please enter a 6-digit verification code.\n\nFormat: 123456 (6 digits)\n\nOptions:\n- Type \"resend\" for new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "numeric_input",
+        "topic": "numeric_input",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "c111ee9e-4a80-4e5b-9178-ed21faa84096",
+      "timestamp": "2025-07-18T08:45:15.733Z",
+      "userMessage": "161928",
+      "botResponse": "✅ Verification successful!\n\nWelcome to JY Alumni Relations Cell, **Pranay Dhoble**! 🌟\n\nYour profile needs completion to connect with 9000+ fellow Yatris.\n\n**Step 1 of 12:** Full Name\n\nPlease enter your full name:\n\nExample: Rajesh Kumar Singh",
+      "context": {
+        "intent": "otp_verification",
+        "topic": "otp_verification",
+        "sessionState": "updating_fullName",
+        "fieldBeingUpdated": "fullName"
+      }
+    },
+    {
+      "id": "1bfb3ae6-f57d-4960-a809-10a9aaaa8ffe",
+      "timestamp": "2025-07-18T08:45:26.315Z",
+      "userMessage": "Akash jadhav",
+      "botResponse": "✅ **Full Name Saved!**\n\n✨ Excellent start!\n\n🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 2/12\n\n**Gender**\n\nSelect your gender:\n\n1. Male\n2. Female  \n3. Others\n\nReply: 1, 2, or 3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_gender",
+        "fieldBeingUpdated": "gender"
+      }
+    },
+    {
+      "id": "449fa2ef-881d-403c-b54f-b16e910dbbb7",
+      "timestamp": "2025-07-18T08:45:36.416Z",
+      "userMessage": "2",
+      "botResponse": "✅ **Gender Saved!**\n\n✨ Excellent start!\n\n🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 3/12\n\n**Professional Role**\n\nSelect your professional role:\n\n1. Entrepreneur\n2. Student\n3. Working Professional\n4. Startup Founder\n5. NGO Founder\n6. Researcher\n7. Freelancer\n8. Consultant\n\nReply: 1-8",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_professionalRole",
+        "fieldBeingUpdated": "professionalRole"
+      }
+    },
+    {
+      "id": "9abf989d-4af3-4bb0-aadc-bb8304fe3004",
+      "timestamp": "2025-07-18T08:45:44.607Z",
+      "userMessage": "3",
+      "botResponse": "✅ **Professional Role Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 4/12\n\n**Date of Birth**\n\nEnter your date of birth:\n\nFormat: DD MM YYYY\nExamples: 19 07 2000, 19/07/2000, 19-07-2000\n\nAny date format works - I'll understand it.",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "f06d628f-2f69-4963-b1bd-63486439d32a",
+      "timestamp": "2025-07-18T08:45:58.018Z",
+      "userMessage": "19 07 2000",
+      "botResponse": "✅ **Date of Birth Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜\n**Progress:** 5/12\n\n**Country**\n\nEnter your country:\n\nExample: India",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_country",
+        "fieldBeingUpdated": "country"
+      }
+    },
+    {
+      "id": "08d93295-311d-47a3-929c-bd1d37e5dd3e",
+      "timestamp": "2025-07-18T08:46:15.739Z",
+      "userMessage": "indis",
+      "botResponse": "✅ **Country Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 6/12\n\n**Complete Address**\n\nEnter your complete address:\n\nPlease include: City, State/Province, Country\n\nExamples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka, India\n• New York, NY, USA\n• London, England, UK\n\nJust type your full location details in any format!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "6f920fc6-977a-4675-af6c-f8449efed1f9",
+      "timestamp": "2025-07-18T08:46:32.896Z",
+      "userMessage": "Mumbai, Maharashtra, India",
+      "botResponse": "✅ **Complete Address Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 7/12\n\n**Mobile Number**\n\nEnter your mobile number with country code:\n\nExamples:\n+91 9876543210\n+1 2025551234\n+44 7911123456",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_phone",
+        "fieldBeingUpdated": "phone"
+      }
+    },
+    {
+      "id": "6c0b157e-6916-444e-a8bd-0c8db0ede25d",
+      "timestamp": "2025-07-18T08:46:45.958Z",
+      "userMessage": "+91 9876543210",
+      "botResponse": "✅ **Mobile Number Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜\n**Progress:** 8/12\n\n**Industry Domain**\n\nSelect your industry domain:\n\n1. Agriculture\n2. Technology\n3. Healthcare\n4. Education\n5. Finance\n6. Manufacturing\n7. Energy & Sustainability\n8. Transportation & Logistics\n9. Retail & E-commerce\n10. Media & Entertainment\n11. Real Estate & Construction\n12. Telecommunications\n13. Automotive\n14. Aerospace & Defense\n15. Tourism & Hospitality\n16. Food & Beverage\n17. Legal & Compliance\n18. Human Resources & Workforce Development\n19. Social Impact & Nonprofit\n20. Cybersecurity\n\nReply: 1-20",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_domain",
+        "fieldBeingUpdated": "domain"
+      }
+    },
+    {
+      "id": "abe0b03c-77b1-4bd6-98ad-c9c5e3ffb009",
+      "timestamp": "2025-07-18T08:46:53.019Z",
+      "userMessage": "2",
+      "botResponse": "✅ **Industry Domain Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜\n**Progress:** 9/12\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "467965d4-4283-4677-a087-74576870c40e",
+      "timestamp": "2025-07-18T08:47:24.473Z",
+      "userMessage": "https://www.linkedin.com/in/pmathad/",
+      "botResponse": "✅ **LinkedIn Profile Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜\n**Progress:** 10/12\n\n**Yatra Impact**\n\nHow did Yatra help you personally? (Select multiple)\n\n1. Started Enterprise Post-Yatra\n2. Found Clarity in Journey\n3. Received Funding / Grant\n\nExamples: 1 or 1,2 or 1,2,3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_yatraImpact",
+        "fieldBeingUpdated": "yatraImpact"
+      }
+    },
+    {
+      "id": "7560420b-a33a-4eee-8d87-4cc0741e8e24",
+      "timestamp": "2025-07-18T08:47:31.167Z",
+      "userMessage": "3",
+      "botResponse": "✅ **Yatra Impact Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜\n**Progress:** 11/12\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "48b272a5-a6ce-462a-811a-750a5301e4b8",
+      "timestamp": "2025-07-18T08:47:50.561Z",
+      "userMessage": "6",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🎯 Almost there! Final stretch!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n**Progress:** 12/12\n\n**Community Contributions**\n\nWhat can you give to the community? (Select up to 3)\n\n1. Mentorship & Guidance\n2. Industry Insights & Best Practices\n3. Community Building & Networking\n4. Legal & Compliance Advice\n5. Technology & Digital Support\n6. Amplification of Ideas & Stories\n7. Market Access & Collaborations\n8. Skill Development Workshops\n9. Job & Internship Opportunities\n10. Investment & Funding Opportunities\n\nExample: 1,3,7",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityGives",
+        "fieldBeingUpdated": "communityGives"
+      }
+    },
+    {
+      "id": "b5d51dd3-7805-4253-bcfe-8cfc6dd9b684",
+      "timestamp": "2025-07-18T08:48:01.522Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Community Contributions Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "8e79126a-a67c-4628-9bc5-307565c680fe",
+      "timestamp": "2025-07-18T09:20:14.722Z",
+      "userMessage": "hi",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "f4b7613b-04df-405d-a23e-f84f154bab4f",
+      "timestamp": "2025-07-18T09:43:05.863Z",
+      "userMessage": "hi",
+      "botResponse": "Invalid email format.\n\nExample: yourname@gmail.com\n\nPlease enter a valid email address:\nExample: yourname@domain.com\n\nType \"change\" if you want to start over.",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "256b3843-66dd-471f-b3bd-070458c76a23",
+      "timestamp": "2025-07-18T09:43:23.028Z",
+      "userMessage": "jadhavakashofficial@gmail.com",
+      "botResponse": "❌ Email \"jadhavakashofficial@gmail.com\" not found in our alumni database.\n\nPlease check:\n- Spelling is correct\n- You're using the same email from your JY application\n- Try alternative email addresses you might have used\n\nType \"change\" to enter a different email\n\nNeed help? Contact support@jagritiyatra.com",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "a953d415-2a1b-4bcf-980b-2df7efd58282",
+      "timestamp": "2025-07-18T09:52:11.702Z",
+      "userMessage": "jadhavakashofficial@gmail.com",
+      "botResponse": "✅ Verification code sent to jadhavakashofficial@gmail.com\n\nPlease enter the 6-digit code from your email:\n\n⏰ Code expires in 10 minutes\n\nOptions:\n- Type \"resend\" for a new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "f556bcae-4f60-45c8-a272-8e34903f5f9d",
+      "timestamp": "2025-07-18T09:52:26.671Z",
+      "userMessage": "634164",
+      "botResponse": "✅ Verification successful!\n\nWelcome to JY Alumni Relations Cell, **Avinash Boddepalli**! 🌟\n\nYour profile needs completion to connect with 9000+ fellow Yatris.\n\n**Step 1 of 12:** Full Name\n\nPlease enter your full name:\n\nExample: Rajesh Kumar Singh",
+      "context": {
+        "intent": "otp_verification",
+        "topic": "otp_verification",
+        "sessionState": "updating_fullName",
+        "fieldBeingUpdated": "fullName"
+      }
+    },
+    {
+      "id": "8e64ef72-bcba-4e19-858c-c5d21a00310b",
+      "timestamp": "2025-07-18T09:52:37.600Z",
+      "userMessage": "Akash jadhav",
+      "botResponse": "✅ **Full Name Saved!**\n\n✨ Excellent start!\n\n🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 2/12\n\n**Gender**\n\nSelect your gender:\n\n1. Male\n2. Female  \n3. Others\n\nReply: 1, 2, or 3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_gender",
+        "fieldBeingUpdated": "gender"
+      }
+    },
+    {
+      "id": "85a62d9e-cac0-4b30-ad29-1990503b2993",
+      "timestamp": "2025-07-18T09:53:07.939Z",
+      "userMessage": "2",
+      "botResponse": "✅ **Gender Saved!**\n\n✨ Excellent start!\n\n🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 3/12\n\n**Professional Role**\n\nSelect your professional role:\n\n1. Entrepreneur\n2. Student\n3. Working Professional\n4. Startup Founder\n5. NGO Founder\n6. Researcher\n7. Freelancer\n8. Consultant\n\nReply: 1-8",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_professionalRole",
+        "fieldBeingUpdated": "professionalRole"
+      }
+    },
+    {
+      "id": "cc43a62f-0077-4ebe-bca0-56afe73bcccf",
+      "timestamp": "2025-07-18T09:53:14.343Z",
+      "userMessage": "5",
+      "botResponse": "✅ **Professional Role Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 4/12\n\n**Date of Birth**\n\nEnter your date of birth:\n\nFormat: DD MM YYYY\nExamples: 19 07 2000, 19/07/2000, 19-07-2000\n\nAny date format works - I'll understand it.",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "f4afa290-cdea-4131-9f2a-99ce27635ceb",
+      "timestamp": "2025-07-18T09:53:38.045Z",
+      "userMessage": "19 07 200",
+      "botResponse": "Invalid date format",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "af8691ac-e727-46d9-a7cb-cb649572f87d",
+      "timestamp": "2025-07-18T09:53:47.571Z",
+      "userMessage": "19 07 2000",
+      "botResponse": "✅ **Date of Birth Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜\n**Progress:** 5/12\n\n**Country**\n\nEnter your country:\n\nExample: India",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_country",
+        "fieldBeingUpdated": "country"
+      }
+    },
+    {
+      "id": "582053e9-4949-4775-a5f8-e0d5d7ef6c20",
+      "timestamp": "2025-07-18T09:54:42.827Z",
+      "userMessage": "india",
+      "botResponse": "✅ **Country Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 6/12\n\n**Complete Address**\n\nEnter your complete address:\n\nPlease include: City, State/Province, Country\n\nExamples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka, India\n• New York, NY, USA\n• London, England, UK\n\nJust type your full location details in any format!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "787b2d9e-bf81-41fc-9132-7f3930242998",
+      "timestamp": "2025-07-18T09:55:12.781Z",
+      "userMessage": "wakad pune",
+      "botResponse": "✅ **Complete Address Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 7/12\n\n**Mobile Number**\n\nEnter your mobile number with country code:\n\nExamples:\n+91 9876543210\n+1 2025551234\n+44 7911123456",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_phone",
+        "fieldBeingUpdated": "phone"
+      }
+    },
+    {
+      "id": "f7610912-4193-43b6-b1a1-ae38275c8a6a",
+      "timestamp": "2025-07-18T09:55:31.873Z",
+      "userMessage": "8970893130",
+      "botResponse": "✅ **Mobile Number Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜\n**Progress:** 8/12\n\n**Industry Domain**\n\nSelect your industry domain:\n\n1. Agriculture\n2. Technology\n3. Healthcare\n4. Education\n5. Finance\n6. Manufacturing\n7. Energy & Sustainability\n8. Transportation & Logistics\n9. Retail & E-commerce\n10. Media & Entertainment\n11. Real Estate & Construction\n12. Telecommunications\n13. Automotive\n14. Aerospace & Defense\n15. Tourism & Hospitality\n16. Food & Beverage\n17. Legal & Compliance\n18. Human Resources & Workforce Development\n19. Social Impact & Nonprofit\n20. Cybersecurity\n\nReply: 1-20",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_domain",
+        "fieldBeingUpdated": "domain"
+      }
+    },
+    {
+      "id": "991ae84d-4ec9-4dde-9778-74a119f16b8a",
+      "timestamp": "2025-07-18T09:55:47.375Z",
+      "userMessage": "20",
+      "botResponse": "✅ **Industry Domain Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜\n**Progress:** 9/12\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "1bdae4a5-170b-4f75-8de1-c937044cbbab",
+      "timestamp": "2025-07-18T09:56:00.971Z",
+      "userMessage": "https://www.linkedin.com/in/pmathad/",
+      "botResponse": "✅ **LinkedIn Profile Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜\n**Progress:** 10/12\n\n**Yatra Impact**\n\nHow did Yatra help you personally? (Select multiple)\n\n1. Started Enterprise Post-Yatra\n2. Found Clarity in Journey\n3. Received Funding / Grant\n\nExamples: 1 or 1,2 or 1,2,3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_yatraImpact",
+        "fieldBeingUpdated": "yatraImpact"
+      }
+    },
+    {
+      "id": "812c318a-34d0-4bf1-a4a3-72900f5d9dc0",
+      "timestamp": "2025-07-18T09:56:09.293Z",
+      "userMessage": "3",
+      "botResponse": "✅ **Yatra Impact Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜\n**Progress:** 11/12\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "c2132262-e53d-4c63-9ed8-77633b805465",
+      "timestamp": "2025-07-18T09:56:15.262Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🎯 Almost there! Final stretch!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n**Progress:** 12/12\n\n**Community Contributions**\n\nWhat can you give to the community? (Select up to 3)\n\n1. Mentorship & Guidance\n2. Industry Insights & Best Practices\n3. Community Building & Networking\n4. Legal & Compliance Advice\n5. Technology & Digital Support\n6. Amplification of Ideas & Stories\n7. Market Access & Collaborations\n8. Skill Development Workshops\n9. Job & Internship Opportunities\n10. Investment & Funding Opportunities\n\nExample: 1,3,7",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityGives",
+        "fieldBeingUpdated": "communityGives"
+      }
+    },
+    {
+      "id": "d084cc2e-85b5-4f83-b792-72ed8ec6e726",
+      "timestamp": "2025-07-18T09:56:26.472Z",
+      "userMessage": "3",
+      "botResponse": "✅ **Community Contributions Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "2df8a3cb-0845-4fe3-b4f8-c43f5cd2e044",
+      "timestamp": "2025-07-18T09:56:59.965Z",
+      "userMessage": "web developer in the list",
+      "botResponse": "**Shivani Sahu**\n**About:** Shivani Sahu is a frontend developer committed to honing her skills while branching out into blogging and networking. Sh...\n📧 shivaniofficial1904@gmail.com\n🔗 https://www.linkedin.com/in/shivani-sahu-167766229\n\n**Siddharth Adawale**\n**About:** Siddharth Adawale is a software developer with a passion for creating solutions that drive social impact, especially for...\n📧 siddharth.adawale@mitaoe.ac.in\n\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "web developer in the list",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "2b934576-9ea2-4fe2-9a52-bde174cb7a77",
+      "timestamp": "2025-07-18T09:57:22.892Z",
+      "userMessage": "ok now any candidates from pune",
+      "botResponse": "🌟 **Welcome Akash!**\n\n✅ **Verified Alumni Member**\n🔓 **Full Network Access**\n🚀 **9000+ Connections Available**\n\n**🔥 Popular Searches:**\n• \"Cybersecurity experts\"\n• \"Mentors in your city\"\n• \"Startup founders\"\n• \"Tech professionals\"\n\n**💡 Try specific searches like:**\n• \"React developers with 5+ years\"\n• \"Marketing consultants in Mumbai\"\n• \"Fintech entrepreneurs seeking co-founders\"\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "affirmative",
+        "topic": "affirmative",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "9874a579-6c97-40de-bb4e-95f21191d1e9",
+      "timestamp": "2025-07-18T09:58:29.560Z",
+      "userMessage": "help in legal matters",
+      "botResponse": "**Shilpi Kulshrestha**\n**About:** With 14 years of experience as a Corporate Lawyer and Company Secretary, Shilpi Kulshrestha offers comprehensive legal s...\n📧 businezexcellence@gmail.com\n🔗 https://www.linkedin.com/in/shilpikulshrestha/\n\n**Srishti Maheshwari**\n**About:** Srishti Maheshwari is a dedicated Lawyer and Entrepreneur with a focus on providing practical legal solutions to foster ...\n📧 srishtikarnani99@gmail.com\n\n\n**Tanmayi K S S**\n**About:** Tanmayi K S S is a committed lawyer with a passion for the legal profession, offering diligent and insightful legal serv...\n📧 tanmayi540@gmail.com\n🔗 https://www.linkedin.com/in/tanmayi-k-s-s-10b8a11b4/\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "help in legal matters",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "da9351e0-f2ce-4bc0-8fe4-677b0dce4de4",
+      "timestamp": "2025-07-18T09:58:41.152Z",
+      "userMessage": "ok thank you",
+      "botResponse": "🌟 **Welcome Akash!**\n\n✅ **Verified Alumni Member**\n🔓 **Full Network Access**\n🚀 **9000+ Connections Available**\n\n**🔥 Popular Searches:**\n• \"Cybersecurity experts\"\n• \"Mentors in your city\"\n• \"Startup founders\"\n• \"Tech professionals\"\n\n**💡 Try specific searches like:**\n• \"React developers with 5+ years\"\n• \"Marketing consultants in Mumbai\"\n• \"Fintech entrepreneurs seeking co-founders\"\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "affirmative",
+        "topic": "affirmative",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "0362a96b-f40e-4032-92ec-d26f20f847c6",
+      "timestamp": "2025-07-18T09:59:44.757Z",
+      "userMessage": "more lawyers in the list ?",
+      "botResponse": "Here are more profiles matching your criteria:\n\n**Shilpi Kulshrestha**\n**About:** Shilpi Kulshrestha is a seasoned Corporate Lawyer and Company Secretary with over 14 years of experience, specializing i...\n📧 businezexcellence@gmail.com\n🔗 https://www.linkedin.com/in/shilpikulshrestha/\n\n**Srishti Maheshwari**\n**About:** Srishti Maheshwari is a lawyer and entrepreneur with a focus on providing legal expertise across various industries. She...\n📧 srishtikarnani99@gmail.com\n\n\n**Tanmayi K S S**\n**About:** Tanmayi K S S is a dedicated lawyer passionate about delivering effective legal services. Her enthusiasm and commitment ...\n📧 tanmayi540@gmail.com\n🔗 https://www.linkedin.com/in/tanmayi-k-s-s-10b8a11b4/\n\n💡 **Try these refinements:**\n• Type 'senior' for experienced professionals\n• Type 'startup' for those with startup experience\n• Type 'different' to see other profiles\n• Ask for specific skills or locations",
+      "context": {
+        "intent": "search",
+        "topic": "more lawyers in the list ?",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
     }
   ],
   "topics": {
-    "casual": 4,
+    "casual": 11,
     "jadhavakashofficial@gmail.com": 1,
-    "otp_verification": 1,
+    "otp_verification": 4,
     "negative": 1,
-    "pune": 2
+    "pune": 2,
+    "at post ananthpur taluk athani district belagavi": 1,
+    "numeric_input": 4,
+    "https://www.linkedin.com/in/classictechak/": 6,
+    "https://linkedin.com/in/yourname": 1,
+    "profile_input": 47,
+    "Web developer": 1,
+    "email_input": 6,
+    "i need help in web development": 2,
+    "web developer in the list": 1,
+    "affirmative": 2,
+    "help in legal matters": 1,
+    "more lawyers in the list ?": 1
   },
   "preferences": {
     "communicationStyle": null,
     "interests": [],
     "searchPatterns": [
       "jadhavakashofficial@gmail.com",
-      "pune"
+      "pune",
+      "at post ananthpur taluk athani district belagavi",
+      "https://www.linkedin.com/in/classictechak/",
+      "https://linkedin.com/in/yourname",
+      "Web developer",
+      "i need help in web development",
+      "web developer in the list",
+      "help in legal matters",
+      "more lawyers in the list ?"
     ]
   },
   "insights": {
-    "totalInteractions": 9,
+    "totalInteractions": 92,
     "averageMessageLength": 0,
     "mostActiveTime": null,
     "frequentQueries": [],
@@ -155,6 +1171,24 @@
       {
         "timestamp": "2025-07-18T05:58:31.013Z",
         "field": "city",
+        "attempts": 1,
+        "completed": true
+      },
+      {
+        "timestamp": "2025-07-18T06:10:19.845Z",
+        "field": "address",
+        "attempts": 1,
+        "completed": true
+      },
+      {
+        "timestamp": "2025-07-18T06:10:31.971Z",
+        "field": "phone",
+        "attempts": 1,
+        "completed": true
+      },
+      {
+        "timestamp": "2025-07-18T06:10:38.760Z",
+        "field": "domain",
         "attempts": 1,
         "completed": true
       }

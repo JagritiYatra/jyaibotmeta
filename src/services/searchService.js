@@ -247,11 +247,11 @@ async function performDatabaseSearch(keywords, userWhatsApp = null) {
     }
 }
 
-// AI-powered selection of top results (3-4 only)
+// AI-powered selection of top results (2-3 only to prevent message length issues)
 async function selectTopResults(searchResults, originalQuery, keywords) {
     try {
         const config = getConfig();
-        const maxResults = 4; // Fixed to 3-4 as per requirements
+        const maxResults = 3; // Reduced to 2-3 to prevent message length issues
         
         if (searchResults.length <= maxResults) {
             return searchResults;
@@ -324,7 +324,7 @@ ${JSON.stringify(profilesForAI, null, 2)}`
         
     } catch (error) {
         logError(error, { operation: 'selectTopResults' });
-        return selectResultsFallback(searchResults, keywords, 4);
+        return selectResultsFallback(searchResults, keywords, 3);
     }
 }
 
@@ -439,42 +439,77 @@ ${JSON.stringify(profiles.map(profile => ({
     }
 }
 
-// Generate clean, focused search response
+// Generate clean, focused search response with length limit handling
 async function generateCleanSearchResponse(results, originalQuery) {
     try {
         if (results.length === 0) {
             return generateNoResultsResponse(originalQuery);
         }
         
+        const MAX_MESSAGE_LENGTH = 1500; // Leave some buffer for WhatsApp limit
         let response = '';
+        let addedProfiles = 0;
         
-        results.forEach((user, index) => {
+        for (let i = 0; i < results.length; i++) {
+            const user = results[i];
             const basicProfile = user.basicProfile || {};
             const enhancedProfile = user.enhancedProfile || {};
             
             const name = enhancedProfile.fullName || basicProfile.name || 'Name not available';
-            const about = basicProfile.about || '';
+            let about = basicProfile.about || '';
             const email = basicProfile.email || 'Email not available';
             const linkedin = enhancedProfile.linkedin || basicProfile.linkedin || '';
             
-            // Clean, simple format as per requirements
-            response += `**${name}**\n`;
-            
-            if (about && about.length > 10) {
-                response += `**About:** ${about}\n`;
+            // Truncate about section if too long
+            if (about.length > 120) {
+                about = about.substring(0, 120) + '...';
             }
             
-            response += `📧 ${email}\n`;
+            // Build profile string
+            let profileString = `**${name}**\n`;
+            
+            if (about && about.length > 10) {
+                profileString += `**About:** ${about}\n`;
+            }
+            
+            profileString += `📧 ${email}\n`;
             
             if (linkedin) {
-                response += `🔗 ${linkedin}`;
+                profileString += `🔗 ${linkedin}`;
             }
             
             // Add spacing between profiles (except for last one)
-            if (index < results.length - 1) {
-                response += '\n\n';
+            if (i < results.length - 1) {
+                profileString += '\n\n';
             }
-        });
+            
+            // Check if adding this profile would exceed limit
+            if (response.length + profileString.length > MAX_MESSAGE_LENGTH) {
+                // If we haven't added any profiles yet, add at least one (truncated)
+                if (addedProfiles === 0) {
+                    // Create a very short version
+                    const shortProfile = `**${name}**\n📧 ${email}\n${linkedin ? `🔗 ${linkedin}` : ''}`;
+                    if (shortProfile.length <= MAX_MESSAGE_LENGTH) {
+                        response += shortProfile;
+                        addedProfiles++;
+                    }
+                }
+                break;
+            }
+            
+            response += profileString;
+            addedProfiles++;
+        }
+        
+        // Add footer if we couldn't fit all results
+        if (addedProfiles < results.length) {
+            const remainingCount = results.length - addedProfiles;
+            const footerMessage = `\n\n📋 +${remainingCount} more result${remainingCount > 1 ? 's' : ''} found. Try a more specific search to see other matches.`;
+            
+            if (response.length + footerMessage.length <= MAX_MESSAGE_LENGTH) {
+                response += footerMessage;
+            }
+        }
         
         return response;
         

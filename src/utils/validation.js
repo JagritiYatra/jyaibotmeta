@@ -1,6 +1,6 @@
-// Enhanced validation utilities with AI-powered validation and intelligent data capture
+// Enhanced validation utilities with strict rules and professional messaging
 // File: src/utils/validation.js
-// AI-ENHANCED VERSION - Smart date parsing, typo correction, and SUPER SIMPLE LinkedIn handling
+// FIXED VERSION - Removed AI validation for city/state/country and fixed LinkedIn
 
 const OpenAI = require('openai');
 const { getConfig } = require('../config/environment');
@@ -25,24 +25,73 @@ function sanitizeInput(input) {
     return input.trim().slice(0, 1000).replace(/[<>]/g, '');
 }
 
-// Enhanced email validation
-function validateEmail(email) {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const cleanEmail = sanitizeInput(email);
+// Strict full name validation - no special characters
+async function validateFullName(name) {
+    const cleanName = sanitizeInput(name);
     
-    if (!emailRegex.test(cleanEmail)) {
+    if (cleanName.length < 2 || cleanName.length > 100) {
         return { 
             valid: false, 
-            message: 'Invalid email format. Please enter a valid email address:\n\nExample: yourname@gmail.com' 
+            message: 'Name must be 2-100 characters long.\n\nExample: Rajesh Kumar Singh'
         };
     }
     
-    return { valid: true, value: cleanEmail.toLowerCase() };
+    // Only letters, spaces, hyphens, and apostrophes allowed
+    if (!/^[a-zA-Z\s\-.']+$/.test(cleanName)) {
+        return { 
+            valid: false, 
+            message: 'Name can only contain letters, spaces, hyphens, and apostrophes.\n\nExample: Rajesh Kumar Singh'
+        };
+    }
+    
+    // Check for fake names
+    const fakePatterns = [
+        /^(test|example|sample|dummy|user|admin|null|undefined)/i,
+        /^[a-z]{1,3}$/i, // Too short like "abc"
+        /^(.)\1{2,}$/,    // Repeated characters like "aaa"
+        /^[0-9]/,         // Starts with number
+        /^\W/             // Starts with special character
+    ];
+    
+    if (fakePatterns.some(pattern => pattern.test(cleanName))) {
+        return { 
+            valid: false, 
+            message: 'Please enter your real full name.\n\nExample: Rajesh Kumar Singh'
+        };
+    }
+    
+    return { valid: true, value: cleanName };
+}
+
+// Strict gender validation - radio button style
+function validateGender(input) {
+    const cleanInput = sanitizeInput(input);
+    const genderMap = {
+        '1': 'Male',
+        '2': 'Female', 
+        '3': 'Others'
+    };
+    
+    if (!genderMap[cleanInput]) {
+        return { 
+            valid: false, 
+            message: 'Please select 1, 2, or 3:\n\n1. Male\n2. Female\n3. Others'
+        };
+    }
+    
+    return { valid: true, value: genderMap[cleanInput] };
 }
 
 // AI-enhanced date validation with flexible parsing
 async function validateDateOfBirth(dateStr) {
     const cleanDate = sanitizeInput(dateStr);
+    
+    if (!cleanDate || cleanDate.length < 6) {
+        return { 
+            valid: false, 
+            message: 'Please enter your date of birth.\n\nFormat: DD MM YYYY\nExample: 19 07 2000'
+        };
+    }
     
     if (!openai) {
         return validateDateFallback(cleanDate);
@@ -55,17 +104,18 @@ async function validateDateOfBirth(dateStr) {
             model: 'gpt-4o-mini',
             messages: [{
                 role: "system",
-                content: `Parse date of birth from user input and convert to YYYY-MM-DD format.
+                content: `Parse date of birth from user input and convert to DD-MM-YYYY format.
 
 Rules:
-- Accept any human-readable date format
+- Accept any readable date format (DD MM YYYY, DD/MM/YYYY, DD-MM-YYYY, etc.)
 - Year must be between 1960-2010
-- Return JSON: {"valid": true/false, "date": "YYYY-MM-DD" or null, "error": "message" or null}
-- Be lenient with formats but strict with validation
+- Return JSON: {"valid": true/false, "date": "DD-MM-YYYY" or null, "error": "message" or null}
+- Be flexible with input formats but strict with validation
 
 Examples:
-"19/07/2000" → {"valid": true, "date": "2000-07-19", "error": null}
-"July 19 2000" → {"valid": true, "date": "2000-07-19", "error": null}
+"19 07 2000" → {"valid": true, "date": "19-07-2000", "error": null}
+"19/07/2000" → {"valid": true, "date": "19-07-2000", "error": null}
+"July 19 2000" → {"valid": true, "date": "19-07-2000", "error": null}
 "2025-01-01" → {"valid": false, "date": null, "error": "Year must be between 1960-2010"}
 "invalid" → {"valid": false, "date": null, "error": "Invalid date format"}`
             }, {
@@ -89,7 +139,7 @@ Examples:
         } else {
             return { 
                 valid: false, 
-                message: result.error || 'Invalid date format. Please try again.'
+                message: result.error || 'Invalid date format.\n\nFormat: DD MM YYYY\nExample: 19 07 2000'
             };
         }
         
@@ -102,9 +152,9 @@ Examples:
 // Fallback date validation
 function validateDateFallback(dateStr) {
     const formats = [
-        /^(\d{2})[\/\-.](\d{2})[\/\-.](\d{4})$/,  // DD/MM/YYYY
-        /^(\d{4})[\/\-.](\d{2})[\/\-.](\d{2})$/,  // YYYY-MM-DD
-        /^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/, // D/M/YYYY
+        /^(\d{1,2})[\/\-.\s](\d{1,2})[\/\-.\s](\d{4})$/,  // DD/MM/YYYY
+        /^(\d{4})[\/\-.\s](\d{1,2})[\/\-.\s](\d{1,2})$/,  // YYYY-MM-DD
+        /^(\d{1,2})\s+(\d{1,2})\s+(\d{4})$/,              // DD MM YYYY
     ];
     
     for (const format of formats) {
@@ -113,7 +163,7 @@ function validateDateFallback(dateStr) {
             let [, part1, part2, part3] = match;
             let day, month, year;
             
-            // Determine if it's DD/MM/YYYY or YYYY-MM-DD
+            // Determine format
             if (part3.length === 4) {
                 day = parseInt(part1, 10);
                 month = parseInt(part2, 10);
@@ -128,30 +178,19 @@ function validateDateFallback(dateStr) {
             if (year < 1960 || year > 2010) {
                 return { 
                     valid: false, 
-                    message: 'Year must be between 1960-2010'
+                    message: 'Year must be between 1960-2010.\n\nFormat: DD MM YYYY\nExample: 19 07 2000'
                 };
             }
             
             if (month < 1 || month > 12 || day < 1 || day > 31) {
                 return { 
                     valid: false, 
-                    message: 'Invalid date values'
+                    message: 'Invalid date values.\n\nFormat: DD MM YYYY\nExample: 19 07 2000'
                 };
             }
             
-            // Format as YYYY-MM-DD
-            const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-            
-            // Validate actual date
-            const testDate = new Date(formattedDate);
-            if (testDate.getFullYear() !== year || 
-                testDate.getMonth() !== month - 1 || 
-                testDate.getDate() !== day) {
-                return { 
-                    valid: false, 
-                    message: 'Invalid date'
-                };
-            }
+            // Format as DD-MM-YYYY
+            const formattedDate = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
             
             return { valid: true, value: formattedDate };
         }
@@ -159,163 +198,246 @@ function validateDateFallback(dateStr) {
     
     return { 
         valid: false, 
-        message: 'Invalid date format. Please try again.'
+        message: 'Invalid date format.\n\nFormat: DD MM YYYY\nExample: 19 07 2000'
     };
 }
 
-// AI-enhanced geographic validation with typo correction
+// FIXED: Simple city validation - no AI, just basic checks
+function validateCityInput(city) {
+    const clean = sanitizeInput(city);
+    
+    if (clean.length < 2 || clean.length > 50) {
+        return { 
+            valid: false, 
+            message: 'City name must be 2-50 characters long.\n\nExample: Mumbai'
+        };
+    }
+    
+    // Check if contains only digits
+    if (/^\d+$/.test(clean)) {
+        return { 
+            valid: false, 
+            message: 'City name cannot be only numbers.\n\nExample: Mumbai'
+        };
+    }
+    
+    // Basic check for letters (allow spaces, hyphens, dots, apostrophes)
+    if (!/[a-zA-Z]/.test(clean)) {
+        return { 
+            valid: false, 
+            message: 'City name must contain letters.\n\nExample: Mumbai'
+        };
+    }
+    
+    return { valid: true, value: clean };
+}
+
+// FIXED: Simple state validation - no AI
+function validateStateInput(state) {
+    const clean = sanitizeInput(state);
+    
+    if (clean.length < 2 || clean.length > 50) {
+        return { 
+            valid: false, 
+            message: 'State name must be 2-50 characters long.\n\nExample: Maharashtra'
+        };
+    }
+    
+    // Check if contains only digits
+    if (/^\d+$/.test(clean)) {
+        return { 
+            valid: false, 
+            message: 'State name cannot be only numbers.\n\nExample: Maharashtra'
+        };
+    }
+    
+    // Basic check for letters
+    if (!/[a-zA-Z]/.test(clean)) {
+        return { 
+            valid: false, 
+            message: 'State name must contain letters.\n\nExample: Maharashtra'
+        };
+    }
+    
+    return { valid: true, value: clean };
+}
+
+// FIXED: Simple country validation - no AI
+function validateCountryInput(country) {
+    const clean = sanitizeInput(country);
+    
+    if (clean.length < 2 || clean.length > 50) {
+        return { 
+            valid: false, 
+            message: 'Country name must be 2-50 characters long.\n\nExample: India'
+        };
+    }
+    
+    // Check if contains only digits
+    if (/^\d+$/.test(clean)) {
+        return { 
+            valid: false, 
+            message: 'Country name cannot be only numbers.\n\nExample: India'
+        };
+    }
+    
+    // Basic check for letters
+    if (!/[a-zA-Z]/.test(clean)) {
+        return { 
+            valid: false, 
+            message: 'Country name must contain letters.\n\nExample: India'
+        };
+    }
+    
+    return { valid: true, value: clean };
+}
+
+// REMOVED AI validation - now just redirects to simple validators
 async function validateGeographicInput(input, type = 'city') {
-    const cleanInput = sanitizeInput(input);
-    
-    if (cleanInput.length < 2 || cleanInput.length > 50) {
-        return { 
-            valid: false, 
-            message: `${type.charAt(0).toUpperCase() + type.slice(1)} must be 2-50 characters long.`
-        };
-    }
-    
-    if (!/^[a-zA-Z\s\-.'()]+$/.test(cleanInput)) {
-        return { 
-            valid: false, 
-            message: `${type.charAt(0).toUpperCase() + type.slice(1)} should only contain letters, spaces, hyphens, and apostrophes.`
-        };
-    }
-    
-    if (!openai) {
-        return { valid: true, value: cleanInput };
-    }
-    
-    try {
-        const startTime = Date.now();
-        
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [{
-                role: "system",
-                content: `Validate and correct geographic names with typo correction.
-
-Rules:
-- Fix common typos and return standard name
-- Return JSON: {"valid": true/false, "corrected": "standard name" or null, "error": "message" or null}
-- Accept valid variations and return standard form
-- Reject obviously fake/invalid names
-
-Examples:
-"mum" → {"valid": true, "corrected": "Mumbai", "error": null}
-"bangalor" → {"valid": true, "corrected": "Bangalore", "error": null}
-"asdfgh" → {"valid": false, "corrected": null, "error": "Invalid name"}
-"New York" → {"valid": true, "corrected": "New York", "error": null}`
-            }, {
-                role: "user",
-                content: `Validate ${type}: "${cleanInput}"`
-            }],
-            max_tokens: 100,
-            temperature: 0.1
-        });
-        
-        let aiResponse = response.choices[0].message.content.trim();
-        aiResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '');
-        
-        const result = JSON.parse(aiResponse);
-        const duration = Date.now() - startTime;
-        
-        logAIOperation(`geographic_validation_${type}`, response.usage?.total_tokens || 0, 'gpt-4o-mini', duration);
-        
-        if (result.valid) {
-            return { 
-                valid: true, 
-                value: result.corrected || cleanInput,
-                corrected: result.corrected !== cleanInput ? result.corrected : null
-            };
-        } else {
-            return { 
-                valid: false, 
-                message: result.error || `Invalid ${type} name`
-            };
-        }
-        
-    } catch (error) {
-        logError(error, { operation: 'ai_geographic_validation', input: cleanInput, type });
-        return { valid: true, value: cleanInput }; // Allow on AI failure
+    switch (type.toLowerCase()) {
+        case 'city':
+            return validateCityInput(input);
+        case 'state':
+            return validateStateInput(input);
+        case 'country':
+            return validateCountryInput(input);
+        default:
+            return validateCityInput(input);
     }
 }
 
-// SUPER SIMPLE LinkedIn validation - accepts almost anything
-async function validateLinkedInURL(url, userContext = {}) {
-    const cleanURL = sanitizeInput(url);
-    
-    // Only reject if completely empty or obvious rejection words
-    if (!cleanURL || cleanURL.length < 2) {
-        return { 
-            valid: false, 
-            message: 'Please enter your LinkedIn URL or username.'
-        };
-    }
-    
-    // Reject only obvious non-answers
-    const rejectWords = ['no', 'none', 'skip', 'later', 'pass'];
-    if (rejectWords.includes(cleanURL.toLowerCase())) {
-        return { 
-            valid: false, 
-            message: 'Please enter your LinkedIn URL or username.\n\nExample: https://linkedin.com/in/yourname'
-        };
-    }
-    
-    // Accept EVERYTHING else - just store whatever they give us
-    return { 
-        valid: true, 
-        value: cleanURL
-    };
-}
-
-// Enhanced name validation
-async function validateFullName(name) {
-    const cleanName = sanitizeInput(name);
-    
-    if (cleanName.length < 2 || cleanName.length > 100) {
-        return { 
-            valid: false, 
-            message: 'Name should be 2-100 characters long.\n\nExample: Rajesh Kumar Singh'
-        };
-    }
-    
-    if (!/^[a-zA-Z\s\-.']+$/.test(cleanName)) {
-        return { 
-            valid: false, 
-            message: 'Name should only contain letters, spaces, hyphens, and apostrophes.'
-        };
-    }
-    
-    // Check for obviously fake names
-    if (/^(test|example|sample|dummy|user|admin)/i.test(cleanName)) {
-        return { 
-            valid: false, 
-            message: 'Please enter your real full name.'
-        };
-    }
-    
-    return { valid: true, value: cleanName };
-}
-
-// Enhanced phone number validation
+// Enhanced phone number validation with country code
 function validatePhoneNumber(phone) {
     const cleanPhone = sanitizeInput(phone);
+    
+    if (!cleanPhone || cleanPhone.length < 8) {
+        return { 
+            valid: false, 
+            message: 'Please enter your mobile number with country code.\n\nExamples:\n+91 9876543210\n+1 2025551234'
+        };
+    }
+    
+    // Extract digits only
     const digitsOnly = cleanPhone.replace(/[^\d]/g, '');
     
     if (digitsOnly.length < 10 || digitsOnly.length > 15) {
         return { 
             valid: false, 
-            message: 'Phone number must be 10-15 digits\n\nExample: +91 9876543210'
+            message: 'Phone number must be 10-15 digits.\n\nExamples:\n+91 9876543210\n+1 2025551234'
         };
     }
     
     // Format phone number
     let formattedPhone = cleanPhone;
-    if (!formattedPhone.startsWith('+') && digitsOnly.length > 10) {
+    if (!formattedPhone.startsWith('+')) {
         formattedPhone = '+' + digitsOnly;
     }
     
     return { valid: true, value: formattedPhone };
+}
+
+// Enhanced email validation
+function validateEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const cleanEmail = sanitizeInput(email);
+    
+    if (!emailRegex.test(cleanEmail)) {
+        return { 
+            valid: false, 
+            message: 'Invalid email format.\n\nExample: yourname@gmail.com'
+        };
+    }
+    
+    return { valid: true, value: cleanEmail.toLowerCase() };
+}
+
+// FIXED: LinkedIn URL validation - much more flexible
+function validateLinkedInURL(url) {
+    const cleanURL = sanitizeInput(url);
+    
+    if (!cleanURL || cleanURL.length === 0) {
+        return { 
+            valid: false, 
+            message: 'Please enter your LinkedIn profile URL.\n\nExample: https://linkedin.com/in/yourname'
+        };
+    }
+    
+    // If it's just a username, convert to full URL
+    if (!cleanURL.includes('http') && !cleanURL.includes('linkedin')) {
+        // Check if it looks like a username (alphanumeric, hyphens, underscores)
+        if (/^[a-zA-Z0-9\-_]+$/.test(cleanURL) && cleanURL.length > 2) {
+            const fullURL = `https://linkedin.com/in/${cleanURL}`;
+            return { 
+                valid: true, 
+                value: fullURL,
+                corrected: fullURL
+            };
+        }
+    }
+    
+    // If it contains linkedin somewhere, consider it valid
+    if (cleanURL.toLowerCase().includes('linkedin')) {
+        // Clean up the URL
+        let finalURL = cleanURL;
+        if (!finalURL.startsWith('http')) {
+            finalURL = 'https://' + finalURL;
+        }
+        return { valid: true, value: finalURL };
+    }
+    
+    // If it starts with http/https, accept it as valid
+    if (cleanURL.startsWith('http://') || cleanURL.startsWith('https://')) {
+        return { valid: true, value: cleanURL };
+    }
+    
+    // If none of the above, try to make it a valid URL
+    if (cleanURL.includes('.')) {
+        // Looks like a domain
+        const finalURL = cleanURL.startsWith('http') ? cleanURL : 'https://' + cleanURL;
+        return { valid: true, value: finalURL };
+    }
+    
+    // Default: accept any non-empty input
+    return { valid: true, value: cleanURL };
+}
+
+// Instagram URL validation
+function validateInstagramURL(url) {
+    const cleanURL = sanitizeInput(url);
+    
+    if (!cleanURL || cleanURL.length === 0) {
+        return { 
+            valid: false, 
+            message: 'Please enter your Instagram profile URL.\n\nExample: https://instagram.com/yourname'
+        };
+    }
+    
+    // Handle username-only input
+    if (!cleanURL.includes('http') && !cleanURL.includes('instagram.com')) {
+        if (cleanURL.length > 1 && cleanURL.length < 50 && /^[a-zA-Z0-9._]+$/.test(cleanURL)) {
+            const suggestedURL = `https://instagram.com/${cleanURL}`;
+            return { 
+                valid: true, 
+                value: suggestedURL,
+                corrected: suggestedURL
+            };
+        }
+    }
+    
+    try {
+        let urlToValidate = cleanURL;
+        if (!urlToValidate.startsWith('http')) {
+            urlToValidate = 'https://' + urlToValidate;
+        }
+        
+        return { valid: true, value: urlToValidate.split('?')[0] };
+        
+    } catch {
+        return { 
+            valid: false, 
+            message: 'Invalid URL format.\n\nExample: https://instagram.com/yourname'
+        };
+    }
 }
 
 // Enhanced multiple choice validation
@@ -325,11 +447,11 @@ function validateMultipleChoice(input, options, minSelections = 1, maxSelections
     if (!cleanInput || cleanInput.trim() === '') {
         return { 
             valid: false, 
-            message: `Please select ${minSelections === maxSelections ? 'exactly' : 'at least'} ${minSelections} option${minSelections > 1 ? 's' : ''}.\n\nFormat: 1,3,5`
+            message: `Please select ${minSelections === maxSelections ? 'exactly' : 'at least'} ${minSelections} option${minSelections > 1 ? 's' : ''}.\n\nExample: 1,3,5`
         };
     }
     
-    // Parse numbers more flexibly
+    // Parse numbers
     const numbers = cleanInput.split(/[,\s]+/)
         .map(n => parseInt(n.trim()))
         .filter(n => !isNaN(n) && n > 0);
@@ -337,10 +459,11 @@ function validateMultipleChoice(input, options, minSelections = 1, maxSelections
     if (numbers.length === 0) {
         return { 
             valid: false, 
-            message: 'Please use numbers separated by commas.\n\nExample: 1,4,7'
+            message: 'Please use numbers separated by commas.\n\nExample: 1,3,5'
         };
     }
     
+    // Check minimum selections
     if (numbers.length < minSelections) {
         return { 
             valid: false, 
@@ -348,6 +471,7 @@ function validateMultipleChoice(input, options, minSelections = 1, maxSelections
         };
     }
     
+    // Check maximum selections
     if (maxSelections && numbers.length > maxSelections) {
         return { 
             valid: false, 
@@ -363,40 +487,12 @@ function validateMultipleChoice(input, options, minSelections = 1, maxSelections
     if (invalidNumbers.length > 0) {
         return { 
             valid: false, 
-            message: `Invalid option${invalidNumbers.length > 1 ? 's' : ''}: ${invalidNumbers.join(', ')}\nValid range: 1 to ${options.length}`
+            message: `Invalid option${invalidNumbers.length > 1 ? 's' : ''}: ${invalidNumbers.join(', ')}\n\nValid range: 1 to ${options.length}`
         };
     }
     
     const selectedOptions = uniqueNumbers.map(n => options[n - 1]);
     return { valid: true, value: selectedOptions, numbers: uniqueNumbers };
-}
-
-// Gender validation
-function validateGender(input) {
-    const cleanInput = sanitizeInput(input);
-    const genderMap = {
-        '1': 'Male',
-        '2': 'Female', 
-        '3': 'Others',
-        'male': 'Male',
-        'female': 'Female',
-        'other': 'Others',
-        'others': 'Others',
-        'm': 'Male',
-        'f': 'Female',
-        'o': 'Others'
-    };
-    
-    const normalizedInput = cleanInput.toLowerCase();
-    
-    if (!genderMap[normalizedInput]) {
-        return { 
-            valid: false, 
-            message: 'Please select:\n\n1. Male\n2. Female\n3. Others'
-        };
-    }
-    
-    return { valid: true, value: genderMap[normalizedInput] };
 }
 
 // Yes/No validation
@@ -416,54 +512,6 @@ function validateYesNo(input) {
         valid: false, 
         message: 'Please reply with YES or NO'
     };
-}
-
-// Instagram URL validation
-function validateInstagramURL(url) {
-    const cleanURL = sanitizeInput(url);
-    
-    // Handle username-only input
-    if (!cleanURL.includes('http') && !cleanURL.includes('instagram.com')) {
-        if (cleanURL.length > 1 && cleanURL.length < 50 && /^[a-zA-Z0-9._]+$/.test(cleanURL)) {
-            const suggestedURL = `https://instagram.com/${cleanURL}`;
-            return { 
-                valid: true, 
-                value: suggestedURL,
-                message: `Instagram URL created: ${suggestedURL}`
-            };
-        }
-    }
-    
-    if (!cleanURL.toLowerCase().includes('instagram.com')) {
-        return { 
-            valid: false, 
-            message: 'Please enter your Instagram URL or username'
-        };
-    }
-    
-    try {
-        let urlToValidate = cleanURL;
-        if (!urlToValidate.startsWith('http')) {
-            urlToValidate = 'https://' + urlToValidate;
-        }
-        
-        const urlObj = new URL(urlToValidate);
-        
-        if (!urlObj.hostname.includes('instagram.com')) {
-            return { 
-                valid: false, 
-                message: 'URL must be from instagram.com'
-            };
-        }
-        
-        return { valid: true, value: urlToValidate.split('?')[0] };
-        
-    } catch {
-        return { 
-            valid: false, 
-            message: 'Invalid URL format'
-        };
-    }
 }
 
 // WhatsApp number validation
@@ -490,11 +538,14 @@ module.exports = {
     sanitizeInput,
     validateEmail,
     validateLinkedInURL,
+    validateInstagramURL,
     validateGeographicInput,
+    validateCityInput,
+    validateStateInput,
+    validateCountryInput,
     validateFullName,
     validateDateOfBirth,
     validatePhoneNumber,
-    validateInstagramURL,
     validateMultipleChoice,
     validateGender,
     validateYesNo,

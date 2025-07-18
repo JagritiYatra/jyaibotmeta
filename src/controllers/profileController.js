@@ -1,36 +1,33 @@
-// Enhanced profile controller optimized for AI-enhanced alumni reconnection system
+// Enhanced profile controller with strict validation and professional messaging
 // File: src/controllers/profileController.js
-// ENHANCED VERSION - AI-powered data capture with smart validation and reconnection intelligence
+// FIXED VERSION - Uses simple validation for geographic fields
 
 const { ENHANCED_PROFILE_FIELDS } = require('../models/User');
 const { 
     validateFullName, 
     validateGender, 
     validateDateOfBirth, 
-    validateGeographicInput,
+    validateCityInput,
+    validateStateInput,
+    validateCountryInput,
     validatePhoneNumber,
     validateEmail,
+    validateLinkedInURL,
+    validateInstagramURL,
     validateMultipleChoice,
     validateYesNo,
     sanitizeInput
 } = require('../utils/validation');
-
-// Import simple validations for address, LinkedIn, Instagram
-const {
-    validateAddress,
-    validateLinkedInURL,
-    validateInstagramURL
-} = require('../utils/simpleValidation');
+const { validateAddress } = require('../utils/simpleValidation');
 const { logError, logSuccess } = require('../middleware/logging');
 
-// AI-enhanced field prompts - concise and intelligent
+// Professional field prompts - concise and clear
 async function getFieldPrompt(fieldName, userSession = {}) {
     try {
         const prompts = {
             fullName: `Please enter your full name:
 
-Example: Rajesh Kumar Singh
-(2-100 characters, real name only)`,
+Example: Rajesh Kumar Singh`,
 
             gender: `Select your gender:
 
@@ -38,7 +35,7 @@ Example: Rajesh Kumar Singh
 2. Female  
 3. Others
 
-Reply with: 1, 2, or 3`,
+Reply: 1, 2, or 3`,
 
             professionalRole: `Select your professional role:
 
@@ -51,17 +48,14 @@ Reply with: 1, 2, or 3`,
 7. Freelancer
 8. Consultant
 
-Reply with: 1-8`,
+Reply: 1-8`,
 
             dateOfBirth: `Enter your date of birth:
 
-Any format works:
-• 19/07/2000
-• July 19 2000
-• 19-07-2000
-• 2000-07-19
+Format: DD MM YYYY
+Examples: 19 07 2000, 19/07/2000, 19-07-2000
 
-I'll understand and save it correctly.`,
+Any date format works - I'll understand it.`,
 
             country: `Enter your country:
 
@@ -79,30 +73,33 @@ Examples:
 
 Just type your full location details in any format!`,
 
-            phone: `Enter your phone number with country code:
+            phone: `Enter your mobile number with country code:
 
 Examples:
 +91 9876543210
 +1 2025551234
-+44 7911123456
++44 7911123456`,
 
-Format: +[code] [number]`,
+            additionalEmail: `Do you have an additional email address?
 
-            linkedin: `Enter your LinkedIn profile:
+Reply: YES or NO`,
+
+            linkedin: `Enter your LinkedIn profile URL:
 
 Examples:
-• https://linkedin.com/in/yourname
-• linkedin.com/in/yourname  
-• yourlinkedinusername
-• Any LinkedIn URL
+- https://linkedin.com/in/yourname
+- linkedin.com/in/yourname
+- yourname (just your LinkedIn username)
 
-Just paste whatever LinkedIn link/username you have.`,
+Any format works!`,
 
-            instagram: `Do you have Instagram to share?
+            instagram: `Do you have an Instagram profile to share?
 
-Reply: YES or NO
+Reply: YES or NO`,
 
-(This helps with networking)`,
+            instagramURL: `Enter your Instagram profile URL:
+
+Example: https://instagram.com/yourname`,
 
             domain: `Select your industry domain:
 
@@ -127,21 +124,17 @@ Reply: YES or NO
 19. Social Impact & Nonprofit
 20. Cybersecurity
 
-Reply with: 1-20`,
+Reply: 1-20`,
 
-            yatraImpact: `How did Jagriti Yatra help you? (Select 1-3)
+            yatraImpact: `How did Yatra help you personally? (Select multiple)
 
 1. Started Enterprise Post-Yatra
 2. Found Clarity in Journey
 3. Received Funding / Grant
 
-Examples:
-• Single: 1
-• Multiple: 1,2
-• All: 1,2,3`,
+Examples: 1 or 1,2 or 1,2,3`,
 
-            communityAsks: `What support do you need from community?
-(Select 1 or more)
+            communityAsks: `What are your primary support needs from community?
 
 1. Mentorship & Guidance
 2. Funding & Investment Support
@@ -155,10 +148,9 @@ Examples:
 10. Emotional & Peer Support
 11. Other
 
-Example: 1,3,5 (select any number you need)`,
+Select 1-3 options: Example: 1,3,5`,
 
-            communityGives: `What can you contribute to community?
-(Select multiple)
+            communityGives: `What can you give to the community? (Select up to 3)
 
 1. Mentorship & Guidance
 2. Industry Insights & Best Practices
@@ -171,13 +163,7 @@ Example: 1,3,5 (select any number you need)`,
 9. Job & Internship Opportunities
 10. Investment & Funding Opportunities
 
-Example: 1,3,5,7`,
-
-            additionalEmail: `Add another email address?
-
-Reply: YES or NO
-
-(Helps other alumni find you)`
+Example: 1,3,7`
         };
 
         return prompts[fieldName] || `Please provide your ${fieldName}:`;
@@ -188,39 +174,35 @@ Reply: YES or NO
     }
 }
 
-// Enhanced field validation with AI assistance and smart corrections
+// Enhanced field validation with strict rules
 async function validateProfileField(fieldName, value, userSession = {}) {
     try {
         const cleanValue = sanitizeInput(value);
         
-        // Store user's attempt to avoid re-asking
+        console.log(`🔍 Validating field "${fieldName}" with value: "${cleanValue}"`);
+        
+        // Track attempts
         if (!userSession.attempts) userSession.attempts = {};
         if (!userSession.attempts[fieldName]) userSession.attempts[fieldName] = 0;
         userSession.attempts[fieldName]++;
         
-        logSuccess('profile_field_validation_started', { 
-            field: fieldName, 
-            attempt: userSession.attempts[fieldName],
-            valueLength: cleanValue.length 
-        });
-
         switch (fieldName) {
             case 'fullName':
-                const nameResult = validateFullName(cleanValue);
-                if (!nameResult.valid && userSession.attempts[fieldName] > 1) {
+                const nameResult = await validateFullName(cleanValue);
+                if (!nameResult.valid) {
                     return {
                         valid: false,
-                        message: 'Name should be 2-100 characters, letters only.\n\nExample: John Smith'
+                        message: nameResult.message
                     };
                 }
                 return nameResult;
 
             case 'gender':
                 const genderResult = validateGender(cleanValue);
-                if (!genderResult.valid && userSession.attempts[fieldName] > 1) {
+                if (!genderResult.valid) {
                     return {
                         valid: false,
-                        message: 'Please reply with: 1, 2, or 3'
+                        message: 'Please select 1, 2, or 3:\n\n1. Male\n2. Female\n3. Others'
                     };
                 }
                 return genderResult;
@@ -237,36 +219,47 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 }
                 return { 
                     valid: false, 
-                    message: userSession.attempts[fieldName] > 1 ? 
-                        'Please reply with a number from 1-8' : 
-                        `Please select from 1-${ENHANCED_PROFILE_FIELDS.PROFESSIONAL_ROLES.length}`
+                    message: 'Please select a number from 1-8'
                 };
 
             case 'dateOfBirth':
-                // AI-enhanced date validation with flexible parsing
                 const dobResult = await validateDateOfBirth(cleanValue);
-                if (!dobResult.valid && userSession.attempts[fieldName] > 1) {
+                if (!dobResult.valid) {
                     return {
                         valid: false,
-                        message: 'Please enter a valid date in any format:\n• 19/07/2000\n• July 19 2000\n• 19-07-2000'
+                        message: dobResult.message
                     };
                 }
                 return dobResult;
 
             case 'country':
-                // AI-enhanced with typo correction
-                return await validateGeographicInput(cleanValue, 'country');
+                // Use simple validation - no AI
+                const countryResult = validateCountryInput(cleanValue);
+                if (!countryResult.valid) {
+                    return {
+                        valid: false,
+                        message: countryResult.message
+                    };
+                }
+                return countryResult;
 
             case 'address':
-                // Use simple validation - accept ANY address format
-                return validateAddress(cleanValue);
+                // Use simple address validation from simpleValidation.js
+                const addressResult = validateAddress(cleanValue);
+                if (!addressResult.valid) {
+                    return {
+                        valid: false,
+                        message: addressResult.message
+                    };
+                }
+                return addressResult;
 
             case 'phone':
                 const phoneResult = validatePhoneNumber(cleanValue);
-                if (!phoneResult.valid && userSession.attempts[fieldName] > 1) {
+                if (!phoneResult.valid) {
                     return {
                         valid: false,
-                        message: 'Format: +[country code] [number]\n\nExample: +91 9876543210'
+                        message: phoneResult.message
                     };
                 }
                 return phoneResult;
@@ -279,42 +272,50 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 }
                 return { 
                     valid: false, 
-                    message: userSession.attempts[fieldName] > 1 ? 
-                        'Please reply: YES or NO' : 
-                        'Please reply with YES or NO'
+                    message: 'Please reply: YES or NO'
                 };
 
+            case 'additionalEmailInput':
+                const emailValidation = validateEmail(cleanValue);
+                if (!emailValidation.valid) {
+                    return {
+                        valid: false,
+                        message: emailValidation.message
+                    };
+                }
+                return emailValidation;
+
             case 'linkedin':
-                // Use simple validation - accept ANY text/link
                 const linkedinResult = validateLinkedInURL(cleanValue);
+                if (!linkedinResult.valid) {
+                    return {
+                        valid: false,
+                        message: linkedinResult.message
+                    };
+                }
+                console.log(`✅ LinkedIn validation successful: ${linkedinResult.value}`);
                 return linkedinResult;
 
             case 'instagram':
-                if (userSession.instagramChoice === undefined) {
-                    const instagramChoice = validateYesNo(cleanValue);
-                    if (instagramChoice.valid) {
-                        if (instagramChoice.value) {
-                            userSession.instagramChoice = true;
-                            return { 
-                                valid: false, 
-                                needsInstagramURL: true,
-                                message: 'Enter your Instagram profile URL:\n\nExample: https://instagram.com/yourprofile' 
-                            };
-                        } else {
-                            return { valid: true, value: null };
-                        }
-                    }
-                    return { 
-                        valid: false, 
-                        message: userSession.attempts[fieldName] > 1 ? 
-                            'Please reply: YES or NO' : 
-                            'Please reply with YES or NO'
-                    };
-                } else {
-                    // Use simple validation - accept ANY text/link
-                    const instagramResult = validateInstagramURL(cleanValue);
-                    return instagramResult;
+                const instagramChoice = validateYesNo(cleanValue);
+                if (instagramChoice.valid) {
+                    userSession.needsInstagram = instagramChoice.value;
+                    return { valid: true, value: instagramChoice.value };
                 }
+                return { 
+                    valid: false, 
+                    message: 'Please reply: YES or NO'
+                };
+
+            case 'instagramURL':
+                const instagramResult = validateInstagramURL(cleanValue);
+                if (!instagramResult.valid) {
+                    return {
+                        valid: false,
+                        message: instagramResult.message
+                    };
+                }
+                return instagramResult;
 
             case 'domain':
                 const domainValidation = validateMultipleChoice(
@@ -328,9 +329,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 }
                 return { 
                     valid: false, 
-                    message: userSession.attempts[fieldName] > 1 ? 
-                        'Please reply with a number from 1-20' : 
-                        `Please select from 1-${ENHANCED_PROFILE_FIELDS.DOMAINS.length}`
+                    message: 'Please select a number from 1-20'
                 };
 
             case 'yatraImpact':
@@ -345,27 +344,22 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 }
                 return { 
                     valid: false, 
-                    message: userSession.attempts[fieldName] > 1 ? 
-                        'Select 1-3 options\n\nExample: 1,2' : 
-                        'Please select 1-3 options from the list'
+                    message: 'Please select 1-3 options.\n\nExample: 1,2 or 1,2,3'
                 };
 
             case 'communityAsks':
-                // CHANGED: Allow 1 or more selections, not fixed at 3
                 const asksValidation = validateMultipleChoice(
                     cleanValue, 
                     ENHANCED_PROFILE_FIELDS.COMMUNITY_ASKS, 
                     1, 
-                    null  // No maximum limit
+                    3
                 );
                 if (asksValidation.valid) {
                     return { valid: true, value: asksValidation.value };
                 }
                 return { 
                     valid: false, 
-                    message: userSession.attempts[fieldName] > 1 ? 
-                        'Select 1 or more options\n\nExample: 1,3,5' : 
-                        'Please select 1 or more options'
+                    message: 'Please select 1-3 options.\n\nExample: 1,3 or 1,3,5'
                 };
 
             case 'communityGives':
@@ -373,35 +367,83 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                     cleanValue, 
                     ENHANCED_PROFILE_FIELDS.COMMUNITY_GIVES, 
                     1, 
-                    null
+                    3
                 );
                 if (givesValidation.valid) {
                     return { valid: true, value: givesValidation.value };
                 }
                 return { 
                     valid: false, 
-                    message: userSession.attempts[fieldName] > 1 ? 
-                        'Select at least 1 option\n\nExample: 1,3,5' : 
-                        'Please select at least 1 option'
+                    message: 'Please select 1-3 options.\n\nExample: 1,3,7'
                 };
 
             default:
                 return { 
                     valid: false, 
-                    message: `Field "${fieldName}" not recognized. Please contact support.` 
+                    message: `Field "${fieldName}" not recognized.` 
                 };
         }
 
     } catch (error) {
+        console.error(`❌ Error validating ${fieldName}:`, error);
         logError(error, { operation: 'validateProfileField', fieldName, value });
         return { 
             valid: false, 
-            message: 'Technical error. Please try again or contact support.' 
+            message: 'Technical error. Please try again.'
         };
     }
 }
 
-// Concise profile completion status
+// Generate greeting with name for profile resumption
+function generateResumeGreeting(user) {
+    const name = user.enhancedProfile?.fullName || user.basicProfile?.name || 'there';
+    const { getIncompleteFields } = require('../models/User');
+    const incompleteFields = getIncompleteFields(user);
+    
+    if (incompleteFields.length === 0) {
+        return `Hi **${name}**! 👋
+
+Your profile is complete. Ready to connect with 9000+ fellow Yatris?
+
+What expertise are you looking for today?`;
+    }
+    
+    const remainingCount = incompleteFields.length;
+    
+    return `Hi **${name}**! 👋
+
+Let's complete your profile to connect with 9000+ fellow Yatris.
+
+${remainingCount} field${remainingCount > 1 ? 's' : ''} remaining.
+
+Ready to continue?`;
+}
+
+// Get field display name
+function getFieldDisplayName(fieldName) {
+    const displayNames = {
+        fullName: 'Full Name',
+        gender: 'Gender',
+        professionalRole: 'Professional Role',
+        dateOfBirth: 'Date of Birth',
+        country: 'Country',
+        address: 'Complete Address',
+        phone: 'Mobile Number',
+        additionalEmail: 'Additional Email',
+        additionalEmailInput: 'Additional Email Address',
+        linkedin: 'LinkedIn Profile',
+        instagram: 'Instagram Profile',
+        instagramURL: 'Instagram Profile URL',
+        domain: 'Industry Domain',
+        yatraImpact: 'Yatra Impact',
+        communityAsks: 'Community Support Needs',
+        communityGives: 'Community Contributions'
+    };
+    
+    return displayNames[fieldName] || fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+}
+
+// Get profile completion status
 function getProfileCompletionStatus(user) {
     try {
         const { getIncompleteFields, getProfileCompletionPercentage } = require('../models/User');
@@ -431,188 +473,40 @@ function getProfileCompletionStatus(user) {
     }
 }
 
-// Generate greeting with name for verified users with incomplete profiles
-function generateResumeGreeting(user) {
-    const name = user.enhancedProfile?.fullName || user.basicProfile?.name || 'there';
-    const { getIncompleteFields } = require('../models/User');
-    const incompleteFields = getIncompleteFields(user);
-    
-    if (incompleteFields.length === 0) {
-        return `Hi **${name}**! 👋
-
-Your profile is complete. Ready to connect with 9000+ fellow Yatris?
-
-What expertise are you looking for today?`;
-    }
-    
-    const nextField = incompleteFields[0];
-    const remainingCount = incompleteFields.length;
-    
-    return `Hi **${name}**! 👋
-
-Let's complete your profile to connect with 9000+ fellow Yatris.
-
-**Remaining:** ${remainingCount} field${remainingCount > 1 ? 's' : ''}
-
-**Next:** ${getFieldDisplayName(nextField)}
-
-${getFieldPrompt(nextField)}`;
-}
-
-// Concise profile summary for WhatsApp
-function generateProfileSummary(user) {
+// Generate smart help for field validation
+async function generateSmartHelp(fieldName, userSession) {
     try {
-        const enhanced = user.enhancedProfile || {};
-        const basic = user.basicProfile || {};
+        const retryCount = userSession.field_retry_count || 0;
         
-        let summary = `Profile Summary:\n\n`;
-        
-        // Basic Information
-        if (enhanced.fullName) summary += `Name: ${enhanced.fullName}\n`;
-        if (enhanced.gender) summary += `Gender: ${enhanced.gender}\n`;
-        if (enhanced.professionalRole) summary += `Role: ${enhanced.professionalRole}\n`;
-        if (enhanced.domain) summary += `Domain: ${enhanced.domain}\n`;
-        
-        // Location
-        if (enhanced.city && enhanced.state && enhanced.country) {
-            summary += `Location: ${enhanced.city}, ${enhanced.state}, ${enhanced.country}\n`;
-        }
-        
-        // Contact
-        if (enhanced.phone) summary += `Phone: ${enhanced.phone}\n`;
-        if (basic.email) summary += `Email: ${basic.email}\n`;
-        
-        // Social
-        if (enhanced.linkedin) summary += `LinkedIn: Added\n`;
-        if (enhanced.instagram) summary += `Instagram: Added\n`;
-        
-        // Community
-        if (enhanced.yatraImpact && enhanced.yatraImpact.length > 0) {
-            summary += `Yatra Impact: ${enhanced.yatraImpact.length} selected\n`;
-        }
-        if (enhanced.communityAsks && enhanced.communityAsks.length > 0) {
-            summary += `Support Needs: ${enhanced.communityAsks.length} areas\n`;
-        }
-        if (enhanced.communityGives && enhanced.communityGives.length > 0) {
-            summary += `Contributions: ${enhanced.communityGives.length} offerings\n`;
-        }
-        
-        const status = getProfileCompletionStatus(user);
-        summary += `\nCompletion: ${status.completionPercentage}% (${status.completedFields}/${status.totalFields})\n`;
-        summary += `Search Access: ${status.searchUnlocked ? 'Unlocked' : 'Locked (100% required)'}`;
-        
-        return summary;
-        
-    } catch (error) {
-        logError(error, { operation: 'generateProfileSummary' });
-        return 'Unable to generate profile summary.';
-    }
-}
-
-// Progress indicator for user motivation
-function getProgressMessage(user) {
-    try {
-        const status = getProfileCompletionStatus(user);
-        const remaining = status.totalFields - status.completedFields;
-        
-        if (status.isComplete) {
-            return `Profile Complete! Search feature unlocked.`;
-        }
-        
-        if (remaining === 1) {
-            return `Almost done! Just 1 more field to unlock search.`;
-        }
-        
-        if (remaining <= 3) {
-            return `Great progress! ${remaining} fields left to unlock search.`;
-        }
-        
-        return `Progress: ${status.completedFields}/${status.totalFields} fields completed`;
-        
-    } catch (error) {
-        logError(error, { operation: 'getProgressMessage' });
-        return 'Profile in progress...';
-    }
-}
-
-// Get next field to fill
-function getNextIncompleteField(user) {
-    try {
-        const { getIncompleteFields } = require('../models/User');
-        const incompleteFields = getIncompleteFields(user);
-        
-        if (incompleteFields.length === 0) {
-            return null;
-        }
-        
-        // Priority order for better UX
-        const fieldOrder = [
-            'fullName', 'gender', 'professionalRole', 'dateOfBirth',
-            'country', 'address', 'phone', 'linkedin',
-            'domain', 'yatraImpact', 'communityAsks', 'communityGives',
-            'additionalEmail', 'instagram'
-        ];
-        
-        for (const field of fieldOrder) {
-            if (incompleteFields.includes(field)) {
-                return field;
+        // Provide increasingly helpful messages based on retry count
+        if (retryCount >= 3) {
+            switch (fieldName) {
+                case 'linkedin':
+                    return `💡 **Need help?**\n\nJust paste any LinkedIn URL or username:\n• https://linkedin.com/in/johndoe\n• johndoe\n• Any LinkedIn link\n\nOr type "skip" to continue without LinkedIn.`;
+                case 'address':
+                    return `💡 **Examples:**\n• Mumbai, Maharashtra, India\n• New York, NY, USA\n• London, UK\n\nJust type your location in any format!`;
+                case 'phone':
+                    return `💡 **Phone format:**\n• For India: +91 9876543210 or 9876543210\n• For USA: +1 2025551234\n• Just enter your number with country code`;
+                default:
+                    return `💡 Type "skip" if you want to continue without this field.`;
             }
+        } else if (retryCount >= 2) {
+            return `💡 Having trouble? You can type "skip" to move to the next field.`;
         }
         
-        return incompleteFields[0];
+        return null; // No help message for first attempt
         
     } catch (error) {
-        logError(error, { operation: 'getNextIncompleteField' });
+        logError(error, { operation: 'generateSmartHelp', fieldName });
         return null;
     }
-}
-
-// Helper function to get display name for fields
-function getFieldDisplayName(fieldName) {
-    const displayNames = {
-        fullName: 'Full Name',
-        gender: 'Gender',
-        professionalRole: 'Professional Role',
-        dateOfBirth: 'Date of Birth',
-        country: 'Country',
-        address: 'Complete Address',
-        phone: 'Phone Number',
-        additionalEmail: 'Additional Email',
-        linkedin: 'LinkedIn Profile',
-        instagram: 'Instagram Profile',
-        domain: 'Industry Domain',
-        yatraImpact: 'Yatra Impact',
-        communityAsks: 'Community Support Needs',
-        communityGives: 'Community Contributions'
-    };
-    
-    return displayNames[fieldName] || fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
-}
-
-// Get validation statistics for monitoring
-function getValidationStatistics() {
-    return {
-        totalFields: 13,
-        requiredFields: 13,
-        optionalFields: 0,
-        aiValidatedFields: ['city', 'state', 'country', 'dateOfBirth', 'linkedin'],
-        formatValidatedFields: ['phone', 'linkedin', 'dateOfBirth', 'email', 'fullName'],
-        multipleChoiceFields: ['gender', 'professionalRole', 'domain', 'yatraImpact', 'communityAsks', 'communityGives'],
-        arrayFields: ['yatraImpact', 'communityAsks', 'communityGives'],
-        strictValidationEnabled: true,
-        completionRequirement: '100%',
-        aiEnhancedFields: ['dateOfBirth', 'city', 'state', 'country', 'linkedin']
-    };
 }
 
 module.exports = {
     getFieldPrompt,
     validateProfileField,
     getProfileCompletionStatus,
-    generateProfileSummary,
-    getProgressMessage,
-    getNextIncompleteField,
     getFieldDisplayName,
-    getValidationStatistics,
-    generateResumeGreeting
+    generateResumeGreeting,
+    generateSmartHelp
 };

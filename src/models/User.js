@@ -321,7 +321,7 @@ function getIncompleteFields(user) {
     }
     
     if (!enhanced.communityAsks || !Array.isArray(enhanced.communityAsks) || 
-        enhanced.communityAsks.length !== 3) {
+        enhanced.communityAsks.length === 0) {
         incomplete.push('communityAsks');
     }
     
@@ -391,6 +391,120 @@ function getProfileCompletionPercentage(user) {
     return Math.round((completedFields / totalFields) * 100);
 }
 
+// Find all users (for admin panel)
+async function findAllUsers() {
+    try {
+        const db = getDatabase();
+        const users = await db.collection('users').find({}).toArray();
+        return users;
+    } catch (error) {
+        logError(error, { operation: 'findAllUsers' });
+        return [];
+    }
+}
+
+// Delete user by WhatsApp number
+async function deleteUser(whatsappNumber) {
+    try {
+        const db = getDatabase();
+        const cleanNumber = whatsappNumber.replace(/[^\d]/g, '');
+        
+        const result = await db.collection('users').deleteOne({
+            $or: [
+                { whatsappNumber: { $regex: cleanNumber, $options: 'i' } },
+                { whatsappNumbers: { $elemMatch: { $regex: cleanNumber, $options: 'i' } } }
+            ]
+        });
+        
+        logSuccess('user_deleted', { whatsappNumber, deleted: result.deletedCount > 0 });
+        return result.deletedCount > 0;
+    } catch (error) {
+        logError(error, { operation: 'deleteUser', whatsappNumber });
+        throw error;
+    }
+}
+
+// Get profile completion statistics
+async function getProfileCompletionStats() {
+    try {
+        const db = getDatabase();
+        const users = await db.collection('users').find({}).toArray();
+        
+        const stats = {
+            total: users.length,
+            completed: 0,
+            inProgress: 0,
+            notStarted: 0,
+            byField: {}
+        };
+        
+        // Track completion by field
+        const fieldCount = {
+            fullName: 0,
+            gender: 0,
+            professionalRole: 0,
+            dateOfBirth: 0,
+            country: 0,
+            address: 0,
+            phone: 0,
+            linkedin: 0,
+            domain: 0,
+            yatraImpact: 0,
+            communityAsks: 0,
+            communityGives: 0,
+            additionalEmail: 0
+        };
+        
+        users.forEach(user => {
+            const percentage = getProfileCompletionPercentage(user);
+            
+            if (percentage === 100) {
+                stats.completed++;
+            } else if (percentage > 0) {
+                stats.inProgress++;
+            } else {
+                stats.notStarted++;
+            }
+            
+            // Count field completion
+            if (user.enhancedProfile) {
+                const profile = user.enhancedProfile;
+                if (profile.fullName) fieldCount.fullName++;
+                if (profile.gender) fieldCount.gender++;
+                if (profile.professionalRole) fieldCount.professionalRole++;
+                if (profile.dateOfBirth) fieldCount.dateOfBirth++;
+                if (profile.country) fieldCount.country++;
+                if (profile.address) fieldCount.address++;
+                if (profile.phone) fieldCount.phone++;
+                if (profile.linkedin) fieldCount.linkedin++;
+                if (profile.domain) fieldCount.domain++;
+                if (profile.yatraImpact?.length > 0) fieldCount.yatraImpact++;
+                if (profile.communityAsks?.length > 0) fieldCount.communityAsks++;
+                if (profile.communityGives?.length > 0) fieldCount.communityGives++;
+                if (profile.additionalEmail) fieldCount.additionalEmail++;
+            }
+        });
+        
+        // Convert to percentages
+        Object.keys(fieldCount).forEach(field => {
+            stats.byField[field] = stats.total > 0 
+                ? Math.round((fieldCount[field] / stats.total) * 100) 
+                : 0;
+        });
+        
+        return stats;
+    } catch (error) {
+        logError(error, { operation: 'getProfileCompletionStats' });
+        return {
+            total: 0,
+            completed: 0,
+            inProgress: 0,
+            notStarted: 0,
+            byField: {}
+        };
+    }
+}
+
 module.exports = {
     ENHANCED_PROFILE_FIELDS,
     findUserByWhatsAppNumber,
@@ -401,5 +515,8 @@ module.exports = {
     getIncompleteFields,
     linkAdditionalEmail,
     getProfileCompletionPercentage,
-    hasMinimumProfileCompletion
+    hasMinimumProfileCompletion,
+    findAllUsers,
+    deleteUser,
+    getProfileCompletionStats
 };

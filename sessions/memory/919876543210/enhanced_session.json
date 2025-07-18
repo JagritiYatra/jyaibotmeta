@@ -1,0 +1,192 @@
+{
+  "sessionId": "47cc60d8-8bec-446b-8689-40998ec67f49",
+  "userId": "+919876543210",
+  "startedAt": "2025-07-18T07:07:04.798Z",
+  "lastActivity": "2025-07-18T07:07:04.803Z",
+  "conversationFlow": [
+    {
+      "id": "83a4ebe8-4430-4df2-8a15-12016ddfb8d8",
+      "timestamp": "2025-07-18T07:07:04.799Z",
+      "userMessage": "web developers in Mumbai",
+      "botResponse": "Mock search results...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "web developers in Mumbai",
+        "searchResults": [
+          "Profile1",
+          "Profile2",
+          "Profile3"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "bacb4874-18cd-4c3d-a9e5-dfda61cbefdb",
+      "timestamp": "2025-07-18T07:07:04.800Z",
+      "userMessage": "any more profiles",
+      "botResponse": "Mock search results...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "83a4ebe8-4430-4df2-8a15-12016ddfb8d8",
+        "searchQuery": "any more profiles",
+        "searchResults": [
+          "Profile1",
+          "Profile2",
+          "Profile3"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "79588265-b275-4182-b09f-bcb4b586f476",
+      "timestamp": "2025-07-18T07:07:04.801Z",
+      "userMessage": "show me senior developers",
+      "botResponse": "Mock search results...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "show me senior developers",
+        "searchResults": [
+          "Profile1",
+          "Profile2",
+          "Profile3"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "33d9ce57-8db5-444f-9b7b-27617f7b76c0",
+      "timestamp": "2025-07-18T07:07:04.801Z",
+      "userMessage": "developers with startup experience",
+      "botResponse": "Mock search results...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "developers with startup experience",
+        "searchResults": [
+          "Profile1",
+          "Profile2",
+          "Profile3"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "1ff5c0af-cb11-4606-aa3b-91acdb2d29f2",
+      "timestamp": "2025-07-18T07:07:04.802Z",
+      "userMessage": "marketing experts",
+      "botResponse": "Mock search results...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "marketing experts",
+        "searchResults": [
+          "Profile1",
+          "Profile2",
+          "Profile3"
+        ],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "480d6986-b9d0-4073-9ade-5e6e90392dee",
+      "timestamp": "2025-07-18T07:07:04.803Z",
+      "userMessage": "more",
+      "botResponse": "Mock search results...",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "1ff5c0af-cb11-4606-aa3b-91acdb2d29f2",
+        "searchQuery": "more",
+        "searchResults": [
+          "Profile1",
+          "Profile2",
+          "Profile3"
+        ],
+        "profilesShown": []
+      }
+    }
+  ],
+  "currentContext": {
+    "topic": "more",
+    "searchQuery": "more",
+    "searchResults": [
+      "Profile1",
+      "Profile2",
+      "Profile3"
+    ],
+    "followUpCount": 2,
+    "relatedQueries": []
+  },
+  "searchHistory": [
+    {
+      "query": "web developers in Mumbai",
+      "timestamp": "2025-07-18T07:07:04.799Z",
+      "resultsCount": 3,
+      "followedBy": []
+    },
+    {
+      "query": "any more profiles",
+      "timestamp": "2025-07-18T07:07:04.800Z",
+      "resultsCount": 3,
+      "followedBy": []
+    },
+    {
+      "query": "show me senior developers",
+      "timestamp": "2025-07-18T07:07:04.801Z",
+      "resultsCount": 3,
+      "followedBy": []
+    },
+    {
+      "query": "developers with startup experience",
+      "timestamp": "2025-07-18T07:07:04.801Z",
+      "resultsCount": 3,
+      "followedBy": []
+    },
+    {
+      "query": "marketing experts",
+      "timestamp": "2025-07-18T07:07:04.802Z",
+      "resultsCount": 3,
+      "followedBy": []
+    },
+    {
+      "query": "more",
+      "timestamp": "2025-07-18T07:07:04.803Z",
+      "resultsCount": 3,
+      "followedBy": []
+    }
+  ],
+  "profileInterests": {
+    "domains": {
+      "startup": 1,
+      "marketing": 1
+    },
+    "skills": {
+      "developer": 3,
+      "expert": 1
+    },
+    "locations": {
+      "mumbai": 1
+    },
+    "roles": {}
+  },
+  "behaviorMetrics": {
+    "totalSearches": 6,
+    "followUpSearches": 2,
+    "profileViews": 0,
+    "averageSessionLength": 0,
+    "topicsExplored": {}
+  },
+  "aiMemory": {
+    "userPreferences": {},
+    "communicationStyle": null,
+    "interests": [],
+    "learnings": []
+  }
+}

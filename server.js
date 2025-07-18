@@ -11,6 +11,7 @@ const { connectDatabase } = require('./src/config/database');
 const { validateEnvironment } = require('./src/config/environment');
 const webhookRoutes = require('./src/routes/webhook');
 const healthRoutes = require('./src/routes/health');
+const adminRoutes = require('./src/routes/admin');
 const { requestLogger } = require('./src/middleware/logging');
 const { errorHandler, notFoundHandler } = require('./src/middleware/errorHandlers');
 
@@ -25,9 +26,13 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 app.use(requestLogger);
 
+// Serve static files for admin dashboard
+app.use('/admin', express.static('admin-dashboard/build'));
+
 // Routes
 app.use('/webhook', webhookRoutes);
 app.use('/health', healthRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use(notFoundHandler);
