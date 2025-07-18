@@ -300,7 +300,7 @@ function getIncompleteFields(user) {
     // Required enhanced fields
     const requiredFields = [
         'fullName', 'gender', 'professionalRole', 'dateOfBirth', 
-        'country', 'city', 'state', 'phone', 'domain'
+        'country', 'address', 'phone', 'domain'
     ];
     
     requiredFields.forEach(field => {

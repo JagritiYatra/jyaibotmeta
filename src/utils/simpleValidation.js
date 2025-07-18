@@ -65,10 +65,30 @@ function validateInstagramURL(input) {
     };
 }
 
+// Address validation - accepts full address in any format
+function validateAddress(input) {
+    const clean = sanitizeInput(input);
+    
+    // Only check if not empty and has minimum length
+    if (!clean || clean.length < 5) {
+        return { 
+            valid: false, 
+            message: 'Please enter your complete address (city, state, country).'
+        };
+    }
+    
+    // Accept ANY address format
+    return { 
+        valid: true, 
+        value: clean 
+    };
+}
+
 // Export all functions
 module.exports = {
     sanitizeInput,
     validateCityTown,
+    validateAddress,
     validateLinkedInURL,
     validateInstagramURL
 };

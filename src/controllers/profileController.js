@@ -15,9 +15,9 @@ const {
     sanitizeInput
 } = require('../utils/validation');
 
-// Import simple validations for city, LinkedIn, Instagram
+// Import simple validations for address, LinkedIn, Instagram
 const {
-    validateCityTown,
+    validateAddress,
     validateLinkedInURL,
     validateInstagramURL
 } = require('../utils/simpleValidation');
@@ -67,13 +67,17 @@ I'll understand and save it correctly.`,
 
 Example: India`,
 
-            city: `Enter your city/town:
+            address: `Enter your complete address:
 
-Just type your city or town name - we accept any location!`,
+Please include: City, State/Province, Country
 
-            state: `Enter your state/province:
+Examples:
+• Mumbai, Maharashtra, India
+• Bangalore, Karnataka, India
+• New York, NY, USA
+• London, England, UK
 
-Example: Maharashtra`,
+Just type your full location details in any format!`,
 
             phone: `Enter your phone number with country code:
 
@@ -253,13 +257,9 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 // AI-enhanced with typo correction
                 return await validateGeographicInput(cleanValue, 'country');
 
-            case 'city':
-                // Use simple validation - accept ANY text
-                return validateCityTown(cleanValue);
-
-            case 'state':
-                // AI-enhanced with typo correction
-                return await validateGeographicInput(cleanValue, 'state');
+            case 'address':
+                // Use simple validation - accept ANY address format
+                return validateAddress(cleanValue);
 
             case 'phone':
                 const phoneResult = validatePhoneNumber(cleanValue);
@@ -548,7 +548,7 @@ function getNextIncompleteField(user) {
         // Priority order for better UX
         const fieldOrder = [
             'fullName', 'gender', 'professionalRole', 'dateOfBirth',
-            'country', 'city', 'state', 'phone', 'linkedin',
+            'country', 'address', 'phone', 'linkedin',
             'domain', 'yatraImpact', 'communityAsks', 'communityGives',
             'additionalEmail', 'instagram'
         ];
@@ -575,8 +575,7 @@ function getFieldDisplayName(fieldName) {
         professionalRole: 'Professional Role',
         dateOfBirth: 'Date of Birth',
         country: 'Country',
-        city: 'City',
-        state: 'State/Province',
+        address: 'Complete Address',
         phone: 'Phone Number',
         additionalEmail: 'Additional Email',
         linkedin: 'LinkedIn Profile',

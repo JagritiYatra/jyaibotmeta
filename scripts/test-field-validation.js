@@ -1,27 +1,28 @@
 // Test script to verify field validations
 // Run with: node scripts/test-field-validation.js
 
-const { validateCityTown, validateLinkedInURL, validateInstagramURL } = require('../src/utils/simpleValidation');
+const { validateAddress, validateLinkedInURL, validateInstagramURL } = require('../src/utils/simpleValidation');
 
 console.log('🧪 Testing Field Validations\n');
 
-// Test City/Town validation
-console.log('📍 Testing City/Town Validation:');
-const cityTests = [
-    'Mumbai',
-    'New York',
-    'São Paulo',
-    'मुंबई',
-    'North-West City',
-    'City@123',
-    '123CityTown',
-    'My Home Town!!!',
-    '',  // Should fail
+// Test Address validation
+console.log('📍 Testing Address Validation:');
+const addressTests = [
+    'Mumbai, Maharashtra, India',
+    'Bangalore, Karnataka, India',
+    'New York, NY, USA',
+    'London, England, UK',
+    'Tokyo Japan',
+    'मुंबई महाराष्ट्र भारत',
+    '123 Main St, City, State, Country',
+    'Just a city name',
+    'X',     // Too short - should fail
+    '',      // Empty - should fail
 ];
 
-cityTests.forEach(test => {
-    const result = validateCityTown(test);
-    console.log(`  "${test}" => ${result.valid ? '✅ Valid' : '❌ Invalid'} ${result.valid ? `(${result.value})` : `(${result.message})`}`);
+addressTests.forEach(test => {
+    const result = validateAddress(test);
+    console.log(`  "${test}" => ${result.valid ? '✅ Valid' : '❌ Invalid'} ${result.valid ? `(Accepted)` : `(${result.message})`}`);
 });
 
 // Test LinkedIn validation

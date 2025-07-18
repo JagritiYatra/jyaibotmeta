@@ -647,11 +647,10 @@ What can I help you find today?`;
 function getFieldHelpTips(fieldName) {
     const helpTips = {
         fullName: '• Use your real full name\n• Only letters, spaces, hyphens allowed\n• Example: "Rajesh Kumar Singh"',
-        city: '• Enter your current city name\n• I can correct typos automatically\n• Examples: "Mumbai", "New York", "London"',
-        state: '• Enter your state/province\n• I can correct typos automatically\n• Examples: "Maharashtra", "California", "Ontario"',
+        address: '• Enter city, state, and country\n• Any format is accepted\n• Examples: "Mumbai, Maharashtra, India" or "NYC, NY, USA"',
         country: '• Enter your country name\n• I can correct typos automatically\n• Examples: "India", "United States", "Canada"',
         phone: '• Include country code\n• Format: +91 9876543210\n• Or: 919876543210',
-        linkedin: '• Full LinkedIn URL or just username\n• I can create the URL for you\n• Examples: "johnsmith" or full URL',
+        linkedin: '• Enter ANY LinkedIn link or username\n• We accept all formats\n• Examples: "johnsmith", "linkedin.com/in/johnsmith", or any URL',
         dateOfBirth: '• Any date format works\n• Examples: 19/07/2000, July 19 2000\n• I will understand and convert it',
         gender: '• Select 1, 2, or 3\n• 1 = Male, 2 = Female, 3 = Others',
         domain: '• Select number from list\n• Choose your primary industry',
@@ -669,8 +668,7 @@ function getFieldDisplayName(fieldName) {
         professionalRole: 'Professional Role',
         dateOfBirth: 'Date of Birth',
         country: 'Country',
-        city: 'City',
-        state: 'State/Province',
+        address: 'Complete Address',
         phone: 'Phone Number',
         additionalEmail: 'Additional Email',
         linkedin: 'LinkedIn Profile',

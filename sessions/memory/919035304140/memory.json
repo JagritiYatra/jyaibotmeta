@@ -1,0 +1,168 @@
+{
+  "userId": "+919035304140",
+  "memoryId": "78aa4e5a-67f0-4e27-8c05-26962c945707",
+  "createdAt": "2025-07-18T05:44:34.873Z",
+  "lastUpdated": "2025-07-18T05:58:31.495Z",
+  "conversations": [
+    {
+      "id": "38e5d3e4-3b4e-41b7-b457-4dadf0ec30e7",
+      "timestamp": "2025-07-18T05:44:34.876Z",
+      "userMessage": "hi",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "1dc48301-d961-4c12-aa3c-118681ded203",
+      "timestamp": "2025-07-18T05:44:53.095Z",
+      "userMessage": "jadhavakashofficial@gmail.com",
+      "botResponse": "✅ Verification code sent to jadhavakashofficial@gmail.com\n\nPlease enter the 6-digit code from your email:\n\n⏰ Code expires in 10 minutes\n\nOptions:\n- Type \"resend\" for a new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "search",
+        "topic": "jadhavakashofficial@gmail.com",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "a7c6fed8-8d39-49c7-82a1-249dc621d341",
+      "timestamp": "2025-07-18T05:45:11.413Z",
+      "userMessage": "308259",
+      "botResponse": "✅ Verification successful!\n\nWelcome to JY Alumni Relations Cell, **swapnil jadhav**! 🌟\n\nYour profile needs completion to connect with 9000+ fellow Yatris.\n\n**Step 1 of 11:** Professional Role\n\nSelect your professional role:\n\n1. Entrepreneur\n2. Student\n3. Working Professional\n4. Startup Founder\n5. NGO Founder\n6. Researcher\n7. Freelancer\n8. Consultant\n\nReply with: 1-8",
+      "context": {
+        "intent": "otp_verification",
+        "topic": "otp_verification",
+        "sessionState": "updating_professionalRole",
+        "fieldBeingUpdated": "professionalRole"
+      }
+    },
+    {
+      "id": "030cc045-d74a-47ba-a38c-d40dd3a5a9fa",
+      "timestamp": "2025-07-18T05:45:19.058Z",
+      "userMessage": "2",
+      "botResponse": "✅ **Professional Role Saved!**\n\n📊 **Progress:** 1/11 (9%)\n\n**Step 2 of 11:** Date of Birth\n\nEnter your date of birth:\n\nAny format works:\n• 19/07/2000\n• July 19 2000\n• 19-07-2000\n• 2000-07-19\n\nI'll understand and save it correctly.",
+      "context": {
+        "intent": "negative",
+        "topic": "negative",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "3e4b1df2-203d-41f3-9076-4abf94566163",
+      "timestamp": "2025-07-18T05:45:36.930Z",
+      "userMessage": "19/07/2000",
+      "botResponse": "✅ **Date of Birth Saved!**\n\n📊 **Progress:** 2/11 (18%)\n\n**Step 3 of 11:** Country\n\nEnter your country:\n\nExample: India",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_country",
+        "fieldBeingUpdated": "country"
+      }
+    },
+    {
+      "id": "050808b4-9bca-46f6-8198-b7cce23335d7",
+      "timestamp": "2025-07-18T05:45:45.317Z",
+      "userMessage": "india",
+      "botResponse": "✅ **Country Saved!**\n\n🔧 *Corrected to: India*\n\n📊 **Progress:** 3/11 (27%)\n\n**Step 4 of 11:** City\n\nEnter your city/town:\n\nJust type your city or town name - we accept any location!",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_city",
+        "fieldBeingUpdated": "city"
+      }
+    },
+    {
+      "id": "62036bd2-390d-4597-9a50-9c38a9a20f05",
+      "timestamp": "2025-07-18T05:45:51.329Z",
+      "userMessage": "pune",
+      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 5 of 11**\n**Field:** City\n\nEnter your city/town:\n\nJust type your city or town name - we accept any location!\n\n🔗 *Full access after profile completion.*",
+      "context": {
+        "intent": "search",
+        "topic": "pune",
+        "sessionState": "updating_city",
+        "fieldBeingUpdated": "city"
+      }
+    },
+    {
+      "id": "0c0d4aba-9237-4293-ba6c-b088eb95fa97",
+      "timestamp": "2025-07-18T05:46:04.299Z",
+      "userMessage": "pune",
+      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 5 of 11**\n**Field:** City\n\nEnter your city/town:\n\nJust type your city or town name - we accept any location!\n\n🔗 *Full access after profile completion.*",
+      "context": {
+        "intent": "search",
+        "topic": "pune",
+        "sessionState": "updating_city",
+        "fieldBeingUpdated": "city"
+      }
+    },
+    {
+      "id": "f88f969f-e68f-4ee7-a83f-e037414790b4",
+      "timestamp": "2025-07-18T05:58:31.495Z",
+      "userMessage": "athani",
+      "botResponse": "✅ **City Saved!**\n\n📊 **Progress:** 4/11 (36%)\n\n**Step 5 of 11:** State/Province\n\nEnter your state/province:\n\nExample: Maharashtra",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "updating_state",
+        "fieldBeingUpdated": "state"
+      }
+    }
+  ],
+  "topics": {
+    "casual": 4,
+    "jadhavakashofficial@gmail.com": 1,
+    "otp_verification": 1,
+    "negative": 1,
+    "pune": 2
+  },
+  "preferences": {
+    "communicationStyle": null,
+    "interests": [],
+    "searchPatterns": [
+      "jadhavakashofficial@gmail.com",
+      "pune"
+    ]
+  },
+  "insights": {
+    "totalInteractions": 9,
+    "averageMessageLength": 0,
+    "mostActiveTime": null,
+    "frequentQueries": [],
+    "profileCompletionJourney": [
+      {
+        "timestamp": "2025-07-18T05:45:18.672Z",
+        "field": "professionalRole",
+        "attempts": 1,
+        "completed": true
+      },
+      {
+        "timestamp": "2025-07-18T05:45:36.485Z",
+        "field": "dateOfBirth",
+        "attempts": 1,
+        "completed": true
+      },
+      {
+        "timestamp": "2025-07-18T05:45:44.920Z",
+        "field": "country",
+        "attempts": 1,
+        "completed": true
+      },
+      {
+        "timestamp": "2025-07-18T05:58:31.013Z",
+        "field": "city",
+        "attempts": 1,
+        "completed": true
+      }
+    ]
+  },
+  "relationships": {
+    "searchedProfiles": [],
+    "interestedIn": [],
+    "connectionsMade": []
+  }
+}
