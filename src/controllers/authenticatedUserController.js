@@ -8,6 +8,7 @@ const { checkDailyLimit } = require('../services/rateLimiter');
 const { handleCasualConversation } = require('./conversationController');
 const { validateProfileField, getFieldPrompt, generateResumeGreeting } = require('./profileController');
 const { logUserActivity, logError } = require('../middleware/logging');
+const UserMemoryService = require('../services/userMemoryService');
 
 // Manual canAccessSearch function
 function canAccessSearch(user) {
@@ -357,6 +358,14 @@ Unable to save your ${getFieldDisplayName(fieldName)}. Please try again.
 
 ${await getFieldPrompt(fieldName, userSession)}`;
         }
+        
+        // Track profile update in user memory
+        await UserMemoryService.trackProfileUpdate(
+            whatsappNumber,
+            fieldName,
+            validation.value,
+            userSession.field_retry_count || 1
+        );
         
         // Get fresh user data and update session
         const updatedUser = await findUserByWhatsAppNumber(whatsappNumber);

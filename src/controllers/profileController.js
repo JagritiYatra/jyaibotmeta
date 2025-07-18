@@ -10,12 +10,17 @@ const {
     validateGeographicInput,
     validatePhoneNumber,
     validateEmail,
-    validateLinkedInURL,
-    validateInstagramURL,
     validateMultipleChoice,
     validateYesNo,
     sanitizeInput
 } = require('../utils/validation');
+
+// Import simple validations for city, LinkedIn, Instagram
+const {
+    validateCityTown,
+    validateLinkedInURL,
+    validateInstagramURL
+} = require('../utils/simpleValidation');
 const { logError, logSuccess } = require('../middleware/logging');
 
 // AI-enhanced field prompts - concise and intelligent
@@ -62,9 +67,9 @@ I'll understand and save it correctly.`,
 
 Example: India`,
 
-            city: `Enter your city:
+            city: `Enter your city/town:
 
-Example: Mumbai`,
+Just type your city or town name - we accept any location!`,
 
             state: `Enter your state/province:
 
@@ -249,8 +254,8 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 return await validateGeographicInput(cleanValue, 'country');
 
             case 'city':
-                // AI-enhanced with typo correction
-                return await validateGeographicInput(cleanValue, 'city');
+                // Use simple validation - accept ANY text
+                return validateCityTown(cleanValue);
 
             case 'state':
                 // AI-enhanced with typo correction
@@ -280,25 +285,8 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                 };
 
             case 'linkedin':
-                // FIXED: Very relaxed LinkedIn validation
-                const linkedinResult = await validateLinkedInURL(cleanValue);
-                
-                // Show helpful message if corrected
-                if (linkedinResult.valid && linkedinResult.corrected) {
-                    return {
-                        valid: true,
-                        value: linkedinResult.value,
-                        corrected: linkedinResult.corrected
-                    };
-                }
-                
-                if (!linkedinResult.valid && userSession.attempts[fieldName] > 2) {
-                    return {
-                        valid: false,
-                        message: 'Please enter any LinkedIn URL or username:\n\n• https://linkedin.com/in/yourname\n• yourlinkedinusername\n• Any LinkedIn link you have'
-                    };
-                }
-                
+                // Use simple validation - accept ANY text/link
+                const linkedinResult = validateLinkedInURL(cleanValue);
                 return linkedinResult;
 
             case 'instagram':
@@ -323,13 +311,8 @@ async function validateProfileField(fieldName, value, userSession = {}) {
                             'Please reply with YES or NO'
                     };
                 } else {
+                    // Use simple validation - accept ANY text/link
                     const instagramResult = validateInstagramURL(cleanValue);
-                    if (!instagramResult.valid && userSession.attempts[fieldName] > 1) {
-                        return {
-                            valid: false,
-                            message: 'Enter valid Instagram URL\n\nExample: https://instagram.com/yourprofile'
-                        };
-                    }
                     return instagramResult;
                 }
 

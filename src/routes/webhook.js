@@ -14,6 +14,7 @@ const { sendTwilioMessage } = require('../services/twilioService');
 const { handleAuthenticatedUser } = require('../controllers/authenticatedUserController');
 const { handleNewUser } = require('../controllers/newUserController');
 const { checkAdvancedRateLimit } = require('../services/rateLimiter');
+const UserMemoryService = require('../services/userMemoryService');
 
 // Main webhook endpoint for Twilio WhatsApp with enhanced processing
 router.post('/', asyncHandler(async (req, res) => {
@@ -125,6 +126,29 @@ router.post('/', asyncHandler(async (req, res) => {
             
             if (messageSent && messageSent.success) {
                 console.log(`✅ Response sent successfully to ${whatsappNumber.replace(/[^\d]/g, '').slice(-4)}`);
+                
+                // Track conversation in user memory
+                await UserMemoryService.addConversation(
+                    whatsappNumber,
+                    userMessage,
+                    responseMessage,
+                    {
+                        intent: intent.type,
+                        topic: intent.query || intent.type,
+                        sessionState: userSession.waiting_for,
+                        fieldBeingUpdated: userSession.current_field || null
+                    }
+                );
+                
+                // Track search behavior if it's a search
+                if (intent.type === 'search' && intent.query) {
+                    await UserMemoryService.trackSearchBehavior(
+                        whatsappNumber,
+                        intent.query,
+                        [] // Results would come from search service
+                    );
+                }
+                
                 logUserActivity(whatsappNumber, 'response_sent', {
                     responseLength: responseMessage.length,
                     intent: intent.type,
