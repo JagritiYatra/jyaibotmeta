@@ -1,0 +1,78 @@
+{
+  "sessionId": "d31c53a0-ea20-4f8a-92b8-54159ababe5a",
+  "userId": "+919152584754",
+  "startedAt": "2025-07-18T11:03:35.938Z",
+  "lastActivity": "2025-07-18T11:04:17.634Z",
+  "conversationFlow": [
+    {
+      "id": "e47cf0c0-43dc-4b72-9a2f-253008ea43c6",
+      "timestamp": "2025-07-18T11:03:44.037Z",
+      "userMessage": "Your industry expert",
+      "botResponse": "**Kotni Hruday Kumar**\n**About:** Kotni Hruday Kumar is the innovative mind behind Techpeek, a legal AI workspace designed to streamline workflows and red...\n📧 hrudaykumar07@gmail.com\n🔗 www.linkedin.com/in/thehruday\n\n**Prinal Goyal**\n**About:** Prinal Goyal, as the founder and CEO of PG Digital Solution, stands out as a dynamic leader in digital entrepreneurship,...\n📧 Prinalgoyal@gmail.com\n🔗 https://www.linkedin.com/in/prinal-goyal\n\n**Yuvraj Aaditya Arya**\n**About:** Yuvraj Aaditya Arya is a driven entrepreneur who launched his first company before college, quickly establishing it as a...\n📧 Uvarya2000@gmail.com\n🔗 https://www.linkedin.com/in/aadityayuvraj/\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Your industry expert",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "8fbcfb7c-f909-4d10-b2e1-f3124a7cb879",
+      "timestamp": "2025-07-18T11:04:17.633Z",
+      "userMessage": "I'm looking for a girlfriend.",
+      "botResponse": "**Jayati Kukreti**\n**About:** Jayati Kukreti is an MBBS graduate currently pursuing an MD in Community Medicine with a focus on mental and sexual heal...\n📧 jayatikkrt@gmail.com\n🔗 https://www.linkedin.com/in/dr-jayati-kukreti-0b191b26b\n\n**Neha Purohit**\n**About:** Neha Purohit is the founder of Kalankit, a fashion and lifestyle brand, and an IIMB alum with a background in engineerin...\n📧 neha@simplyunusual.com\n🔗 https://www.linkedin.com/in/purohit-neha/\n\n**Minakshi Pandey**\n**About:** Minakshi Pandey is the founder of GoEventras Event Enterprise, managing events across India and leading a Varanasi-based...\n📧 minakshi.130411@gmail.com\n🔗 https://www.linkedin.com/in/minakshii\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "I'm looking for a girlfriend.",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    }
+  ],
+  "currentContext": {
+    "topic": "I'm looking for a girlfriend.",
+    "searchQuery": "I'm looking for a girlfriend.",
+    "searchResults": [],
+    "followUpCount": 0,
+    "relatedQueries": []
+  },
+  "searchHistory": [
+    {
+      "query": "Your industry expert",
+      "timestamp": "2025-07-18T11:03:44.037Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "I'm looking for a girlfriend.",
+      "timestamp": "2025-07-18T11:04:17.634Z",
+      "resultsCount": 0,
+      "followedBy": []
+    }
+  ],
+  "profileInterests": {
+    "domains": {},
+    "skills": {
+      "expert": 1
+    },
+    "locations": {},
+    "roles": {}
+  },
+  "behaviorMetrics": {
+    "totalSearches": 2,
+    "followUpSearches": 0,
+    "profileViews": 0,
+    "averageSessionLength": 0,
+    "topicsExplored": {}
+  },
+  "aiMemory": {
+    "userPreferences": {},
+    "communicationStyle": null,
+    "interests": [],
+    "learnings": []
+  }
+}

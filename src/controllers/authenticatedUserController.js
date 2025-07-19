@@ -110,7 +110,45 @@ ${await getFieldPrompt(firstField, userSession)}
             }
             
             // Profile complete - proceed with context-aware search
-            return await handleContextualSearchRequest(userMessage, intent, userSession, whatsappNumber);
+            const searchResponse = await handleContextualSearchRequest(userMessage, intent, userSession, whatsappNumber);
+            
+            // Mark that we just provided search results
+            userSession.lastActivity = 'search_results';
+            userSession.lastSearchTime = new Date().toISOString();
+            userSession.lastSearchQuery = intent.query || userMessage;
+            
+            return searchResponse;
+        }
+        
+        // PRIORITY 5.5: Handle follow-up search queries (like "from pune", "more lawyers")
+        if (intent.type === 'follow_up_search' && isProfileComplete) {
+            const followUpResponse = await handleFollowUpSearch(
+                userMessage,
+                intent,
+                userSession,
+                whatsappNumber
+            );
+            
+            if (followUpResponse) {
+                userSession.lastActivity = 'search_results';
+                userSession.lastSearchTime = new Date().toISOString();
+                return followUpResponse;
+            }
+        }
+        
+        // PRIORITY 5.6: Handle acknowledgments (like "thank you" after search)
+        if (intent.type === 'acknowledgment' && intent.subtype === 'thanks') {
+            const responses = [
+                "You're welcome! 😊 Let me know if you need help finding anyone else.",
+                "Happy to help! Feel free to search for more alumni anytime.",
+                "Glad I could help! Need to connect with anyone else?",
+                "You're welcome! The network has 9000+ alumni if you need more connections."
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            
+            // Don't reset the session state, just acknowledge
+            return randomResponse;
         }
         
         // PRIORITY 6: Profile update request with motivation
@@ -153,6 +191,21 @@ What expertise are you looking for?`;
         
         // PRIORITY 7: Enhanced casual conversation
         if (intent.type === 'casual') {
+            // If we just showed search results, don't show the full welcome again
+            if (userSession.lastActivity === 'search_results' && 
+                Date.now() - new Date(userSession.lastSearchTime || 0).getTime() < 300000) { // 5 minutes
+                
+                // Simple acknowledgment instead of full welcome
+                const simpleResponses = [
+                    `What else can I help you find, ${firstName}?`,
+                    `Need to search for anyone else?`,
+                    `Looking for more connections?`,
+                    `Any other expertise you need?`
+                ];
+                
+                return simpleResponses[Math.floor(Math.random() * simpleResponses.length)];
+            }
+            
             const casualResponse = await handleCasualConversation(userMessage, {
                 name: userName,
                 profileComplete: isProfileComplete,
@@ -282,6 +335,73 @@ Please try:
 • Simpler search terms
 • "Help" for assistance
 • Try again in a moment`;
+    }
+}
+
+// Handle follow-up search queries with context
+async function handleFollowUpSearch(userMessage, intent, userSession, whatsappNumber) {
+    try {
+        const { refinementType, refinementValue } = intent;
+        const lastQuery = userSession.lastSearchQuery || '';
+        
+        let enhancedQuery = lastQuery;
+        
+        switch (refinementType) {
+            case 'location':
+                // Add location to previous search
+                enhancedQuery = `${lastQuery} in ${refinementValue}`;
+                break;
+                
+            case 'more_results':
+                // Request for more results - add exclusion context
+                enhancedQuery = `more ${lastQuery}`;
+                break;
+                
+            case 'experience':
+                // Add experience level
+                enhancedQuery = `${refinementValue} ${lastQuery}`;
+                break;
+                
+            case 'skill_refinement':
+                // Refine with additional skills
+                enhancedQuery = `${lastQuery} ${refinementValue}`;
+                break;
+                
+            default:
+                enhancedQuery = userMessage;
+        }
+        
+        // Create a new search intent with the enhanced query
+        const enhancedIntent = {
+            type: 'search',
+            query: enhancedQuery,
+            isFollowUp: true,
+            originalQuery: lastQuery,
+            refinement: { type: refinementType, value: refinementValue }
+        };
+        
+        // Use the existing search handler with enhanced query
+        const searchResponse = await handleContextualSearchRequest(
+            enhancedQuery,
+            enhancedIntent,
+            userSession,
+            whatsappNumber
+        );
+        
+        // Add context about this being a refined search
+        if (refinementType === 'location' && searchResponse) {
+            const prefix = `Here are ${lastQuery} from ${refinementValue}:\n\n`;
+            return prefix + searchResponse;
+        } else if (refinementType === 'more_results' && searchResponse) {
+            const prefix = `Here are more results for "${lastQuery}":\n\n`;
+            return prefix + searchResponse;
+        }
+        
+        return searchResponse;
+        
+    } catch (error) {
+        logError(error, { operation: 'handleFollowUpSearch', whatsappNumber });
+        return "I couldn't refine your search. Please try a new search query.";
     }
 }
 

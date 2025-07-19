@@ -197,9 +197,33 @@ function detectUserIntent(message, userContext = {}) {
         };
     }
     
-    // 7. Greetings and casual conversation
+    // 7. Check for follow-up search queries BEFORE casual intent
+    const followUpIntent = detectFollowUpSearchIntent(msg, userContext);
+    if (followUpIntent.detected) {
+        return {
+            type: 'follow_up_search',
+            originalMessage: sanitizedMessage,
+            refinementType: followUpIntent.refinementType,
+            refinementValue: followUpIntent.refinementValue,
+            confidence: followUpIntent.confidence,
+            allowedDuringProfile: false
+        };
+    }
+    
+    // 8. Greetings and casual conversation
     const casualIntent = detectCasualIntent(msg);
     if (casualIntent.detected) {
+        // Don't treat "thank you" as requiring a full reset
+        if (casualIntent.subtype === 'thanks' && userContext.lastActivity === 'search_results') {
+            return {
+                type: 'acknowledgment',
+                subtype: 'thanks',
+                message: sanitizedMessage,
+                confidence: 'high',
+                allowedDuringProfile: false
+            };
+        }
+        
         return {
             type: 'casual',
             subtype: casualIntent.subtype,
@@ -395,6 +419,85 @@ function detectYesNoIntent(msg) {
         return { detected: true, value: true, confidence: 'high' };
     } else if (isNo) {
         return { detected: true, value: false, confidence: 'high' };
+    }
+    
+    return { detected: false };
+}
+
+// Detect follow-up search intent
+function detectFollowUpSearchIntent(msg, userContext) {
+    // Check if there was a recent search
+    if (!userContext || !userContext.lastActivity || userContext.lastActivity !== 'search_results') {
+        return { detected: false };
+    }
+    
+    const lowerMsg = msg.toLowerCase();
+    
+    // Location-based refinements
+    const locationPatterns = [
+        /(?:from|in|at|near)\s+(\w+)/i,
+        /candidates?\s+(?:from|in)\s+(\w+)/i,
+        /any(?:one|body)?\s+(?:from|in)\s+(\w+)/i,
+        /(\w+)\s+based/i
+    ];
+    
+    for (const pattern of locationPatterns) {
+        const match = lowerMsg.match(pattern);
+        if (match) {
+            return {
+                detected: true,
+                refinementType: 'location',
+                refinementValue: match[1],
+                confidence: 'high'
+            };
+        }
+    }
+    
+    // More results request
+    const morePatterns = [
+        /more\s+(?:results?|people|candidates?|lawyers?|developers?)/i,
+        /any\s+(?:other|more)/i,
+        /show\s+(?:me\s+)?more/i,
+        /what\s+else/i,
+        /who\s+else/i
+    ];
+    
+    for (const pattern of morePatterns) {
+        if (pattern.test(lowerMsg)) {
+            return {
+                detected: true,
+                refinementType: 'more_results',
+                refinementValue: null,
+                confidence: 'high'
+            };
+        }
+    }
+    
+    // Experience level refinements
+    if (/(senior|junior|experienced|fresher|entry\s*level)/i.test(lowerMsg)) {
+        const match = lowerMsg.match(/(senior|junior|experienced|fresher|entry\s*level)/i);
+        return {
+            detected: true,
+            refinementType: 'experience',
+            refinementValue: match[1],
+            confidence: 'medium'
+        };
+    }
+    
+    // Specific skill refinements
+    if (userContext.lastSearchKeywords) {
+        const hasKeyword = userContext.lastSearchKeywords.some(keyword => 
+            lowerMsg.includes(keyword.toLowerCase())
+        );
+        
+        if (hasKeyword && lowerMsg.split(' ').length <= 5) {
+            return {
+                detected: true,
+                refinementType: 'skill_refinement',
+                refinementValue: lowerMsg,
+                confidence: 'medium'
+            };
+        }
     }
     
     return { detected: false };

@@ -2,7 +2,7 @@
   "sessionId": "f3e4195a-4ba9-4904-bbd4-d0441465d05b",
   "userId": "+919035304140",
   "startedAt": "2025-07-18T08:48:15.402Z",
-  "lastActivity": "2025-07-18T09:59:44.297Z",
+  "lastActivity": "2025-07-18T11:55:32.861Z",
   "conversationFlow": [
     {
       "id": "fab1dd1c-ecf0-4f52-9fe4-8633e883a12c",
@@ -59,13 +59,181 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "431a6311-72fc-4d77-9f86-328baa08a3ea",
+      "timestamp": "2025-07-18T11:36:13.592Z",
+      "userMessage": "i need help in food industry who can help me",
+      "botResponse": "**Vandit Malik**\n**About:** Vandit Malik is an entrepreneur specializing in the integration of technology within the food industry, notably through ...\n📧 malikvandit@gmail.com\n🔗 https://www.linkedin.com/in/vanditmalik/\n\n**Bharti Pahade**\n**About:** Bharti Pahade has dedicated 15 years to producing nutritious, chemical-free baby food under the brand 'Poshak Bal Ahar.'...\n📧 bdpahade17@gmail.com\n\n\n**Kumar S**\n**About:** Kumar S is an agribusiness professional with an MBA in Agribusiness Management, co-founding Bengaluru Mandi to revolutio...\n📧 Kumarreddy1325@gmail.com\n🔗 https://www.linkedin.com/in/kumarreddysrinivasa\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i need help in food industry who can help me",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "c6a4ce12-7b37-4ce4-9030-bab6a89898b9",
+      "timestamp": "2025-07-18T11:37:28.529Z",
+      "userMessage": "more i need help in food industry who can help me",
+      "botResponse": "Here are more profiles matching your criteria:\n\n**Vandit Malik**\n**About:** Vandit Malik combines his experience in software development and entrepreneurship to innovate within the food industry. ...\n📧 malikvandit@gmail.com\n🔗 https://www.linkedin.com/in/vanditmalik/\n\n**Bharti Pahade**\n**About:** With over 15 years in the baby food manufacturing sector, Bharti Pahade is committed to providing nutritious and chemica...\n📧 bdpahade17@gmail.com\n\n\n**Kumar S**\n**About:** Kumar S, with an MBA in Agribusiness Management, is dedicated to advancing sustainable agricultural practices. As a co-f...\n📧 Kumarreddy1325@gmail.com\n🔗 https://www.linkedin.com/in/kumarreddysrinivasa",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "431a6311-72fc-4d77-9f86-328baa08a3ea",
+        "searchQuery": "i need help in food industry who can help me",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "fc853e52-6c70-46ed-9167-252d03a83bae",
+      "timestamp": "2025-07-18T11:40:21.167Z",
+      "userMessage": "i need help in food industry who can help me in pune",
+      "botResponse": "**Shruti Gupta**\n**About:** Shruti Gupta is a software developer based in Pune, passionate about leveraging technology for educational purposes. Wit...\n📧 shrutigupta4895@gmail.com\n🔗 https://www.linkedin.com/in/shruti-gupta-2b767718b/\n\n**Jayanti Soman**\n**About:** Jayanti Soman is an academician and biotechnology enthusiast with a keen interest in the agriculture and hospitality ind...\n📧 jayilams@yahoo.co.in\n🔗 https://www.linkedin.com/in/jayanthi-ilamurugu-5261722b\n\n**Vandit Malik**\n**About:** Vandit Malik is an entrepreneur who merges technology with culinary innovation, leading The Garlic Bread chain across In...\n📧 malikvandit@gmail.com\n🔗 https://www.linkedin.com/in/vanditmalik/\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i need help in food industry who can help me in pune",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "99997fcc-cb91-4f57-87e4-d84edc5a376b",
+      "timestamp": "2025-07-18T11:42:24.770Z",
+      "userMessage": "i am looking for a graphic designer",
+      "botResponse": "**Kaushal Poddar**\n**About:** Kaushal Poddar is a creative entrepreneur with a focus on developing marketing solutions and web designs. His passion fo...\n📧 kshlkp@gmail.com\n🔗 https://www.linkedin.com/in/kaushal-poddar/\n\n**Saachi Jain**\n**About:** Saachi Jain is a creative professional adept at blending visual design with cultural ideologies. She is committed to ref...\n📧 saachionset@gmail.com\n🔗 https://www.linkedin.com/in/saachi-jain-b3bb39191/\n\n**Ajay Gupta**\n**About:** Ajay Gupta specializes in creating efficient workflow solutions in digital media, ensuring optimal results. His creative...\n📧 queryforajay@gmail.com\n🔗 www.linkedin.com/company/business-with-ajay\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i am looking for a graphic designer",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "b69fe219-9940-4758-a574-aa3c6747b738",
+      "timestamp": "2025-07-18T11:42:25.861Z",
+      "userMessage": "i am looking for a graphic designer",
+      "botResponse": "**Kaushal Poddar**\n**About:** Kaushal Poddar is a skilled graphic designer with expertise in crafting marketing solutions, web designs, and multimedia...\n📧 kshlkp@gmail.com\n🔗 https://www.linkedin.com/in/kaushal-poddar/\n\n**Saachi Jain**\n**About:** Saachi Jain is a creative professional who integrates visual design with cultural insights, leveraging modern innovation...\n📧 saachionset@gmail.com\n🔗 https://www.linkedin.com/in/saachi-jain-b3bb39191/\n\n**Ajay Gupta**\n**About:** Ajay Gupta specializes in creating efficient digital media workflow solutions, ensuring optimal outcomes. His commitment...\n📧 queryforajay@gmail.com\n🔗 www.linkedin.com/company/business-with-ajay\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i am looking for a graphic designer",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "2f485a05-3926-4058-b28c-6dde81f4256b",
+      "timestamp": "2025-07-18T11:46:18.597Z",
+      "userMessage": "i am looking for a graphic designer in corporate",
+      "botResponse": "**Mannat Sidhu**\n**About:** Mannat Sidhu is a graphic designer known for impactful designs with major brands like Maggi and CocaCola. She specialize...\n📧 mannatsidhu1@gmail.com\n🔗 Https://www.linkedin.com/mannatsidhu1\n\n**Kaushal Poddar**\n**About:** Kaushal Poddar brings a blend of creativity and strategic thinking to crafting marketing solutions, web designs, and mul...\n📧 kshlkp@gmail.com\n🔗 https://www.linkedin.com/in/kaushal-poddar/\n\n**Saachi Jain**\n**About:** Saachi Jain is a creative professional focused on integrating visual design with cultural insights to drive impactful pr...\n📧 saachionset@gmail.com\n🔗 https://www.linkedin.com/in/saachi-jain-b3bb39191/\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i am looking for a graphic designer in corporate",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "9a827591-cb19-4397-b136-4c0bfbc42dfe",
+      "timestamp": "2025-07-18T11:48:38.783Z",
+      "userMessage": "who is the founder of jagriti yatra",
+      "botResponse": "I searched our network but couldn't find alumni matching \"who is the founder of jagriti yatra\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "who is the founder of jagriti yatra",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "1934209a-214d-4302-af11-79cf931c54b1",
+      "timestamp": "2025-07-18T11:51:54.393Z",
+      "userMessage": "i want to connect with someone who is onto CRM",
+      "botResponse": "I searched our network but couldn't find alumni matching \"i want to connect with someone who is onto CRM\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i want to connect with someone who is onto CRM",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "83e34cde-246e-4150-9c4f-f4258c3d92c2",
+      "timestamp": "2025-07-18T11:52:21.675Z",
+      "userMessage": "zoho me koi work karta hai",
+      "botResponse": "I searched our network but couldn't find alumni matching \"zoho me koi work karta hai\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "1934209a-214d-4302-af11-79cf931c54b1",
+        "searchQuery": "zoho me koi work karta hai",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "b8055e95-5b7f-4318-a671-091aab3c9f8c",
+      "timestamp": "2025-07-18T11:52:46.152Z",
+      "userMessage": "zoho me koi work karta hai in google",
+      "botResponse": "**Rahul Bulchandani**\n**About:** Rahul Bulchandani is a certified Google partner specializing in helping e-commerce businesses grow through strategic Goo...\n📧 rahulbulchandani37@gmail.com\n🔗 https://www.linkedin.com/in/rahul-bulchandani-8b84761b0\n\n**Aditya Malani**\n**About:** Aditya Malani is a software developer and entrepreneur, currently leading Speedy Squirrel, a B2B SaaS company focused on...\n📧 aditya.malani28@gmail.com\n🔗 https://www.linkedin.com/in/aditya-malani-a673a8146/\n\n**Aditya Vyavahare**\n**About:** Aditya Vyavahare is a software engineer with a passion for technology and sustainability, dedicated to integrating innov...\n📧 thealcworldwebsite@gmail.com\n🔗 https://www.linkedin.com/in/vvaditya23\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "zoho me koi work karta hai in google",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "95ebd45d-8352-4403-9825-a8902d10ed88",
+      "timestamp": "2025-07-18T11:55:06.033Z",
+      "userMessage": "zoho me koi work karta hai in jammu",
+      "botResponse": "I searched our network but couldn't find alumni matching \"zoho me koi work karta hai in jammu\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "zoho me koi work karta hai in jammu",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "11d6adfd-a006-4418-a600-6eed343d95d8",
+      "timestamp": "2025-07-18T11:55:32.861Z",
+      "userMessage": "zoho me koi work karta hai in jammu",
+      "botResponse": "I searched our network but couldn't find alumni matching \"zoho me koi work karta hai in jammu\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "zoho me koi work karta hai in jammu",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "help in legal matters",
-    "searchQuery": "help in legal matters",
+    "topic": "zoho me koi work karta hai in jammu",
+    "searchQuery": "zoho me koi work karta hai in jammu",
     "searchResults": [],
-    "followUpCount": 3,
+    "followUpCount": 5,
     "relatedQueries": []
   },
   "searchHistory": [
@@ -92,19 +260,96 @@
       "timestamp": "2025-07-18T09:59:44.297Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "i need help in food industry who can help me",
+      "timestamp": "2025-07-18T11:36:13.594Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i need help in food industry who can help me",
+      "timestamp": "2025-07-18T11:37:28.530Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i need help in food industry who can help me in pune",
+      "timestamp": "2025-07-18T11:40:21.167Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i am looking for a graphic designer",
+      "timestamp": "2025-07-18T11:42:24.770Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i am looking for a graphic designer",
+      "timestamp": "2025-07-18T11:42:25.861Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i am looking for a graphic designer in corporate",
+      "timestamp": "2025-07-18T11:46:18.598Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "who is the founder of jagriti yatra",
+      "timestamp": "2025-07-18T11:48:38.783Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i want to connect with someone who is onto CRM",
+      "timestamp": "2025-07-18T11:51:54.393Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "zoho me koi work karta hai",
+      "timestamp": "2025-07-18T11:52:21.675Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "zoho me koi work karta hai in google",
+      "timestamp": "2025-07-18T11:52:46.152Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "zoho me koi work karta hai in jammu",
+      "timestamp": "2025-07-18T11:55:06.034Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "zoho me koi work karta hai in jammu",
+      "timestamp": "2025-07-18T11:55:32.861Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
-    "domains": {},
-    "skills": {
-      "developer": 1
+    "domains": {
+      "design": 3
     },
-    "locations": {},
+    "skills": {
+      "developer": 1,
+      "designer": 3
+    },
+    "locations": {
+      "pune": 1
+    },
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 4,
-    "followUpSearches": 3,
+    "totalSearches": 16,
+    "followUpSearches": 5,
     "profileViews": 0,
     "averageSessionLength": 0,
     "topicsExplored": {}

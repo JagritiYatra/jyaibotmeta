@@ -2,272 +2,8 @@
   "userId": "+919035304140",
   "memoryId": "78aa4e5a-67f0-4e27-8c05-26962c945707",
   "createdAt": "2025-07-18T05:44:34.873Z",
-  "lastUpdated": "2025-07-18T09:59:44.760Z",
+  "lastUpdated": "2025-07-18T11:55:33.243Z",
   "conversations": [
-    {
-      "id": "38e5d3e4-3b4e-41b7-b457-4dadf0ec30e7",
-      "timestamp": "2025-07-18T05:44:34.876Z",
-      "userMessage": "hi",
-      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "email_input",
-        "fieldBeingUpdated": null
-      }
-    },
-    {
-      "id": "1dc48301-d961-4c12-aa3c-118681ded203",
-      "timestamp": "2025-07-18T05:44:53.095Z",
-      "userMessage": "jadhavakashofficial@gmail.com",
-      "botResponse": "✅ Verification code sent to jadhavakashofficial@gmail.com\n\nPlease enter the 6-digit code from your email:\n\n⏰ Code expires in 10 minutes\n\nOptions:\n- Type \"resend\" for a new code\n- Type \"change\" for different email",
-      "context": {
-        "intent": "search",
-        "topic": "jadhavakashofficial@gmail.com",
-        "sessionState": "otp_verification",
-        "fieldBeingUpdated": null
-      }
-    },
-    {
-      "id": "a7c6fed8-8d39-49c7-82a1-249dc621d341",
-      "timestamp": "2025-07-18T05:45:11.413Z",
-      "userMessage": "308259",
-      "botResponse": "✅ Verification successful!\n\nWelcome to JY Alumni Relations Cell, **swapnil jadhav**! 🌟\n\nYour profile needs completion to connect with 9000+ fellow Yatris.\n\n**Step 1 of 11:** Professional Role\n\nSelect your professional role:\n\n1. Entrepreneur\n2. Student\n3. Working Professional\n4. Startup Founder\n5. NGO Founder\n6. Researcher\n7. Freelancer\n8. Consultant\n\nReply with: 1-8",
-      "context": {
-        "intent": "otp_verification",
-        "topic": "otp_verification",
-        "sessionState": "updating_professionalRole",
-        "fieldBeingUpdated": "professionalRole"
-      }
-    },
-    {
-      "id": "030cc045-d74a-47ba-a38c-d40dd3a5a9fa",
-      "timestamp": "2025-07-18T05:45:19.058Z",
-      "userMessage": "2",
-      "botResponse": "✅ **Professional Role Saved!**\n\n📊 **Progress:** 1/11 (9%)\n\n**Step 2 of 11:** Date of Birth\n\nEnter your date of birth:\n\nAny format works:\n• 19/07/2000\n• July 19 2000\n• 19-07-2000\n• 2000-07-19\n\nI'll understand and save it correctly.",
-      "context": {
-        "intent": "negative",
-        "topic": "negative",
-        "sessionState": "updating_dateOfBirth",
-        "fieldBeingUpdated": "dateOfBirth"
-      }
-    },
-    {
-      "id": "3e4b1df2-203d-41f3-9076-4abf94566163",
-      "timestamp": "2025-07-18T05:45:36.930Z",
-      "userMessage": "19/07/2000",
-      "botResponse": "✅ **Date of Birth Saved!**\n\n📊 **Progress:** 2/11 (18%)\n\n**Step 3 of 11:** Country\n\nEnter your country:\n\nExample: India",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_country",
-        "fieldBeingUpdated": "country"
-      }
-    },
-    {
-      "id": "050808b4-9bca-46f6-8198-b7cce23335d7",
-      "timestamp": "2025-07-18T05:45:45.317Z",
-      "userMessage": "india",
-      "botResponse": "✅ **Country Saved!**\n\n🔧 *Corrected to: India*\n\n📊 **Progress:** 3/11 (27%)\n\n**Step 4 of 11:** City\n\nEnter your city/town:\n\nJust type your city or town name - we accept any location!",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_city",
-        "fieldBeingUpdated": "city"
-      }
-    },
-    {
-      "id": "62036bd2-390d-4597-9a50-9c38a9a20f05",
-      "timestamp": "2025-07-18T05:45:51.329Z",
-      "userMessage": "pune",
-      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 5 of 11**\n**Field:** City\n\nEnter your city/town:\n\nJust type your city or town name - we accept any location!\n\n🔗 *Full access after profile completion.*",
-      "context": {
-        "intent": "search",
-        "topic": "pune",
-        "sessionState": "updating_city",
-        "fieldBeingUpdated": "city"
-      }
-    },
-    {
-      "id": "0c0d4aba-9237-4293-ba6c-b088eb95fa97",
-      "timestamp": "2025-07-18T05:46:04.299Z",
-      "userMessage": "pune",
-      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 5 of 11**\n**Field:** City\n\nEnter your city/town:\n\nJust type your city or town name - we accept any location!\n\n🔗 *Full access after profile completion.*",
-      "context": {
-        "intent": "search",
-        "topic": "pune",
-        "sessionState": "updating_city",
-        "fieldBeingUpdated": "city"
-      }
-    },
-    {
-      "id": "f88f969f-e68f-4ee7-a83f-e037414790b4",
-      "timestamp": "2025-07-18T05:58:31.495Z",
-      "userMessage": "athani",
-      "botResponse": "✅ **City Saved!**\n\n📊 **Progress:** 4/11 (36%)\n\n**Step 5 of 11:** State/Province\n\nEnter your state/province:\n\nExample: Maharashtra",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_state",
-        "fieldBeingUpdated": "state"
-      }
-    },
-    {
-      "id": "21fff2ec-dd89-4d1e-b95f-a436857f7152",
-      "timestamp": "2025-07-18T06:09:26.487Z",
-      "userMessage": "hi",
-      "botResponse": "Hi **Akash jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n**Remaining:** 7 fields\n\n**Next:** Complete Address\n\n[object Promise]",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_address",
-        "fieldBeingUpdated": "address"
-      }
-    },
-    {
-      "id": "ec5fbf48-9ad2-48e3-825e-4e4a51c8568b",
-      "timestamp": "2025-07-18T06:09:58.300Z",
-      "userMessage": "at post ananthpur taluk athani district belagavi",
-      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 2 of 7**\n**Field:** Complete Address\n\nEnter your complete address:\n\nPlease include: City, State/Province, Country\n\nExamples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka, India\n• New York, NY, USA\n• London, England, UK\n\nJust type your full location details in any format!\n\n🔗 *Full access after profile completion.*",
-      "context": {
-        "intent": "search",
-        "topic": "at post ananthpur taluk athani district belagavi",
-        "sessionState": "updating_address",
-        "fieldBeingUpdated": "address"
-      }
-    },
-    {
-      "id": "e2b05f40-8fe6-49ad-a3ec-474dfa2355e3",
-      "timestamp": "2025-07-18T06:10:20.316Z",
-      "userMessage": "city state",
-      "botResponse": "✅ **Complete Address Saved!**\n\n📊 **Progress:** 1/7 (14%)\n\n**Step 2 of 7:** Phone Number\n\nEnter your phone number with country code:\n\nExamples:\n+91 9876543210\n+1 2025551234\n+44 7911123456\n\nFormat: +[code] [number]",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_phone",
-        "fieldBeingUpdated": "phone"
-      }
-    },
-    {
-      "id": "f60f1012-f149-4d03-a55d-ae2b01938640",
-      "timestamp": "2025-07-18T06:10:32.707Z",
-      "userMessage": "8970894140",
-      "botResponse": "✅ **Phone Number Saved!**\n\n📊 **Progress:** 2/7 (29%)\n\n**Step 3 of 7:** Industry Domain\n\nSelect your industry domain:\n\n1. Agriculture\n2. Technology\n3. Healthcare\n4. Education\n5. Finance\n6. Manufacturing\n7. Energy & Sustainability\n8. Transportation & Logistics\n9. Retail & E-commerce\n10. Media & Entertainment\n11. Real Estate & Construction\n12. Telecommunications\n13. Automotive\n14. Aerospace & Defense\n15. Tourism & Hospitality\n16. Food & Beverage\n17. Legal & Compliance\n18. Human Resources & Workforce Development\n19. Social Impact & Nonprofit\n20. Cybersecurity\n\nReply with: 1-20",
-      "context": {
-        "intent": "numeric_input",
-        "topic": "numeric_input",
-        "sessionState": "updating_domain",
-        "fieldBeingUpdated": "domain"
-      }
-    },
-    {
-      "id": "ddf32ebd-e3ba-4651-921f-6d18b6081c40",
-      "timestamp": "2025-07-18T06:10:39.158Z",
-      "userMessage": "20",
-      "botResponse": "✅ **Industry Domain Saved!**\n\n📊 **Progress:** 3/7 (43%)\n\n**Step 4 of 7:** LinkedIn Profile\n\nEnter your LinkedIn profile:\n\nExamples:\n• https://linkedin.com/in/yourname\n• linkedin.com/in/yourname  \n• yourlinkedinusername\n• Any LinkedIn URL\n\nJust paste whatever LinkedIn link/username you have.",
-      "context": {
-        "intent": "numeric_input",
-        "topic": "numeric_input",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "dea94abd-6991-48df-9b7d-dde30ae7e1af",
-      "timestamp": "2025-07-18T06:11:05.698Z",
-      "userMessage": "https://www.linkedin.com/in/classictechak/",
-      "botResponse": "📋 **Profile Completion Needed**\n\nPlease complete this field to connect with fellow Yatris.\n\n**Current: Step 5 of 7**\n**Field:** LinkedIn Profile\n\nEnter your LinkedIn profile:\n\nExamples:\n• https://linkedin.com/in/yourname\n• linkedin.com/in/yourname  \n• yourlinkedinusername\n• Any LinkedIn URL\n\nJust paste whatever LinkedIn link/username you have.\n\n🔗 *Full access after profile completion.*",
-      "context": {
-        "intent": "search",
-        "topic": "https://www.linkedin.com/in/classictechak/",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "47240b06-e9d8-40d1-bcd2-3641a8298b8e",
-      "timestamp": "2025-07-18T06:32:18.543Z",
-      "userMessage": "hi",
-      "botResponse": "Hi **Akash jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n4 fields remaining.\n\nReady to continue?\n\nLet's continue with the next field:\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "376012e3-216b-4b8d-a920-a806e82941f2",
-      "timestamp": "2025-07-18T06:32:32.902Z",
-      "userMessage": "https://www.linkedin.com/in/classictechak/",
-      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "search",
-        "topic": "https://www.linkedin.com/in/classictechak/",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "f56b58bd-240a-4938-a394-2ae39390e09c",
-      "timestamp": "2025-07-18T06:32:40.805Z",
-      "userMessage": "https://www.linkedin.com/in/classictechak/",
-      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "search",
-        "topic": "https://www.linkedin.com/in/classictechak/",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "4571f10a-fcb5-4dab-858b-3f3f8f1d344e",
-      "timestamp": "2025-07-18T06:32:45.944Z",
-      "userMessage": "https://www.linkedin.com/in/classictechak/",
-      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "search",
-        "topic": "https://www.linkedin.com/in/classictechak/",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "a7ace2d1-bb12-4d2d-96df-1140e3a47d81",
-      "timestamp": "2025-07-18T06:32:50.759Z",
-      "userMessage": "https://www.linkedin.com/in/classictechak/",
-      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "search",
-        "topic": "https://www.linkedin.com/in/classictechak/",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "08ff7365-b43d-445e-a873-a7c35fb2eeb2",
-      "timestamp": "2025-07-18T06:32:55.583Z",
-      "userMessage": "https://www.linkedin.com/in/classictechak/",
-      "botResponse": "🔒 **Profile Completion Required**\n\nPlease complete this field to access search.\n\n**Step 2 of 4**\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "search",
-        "topic": "https://www.linkedin.com/in/classictechak/",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
-    {
-      "id": "d33a294d-34dc-4920-9a54-1349c4ce6098",
-      "timestamp": "2025-07-18T06:34:56.712Z",
-      "userMessage": "hi",
-      "botResponse": "Hi **Akash jadhav**! 👋\n\nLet's complete your profile to connect with 9000+ fellow Yatris.\n\n4 fields remaining.\n\nReady to continue?\n\nLet's continue with the next field:\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
-      "context": {
-        "intent": "casual",
-        "topic": "casual",
-        "sessionState": "updating_linkedin",
-        "fieldBeingUpdated": "linkedin"
-      }
-    },
     {
       "id": "0078dd07-56ef-42ac-92fa-8f7d5d1e88af",
       "timestamp": "2025-07-18T06:35:20.489Z",
@@ -1107,26 +843,392 @@
         "sessionState": "ready",
         "fieldBeingUpdated": null
       }
+    },
+    {
+      "id": "2da2f0f0-12f7-4b19-a1fb-ff28ad01e5cd",
+      "timestamp": "2025-07-18T11:25:36.219Z",
+      "userMessage": "hi",
+      "botResponse": "🚆 Welcome to JY Alumni Relations Cell!\n\nI help you connect with 9000+ fellow Yatris and changemakers from our community.\n\nTo get started, please share your registered email address:\n\nExample: yourname@domain.com",
+      "context": {
+        "intent": "casual",
+        "topic": "casual",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "69139a92-3a2b-46dd-a3a9-179a77e6abeb",
+      "timestamp": "2025-07-18T11:26:03.322Z",
+      "userMessage": "random@gmail.com",
+      "botResponse": "❌ Email \"random@gmail.com\" not found in our alumni database.\n\nPlease check:\n- Spelling is correct\n- You're using the same email from your JY application\n- Try alternative email addresses you might have used\n\nType \"change\" to enter a different email\n\nNeed help? Contact support@jagritiyatra.com",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "email_input",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "8284660d-73c9-4c28-a3e2-6739b8e892b9",
+      "timestamp": "2025-07-18T11:26:24.335Z",
+      "userMessage": "jadhavakashofficial@gmail.com",
+      "botResponse": "✅ Verification code sent to jadhavakashofficial@gmail.com\n\nPlease enter the 6-digit code from your email:\n\n⏰ Code expires in 10 minutes\n\nOptions:\n- Type \"resend\" for a new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "email_input",
+        "topic": "email_input",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "71893e0e-6235-402d-8e19-e7a72c881ddb",
+      "timestamp": "2025-07-18T11:26:47.674Z",
+      "userMessage": "21190",
+      "botResponse": "❌ Please enter a 6-digit verification code.\n\nFormat: 123456 (6 digits)\n\nOptions:\n- Type \"resend\" for new code\n- Type \"change\" for different email",
+      "context": {
+        "intent": "numeric_input",
+        "topic": "numeric_input",
+        "sessionState": "otp_verification",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "3f20f3c0-a04e-4b21-bc0d-592d8b99afc5",
+      "timestamp": "2025-07-18T11:26:58.958Z",
+      "userMessage": "211907",
+      "botResponse": "✅ Verification successful!\n\nWelcome to JY Alumni Relations Cell, **Tassaduk Dafedar**! 🌟\n\nYour profile needs completion to connect with 9000+ fellow Yatris.\n\n**Step 1 of 12:** Full Name\n\nPlease enter your full name:\n\nExample: Rajesh Kumar Singh",
+      "context": {
+        "intent": "otp_verification",
+        "topic": "otp_verification",
+        "sessionState": "updating_fullName",
+        "fieldBeingUpdated": "fullName"
+      }
+    },
+    {
+      "id": "f5def2c5-26df-46c3-aa1a-b7324558bba8",
+      "timestamp": "2025-07-18T11:28:19.118Z",
+      "userMessage": "Akash Sambhaji Jadhav",
+      "botResponse": "✅ **Full Name Saved!**\n\n✨ Excellent start!\n\n🟩⬜⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 2/12\n\n**Gender**\n\nSelect your gender:\n\n1. Male\n2. Female  \n3. Others\n\nReply: 1, 2, or 3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_gender",
+        "fieldBeingUpdated": "gender"
+      }
+    },
+    {
+      "id": "ec8bc44a-1067-40eb-ab2f-931672dff1eb",
+      "timestamp": "2025-07-18T11:29:50.863Z",
+      "userMessage": "1",
+      "botResponse": "✅ **Gender Saved!**\n\n✨ Excellent start!\n\n🟩🟩⬜⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 3/12\n\n**Professional Role**\n\nSelect your professional role:\n\n1. Entrepreneur\n2. Student\n3. Working Professional\n4. Startup Founder\n5. NGO Founder\n6. Researcher\n7. Freelancer\n8. Consultant\n\nReply: 1-8",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_professionalRole",
+        "fieldBeingUpdated": "professionalRole"
+      }
+    },
+    {
+      "id": "6ef42274-0aa6-4086-bdcb-1fa2963625f9",
+      "timestamp": "2025-07-18T11:30:01.709Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Professional Role Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜\n**Progress:** 4/12\n\n**Date of Birth**\n\nEnter your date of birth:\n\nFormat: DD MM YYYY\nExamples: 19 07 2000, 19/07/2000, 19-07-2000\n\nAny date format works - I'll understand it.",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "7a933f5d-9550-4a4d-a9e7-6cdfd336ed07",
+      "timestamp": "2025-07-18T11:30:30.282Z",
+      "userMessage": "19 07 200",
+      "botResponse": "Invalid date format",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_dateOfBirth",
+        "fieldBeingUpdated": "dateOfBirth"
+      }
+    },
+    {
+      "id": "50301348-c332-49ab-ba94-9aaf5ea0d652",
+      "timestamp": "2025-07-18T11:30:59.665Z",
+      "userMessage": "19 07 2000",
+      "botResponse": "✅ **Date of Birth Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜\n**Progress:** 5/12\n\n**Country**\n\nEnter your country:\n\nExample: India",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_country",
+        "fieldBeingUpdated": "country"
+      }
+    },
+    {
+      "id": "d3af2b3f-19af-45a7-b5f1-7386cfdea72c",
+      "timestamp": "2025-07-18T11:31:31.508Z",
+      "userMessage": "india",
+      "botResponse": "✅ **Country Saved!**\n\n🚀 Great momentum!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 6/12\n\n**Complete Address**\n\nEnter your complete address:\n\nPlease include: City, State/Province, Country\n\nExamples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka, India\n• New York, NY, USA\n• London, England, UK\n\nJust type your full location details in any format!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_address",
+        "fieldBeingUpdated": "address"
+      }
+    },
+    {
+      "id": "6d20d1b5-05d3-4e18-a199-7c0acb22f153",
+      "timestamp": "2025-07-18T11:31:46.712Z",
+      "userMessage": "chembur 19 mumbai",
+      "botResponse": "✅ **Complete Address Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜\n**Progress:** 7/12\n\n**Mobile Number**\n\nEnter your mobile number with country code:\n\nExamples:\n+91 9876543210\n+1 2025551234\n+44 7911123456",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_phone",
+        "fieldBeingUpdated": "phone"
+      }
+    },
+    {
+      "id": "4eee1fa0-0716-47d7-a7f7-e679aeaf8087",
+      "timestamp": "2025-07-18T11:32:10.830Z",
+      "userMessage": "+91 8970894140",
+      "botResponse": "✅ **Mobile Number Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜\n**Progress:** 8/12\n\n**Industry Domain**\n\nSelect your industry domain:\n\n1. Agriculture\n2. Technology\n3. Healthcare\n4. Education\n5. Finance\n6. Manufacturing\n7. Energy & Sustainability\n8. Transportation & Logistics\n9. Retail & E-commerce\n10. Media & Entertainment\n11. Real Estate & Construction\n12. Telecommunications\n13. Automotive\n14. Aerospace & Defense\n15. Tourism & Hospitality\n16. Food & Beverage\n17. Legal & Compliance\n18. Human Resources & Workforce Development\n19. Social Impact & Nonprofit\n20. Cybersecurity\n\nReply: 1-20",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_domain",
+        "fieldBeingUpdated": "domain"
+      }
+    },
+    {
+      "id": "f6423025-dd42-47dc-8988-06f401b20d2b",
+      "timestamp": "2025-07-18T11:32:30.071Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Industry Domain Saved!**\n\n💪 Halfway champion!\n\n🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜\n**Progress:** 9/12\n\n**LinkedIn Profile**\n\nEnter your LinkedIn profile URL:\n\nExamples:\n- https://linkedin.com/in/yourname\n- linkedin.com/in/yourname\n- yourname (just your LinkedIn username)\n\nAny format works!",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_linkedin",
+        "fieldBeingUpdated": "linkedin"
+      }
+    },
+    {
+      "id": "8a1e5b84-e3af-4a13-9d10-ebb464b9a77c",
+      "timestamp": "2025-07-18T11:33:18.461Z",
+      "userMessage": "https://www.linkedin.com/in/karthiknagpuri/",
+      "botResponse": "✅ **LinkedIn Profile Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜\n**Progress:** 10/12\n\n**Yatra Impact**\n\nHow did Yatra help you personally? (Select multiple)\n\n1. Started Enterprise Post-Yatra\n2. Found Clarity in Journey\n3. Received Funding / Grant\n\nExamples: 1 or 1,2 or 1,2,3",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_yatraImpact",
+        "fieldBeingUpdated": "yatraImpact"
+      }
+    },
+    {
+      "id": "e6be1324-eac9-4010-b288-7c91d74f9acc",
+      "timestamp": "2025-07-18T11:33:46.260Z",
+      "userMessage": "1,2",
+      "botResponse": "✅ **Yatra Impact Saved!**\n\n🔥 On fire! Keep it up!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜\n**Progress:** 11/12\n\n**Community Support Needs**\n\nWhat are your primary support needs from community?\n\n1. Mentorship & Guidance\n2. Funding & Investment Support\n3. Business Partnerships\n4. Job & Hiring Support\n5. Product Feedback & Testing\n6. Market & Customer Insights\n7. Legal & Compliance Help\n8. Technology Development & Support\n9. Publicity & Storytelling Help\n10. Emotional & Peer Support\n11. Other\n\nSelect 1-3 options: Example: 1,3,5",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityAsks",
+        "fieldBeingUpdated": "communityAsks"
+      }
+    },
+    {
+      "id": "f781409f-85dc-4b5f-918c-890243b0b919",
+      "timestamp": "2025-07-18T11:34:03.545Z",
+      "userMessage": "4",
+      "botResponse": "✅ **Community Support Needs Saved!**\n\n🎯 Almost there! Final stretch!\n\n🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩\n**Progress:** 12/12\n\n**Community Contributions**\n\nWhat can you give to the community? (Select up to 3)\n\n1. Mentorship & Guidance\n2. Industry Insights & Best Practices\n3. Community Building & Networking\n4. Legal & Compliance Advice\n5. Technology & Digital Support\n6. Amplification of Ideas & Stories\n7. Market Access & Collaborations\n8. Skill Development Workshops\n9. Job & Internship Opportunities\n10. Investment & Funding Opportunities\n\nExample: 1,3,7",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "updating_communityGives",
+        "fieldBeingUpdated": "communityGives"
+      }
+    },
+    {
+      "id": "7c723da7-6fe3-4930-8873-c8d69e7dfbe6",
+      "timestamp": "2025-07-18T11:34:23.467Z",
+      "userMessage": "7",
+      "botResponse": "✅ **Community Contributions Saved!**\n\n🎉 **PROFILE COMPLETED!**\n\n🎊 Congratulations, Akash! 🎊\n\nYou've unlocked:\n✅ Full access to 9000+ alumni\n✅ Enhanced search capabilities\n✅ Priority in search results\n✅ Complete networking features\n\n🚀 **You're now part of an exclusive network of changemakers!**\n\nReady to make your first connection?\n\n**Try searching for:**\n• Your industry experts\n• Mentors in your field\n• Potential collaborators\n• Alumni in your city\n\nWhat expertise are you looking for today?",
+      "context": {
+        "intent": "profile_input",
+        "topic": "profile_input",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "fd68c822-5b53-42aa-9e8b-1067cb197d49",
+      "timestamp": "2025-07-18T11:36:14.088Z",
+      "userMessage": "i need help in food industry who can help me",
+      "botResponse": "**Vandit Malik**\n**About:** Vandit Malik is an entrepreneur specializing in the integration of technology within the food industry, notably through ...\n📧 malikvandit@gmail.com\n🔗 https://www.linkedin.com/in/vanditmalik/\n\n**Bharti Pahade**\n**About:** Bharti Pahade has dedicated 15 years to producing nutritious, chemical-free baby food under the brand 'Poshak Bal Ahar.'...\n📧 bdpahade17@gmail.com\n\n\n**Kumar S**\n**About:** Kumar S is an agribusiness professional with an MBA in Agribusiness Management, co-founding Bengaluru Mandi to revolutio...\n📧 Kumarreddy1325@gmail.com\n🔗 https://www.linkedin.com/in/kumarreddysrinivasa\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "i need help in food industry who can help me",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "24f75ef2-d052-48b6-bfde-bd0002567b7d",
+      "timestamp": "2025-07-18T11:37:29.055Z",
+      "userMessage": "any more profiles",
+      "botResponse": "Here are more results for \"i need help in food industry who can help me\":\n\nHere are more profiles matching your criteria:\n\n**Vandit Malik**\n**About:** Vandit Malik combines his experience in software development and entrepreneurship to innovate within the food industry. ...\n📧 malikvandit@gmail.com\n🔗 https://www.linkedin.com/in/vanditmalik/\n\n**Bharti Pahade**\n**About:** With over 15 years in the baby food manufacturing sector, Bharti Pahade is committed to providing nutritious and chemica...\n📧 bdpahade17@gmail.com\n\n\n**Kumar S**\n**About:** Kumar S, with an MBA in Agribusiness Management, is dedicated to advancing sustainable agricultural practices. As a co-f...\n📧 Kumarreddy1325@gmail.com\n🔗 https://www.linkedin.com/in/kumarreddysrinivasa",
+      "context": {
+        "intent": "follow_up_search",
+        "topic": "follow_up_search",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "7ac3deed-7835-408a-9720-ca6868ecec49",
+      "timestamp": "2025-07-18T11:40:21.553Z",
+      "userMessage": "i am looking for a graphic designer from pune",
+      "botResponse": "Here are i need help in food industry who can help me from pune:\n\n**Shruti Gupta**\n**About:** Shruti Gupta is a software developer based in Pune, passionate about leveraging technology for educational purposes. Wit...\n📧 shrutigupta4895@gmail.com\n🔗 https://www.linkedin.com/in/shruti-gupta-2b767718b/\n\n**Jayanti Soman**\n**About:** Jayanti Soman is an academician and biotechnology enthusiast with a keen interest in the agriculture and hospitality ind...\n📧 jayilams@yahoo.co.in\n🔗 https://www.linkedin.com/in/jayanthi-ilamurugu-5261722b\n\n**Vandit Malik**\n**About:** Vandit Malik is an entrepreneur who merges technology with culinary innovation, leading The Garlic Bread chain across In...\n📧 malikvandit@gmail.com\n🔗 https://www.linkedin.com/in/vanditmalik/\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "follow_up_search",
+        "topic": "follow_up_search",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "fc2afac2-d328-4355-8d5f-7a46bbe8f285",
+      "timestamp": "2025-07-18T11:42:25.268Z",
+      "userMessage": "i am looking for a graphic designer",
+      "botResponse": "**Kaushal Poddar**\n**About:** Kaushal Poddar is a creative entrepreneur with a focus on developing marketing solutions and web designs. His passion fo...\n📧 kshlkp@gmail.com\n🔗 https://www.linkedin.com/in/kaushal-poddar/\n\n**Saachi Jain**\n**About:** Saachi Jain is a creative professional adept at blending visual design with cultural ideologies. She is committed to ref...\n📧 saachionset@gmail.com\n🔗 https://www.linkedin.com/in/saachi-jain-b3bb39191/\n\n**Ajay Gupta**\n**About:** Ajay Gupta specializes in creating efficient workflow solutions in digital media, ensuring optimal results. His creative...\n📧 queryforajay@gmail.com\n🔗 www.linkedin.com/company/business-with-ajay\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "i am looking for a graphic designer",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "62e2f8ae-177b-42de-96b7-d60966844e28",
+      "timestamp": "2025-07-18T11:42:27.896Z",
+      "userMessage": "i am looking for a graphic designer",
+      "botResponse": "**Kaushal Poddar**\n**About:** Kaushal Poddar is a skilled graphic designer with expertise in crafting marketing solutions, web designs, and multimedia...\n📧 kshlkp@gmail.com\n🔗 https://www.linkedin.com/in/kaushal-poddar/\n\n**Saachi Jain**\n**About:** Saachi Jain is a creative professional who integrates visual design with cultural insights, leveraging modern innovation...\n📧 saachionset@gmail.com\n🔗 https://www.linkedin.com/in/saachi-jain-b3bb39191/\n\n**Ajay Gupta**\n**About:** Ajay Gupta specializes in creating efficient digital media workflow solutions, ensuring optimal outcomes. His commitment...\n📧 queryforajay@gmail.com\n🔗 www.linkedin.com/company/business-with-ajay\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "i am looking for a graphic designer",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "ddcd0cc4-0105-44b1-8009-4829cddef630",
+      "timestamp": "2025-07-18T11:46:19.091Z",
+      "userMessage": "list the profiles who is working in corporate",
+      "botResponse": "Here are i am looking for a graphic designer from corporate:\n\n**Mannat Sidhu**\n**About:** Mannat Sidhu is a graphic designer known for impactful designs with major brands like Maggi and CocaCola. She specialize...\n📧 mannatsidhu1@gmail.com\n🔗 Https://www.linkedin.com/mannatsidhu1\n\n**Kaushal Poddar**\n**About:** Kaushal Poddar brings a blend of creativity and strategic thinking to crafting marketing solutions, web designs, and mul...\n📧 kshlkp@gmail.com\n🔗 https://www.linkedin.com/in/kaushal-poddar/\n\n**Saachi Jain**\n**About:** Saachi Jain is a creative professional focused on integrating visual design with cultural insights to drive impactful pr...\n📧 saachionset@gmail.com\n🔗 https://www.linkedin.com/in/saachi-jain-b3bb39191/\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "follow_up_search",
+        "topic": "follow_up_search",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "9ac8d601-286f-4c88-8792-fb69cf8c8427",
+      "timestamp": "2025-07-18T11:48:39.156Z",
+      "userMessage": "who is the founder of jagriti yatra",
+      "botResponse": "I searched our network but couldn't find alumni matching \"who is the founder of jagriti yatra\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "who is the founder of jagriti yatra",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "e3e46b63-d78a-4748-b82b-b5d86c48d119",
+      "timestamp": "2025-07-18T11:51:54.916Z",
+      "userMessage": "i want to connect with someone who is onto CRM",
+      "botResponse": "I searched our network but couldn't find alumni matching \"i want to connect with someone who is onto CRM\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "i want to connect with someone who is onto CRM",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "1af220f7-55ef-43eb-aa29-113b3db0ae32",
+      "timestamp": "2025-07-18T11:52:22.212Z",
+      "userMessage": "zoho me koi work karta hai",
+      "botResponse": "I searched our network but couldn't find alumni matching \"zoho me koi work karta hai\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "topic": "zoho me koi work karta hai",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "c695211e-422e-4d47-ac9b-3bd569bbc6a2",
+      "timestamp": "2025-07-18T11:52:46.527Z",
+      "userMessage": "anyone who is working in google",
+      "botResponse": "Here are zoho me koi work karta hai from google:\n\n**Rahul Bulchandani**\n**About:** Rahul Bulchandani is a certified Google partner specializing in helping e-commerce businesses grow through strategic Goo...\n📧 rahulbulchandani37@gmail.com\n🔗 https://www.linkedin.com/in/rahul-bulchandani-8b84761b0\n\n**Aditya Malani**\n**About:** Aditya Malani is a software developer and entrepreneur, currently leading Speedy Squirrel, a B2B SaaS company focused on...\n📧 aditya.malani28@gmail.com\n🔗 https://www.linkedin.com/in/aditya-malani-a673a8146/\n\n**Aditya Vyavahare**\n**About:** Aditya Vyavahare is a software engineer with a passion for technology and sustainability, dedicated to integrating innov...\n📧 thealcworldwebsite@gmail.com\n🔗 https://www.linkedin.com/in/vvaditya23\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "follow_up_search",
+        "topic": "follow_up_search",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "cb717d4f-85c2-417f-8034-971413325c49",
+      "timestamp": "2025-07-18T11:55:06.504Z",
+      "userMessage": "i want to meet a yatri who is in jammu kashmir adventure field",
+      "botResponse": "Here are zoho me koi work karta hai from jammu:\n\nI searched our network but couldn't find alumni matching \"zoho me koi work karta hai in jammu\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "follow_up_search",
+        "topic": "follow_up_search",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
+    },
+    {
+      "id": "c7783353-32b7-416b-88c3-42b6a1cbbd40",
+      "timestamp": "2025-07-18T11:55:33.242Z",
+      "userMessage": "anyone from jammu kashmir",
+      "botResponse": "Here are zoho me koi work karta hai from jammu:\n\nI searched our network but couldn't find alumni matching \"zoho me koi work karta hai in jammu\". 🔍\n\nTry these suggestions:\n- Use broader terms: \"technology\", \"business\", \"marketing\"\n- Search by role: \"entrepreneur\", \"developer\", \"consultant\"\n- Search by industry: \"fintech\", \"healthtech\", \"edtech\"\n- Search by location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n- Try different keywords: \"web dev\" instead of \"programming\"\n\nWhat other expertise would be helpful?\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "follow_up_search",
+        "topic": "follow_up_search",
+        "sessionState": "ready",
+        "fieldBeingUpdated": null
+      }
     }
   ],
   "topics": {
-    "casual": 11,
+    "casual": 12,
     "jadhavakashofficial@gmail.com": 1,
-    "otp_verification": 4,
+    "otp_verification": 5,
     "negative": 1,
     "pune": 2,
     "at post ananthpur taluk athani district belagavi": 1,
-    "numeric_input": 4,
+    "numeric_input": 5,
     "https://www.linkedin.com/in/classictechak/": 6,
     "https://linkedin.com/in/yourname": 1,
-    "profile_input": 47,
+    "profile_input": 60,
     "Web developer": 1,
-    "email_input": 6,
+    "email_input": 8,
     "i need help in web development": 2,
     "web developer in the list": 1,
     "affirmative": 2,
     "help in legal matters": 1,
-    "more lawyers in the list ?": 1
+    "more lawyers in the list ?": 1,
+    "i need help in food industry who can help me": 1,
+    "follow_up_search": 6,
+    "i am looking for a graphic designer": 2,
+    "who is the founder of jagriti yatra": 1,
+    "i want to connect with someone who is onto CRM": 1,
+    "zoho me koi work karta hai": 1
   },
   "preferences": {
     "communicationStyle": null,
@@ -1141,11 +1243,16 @@
       "i need help in web development",
       "web developer in the list",
       "help in legal matters",
-      "more lawyers in the list ?"
+      "more lawyers in the list ?",
+      "i need help in food industry who can help me",
+      "i am looking for a graphic designer",
+      "who is the founder of jagriti yatra",
+      "i want to connect with someone who is onto CRM",
+      "zoho me koi work karta hai"
     ]
   },
   "insights": {
-    "totalInteractions": 92,
+    "totalInteractions": 122,
     "averageMessageLength": 0,
     "mostActiveTime": null,
     "frequentQueries": [],
