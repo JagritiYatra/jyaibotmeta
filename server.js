@@ -43,39 +43,39 @@ connectDatabase();
 
 // Graceful shutdown handlers
 process.on('SIGTERM', () => {
-    console.log('🔄 SIGTERM received - shutting down gracefully...');
-    process.exit(0);
+  console.log('🔄 SIGTERM received - shutting down gracefully...');
+  process.exit(0);
 });
 
 process.on('SIGINT', () => {
-    console.log('🔄 SIGINT received - shutting down gracefully...');
-    process.exit(0);
+  console.log('🔄 SIGINT received - shutting down gracefully...');
+  process.exit(0);
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🎉 ===============================================');
-    console.log('🌟 JY ALUMNI NETWORK BOT v3.0 - ENHANCED PROFILE SYSTEM');
-    console.log('🎉 ===============================================\n');
-    
-    console.log('🔧 NEW ENHANCED FEATURES:');
-    console.log('   ✅ Comprehensive Profile Data Collection');
-    console.log('   ✅ AI-Powered Input Validation');
-    console.log('   ✅ Multiple Email Support & Linking');
-    console.log('   ✅ Enhanced Professional Domains');
-    console.log('   ✅ Community Give & Ask System');
-    console.log('   ✅ Modular Architecture for Easy Maintenance\n');
-    
-    console.log('📊 Profile Fields Enhanced:');
-    console.log('   📝 20+ Comprehensive Profile Fields');
-    console.log('   🤖 AI Validation for Each Input');
-    console.log('   📧 Multiple Email Linking Support');
-    console.log('   🌍 Geographic Data Validation');
-    console.log('   🎯 Community Contribution Mapping\n');
-    
-    console.log(`🌐 Server running on port ${PORT}`);
-    console.log('🎯 Ready for enhanced user profile collection! 🎯\n');
+  console.log('\n🎉 ===============================================');
+  console.log('🌟 JY ALUMNI NETWORK BOT v3.0 - ENHANCED PROFILE SYSTEM');
+  console.log('🎉 ===============================================\n');
+
+  console.log('🔧 NEW ENHANCED FEATURES:');
+  console.log('   ✅ Comprehensive Profile Data Collection');
+  console.log('   ✅ AI-Powered Input Validation');
+  console.log('   ✅ Multiple Email Support & Linking');
+  console.log('   ✅ Enhanced Professional Domains');
+  console.log('   ✅ Community Give & Ask System');
+  console.log('   ✅ Modular Architecture for Easy Maintenance\n');
+
+  console.log('📊 Profile Fields Enhanced:');
+  console.log('   📝 20+ Comprehensive Profile Fields');
+  console.log('   🤖 AI Validation for Each Input');
+  console.log('   📧 Multiple Email Linking Support');
+  console.log('   🌍 Geographic Data Validation');
+  console.log('   🎯 Community Contribution Mapping\n');
+
+  console.log(`🌐 Server running on port ${PORT}`);
+  console.log('🎯 Ready for enhanced user profile collection! 🎯\n');
 });
 
 module.exports = app;

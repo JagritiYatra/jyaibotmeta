@@ -117,8 +117,12 @@
     ],
     "env": {
       "node": true,
-      "es6": true,
+      "es2021": true,
       "jest": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2021,
+      "sourceType": "module"
     },
     "rules": {
       "prettier/prettier": "error",
@@ -131,7 +135,14 @@
       ],
       "consistent-return": "off",
       "no-underscore-dangle": "off",
-      "camelcase": "off"
+      "camelcase": "off",
+      "no-use-before-define": ["error", { "functions": false }],
+      "no-plusplus": "off",
+      "no-param-reassign": ["error", { "props": false }],
+      "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+      "no-nested-ternary": "off",
+      "no-restricted-syntax": "off",
+      "radix": ["error", "as-needed"]
     }
   },
   "prettier": {

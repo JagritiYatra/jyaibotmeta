@@ -2,7 +2,7 @@
   "sessionId": "f3e4195a-4ba9-4904-bbd4-d0441465d05b",
   "userId": "+919035304140",
   "startedAt": "2025-07-18T08:48:15.402Z",
-  "lastActivity": "2025-07-18T11:55:32.861Z",
+  "lastActivity": "2025-07-22T22:39:01.510Z",
   "conversationFlow": [
     {
       "id": "fab1dd1c-ecf0-4f52-9fe4-8633e883a12c",
@@ -227,13 +227,41 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "423dc74e-68f3-4302-9165-ef1946faa7f3",
+      "timestamp": "2025-07-22T22:36:55.268Z",
+      "userMessage": "chemical engineering",
+      "botResponse": "**Punit Patel**\n**About:** Punit Patel, an M.Tech graduate in Chemical Engineering from IIT Guwahati, specializes in Materials Science and currentl...\n📧 punitpatel565@gmail.com\n🔗 https://www.linkedin.com/in/punit-patel-17a158201/\n\n**Aditya Ratnaparkhi**\n**About:** Aditya Ratnaparkhi is a chemical engineer focused on sustainable innovations in the coatings industry, notably developin...\n📧 aditya_ratnaparkhi@yahoo.com\n🔗 https://www.linkedin.com/in/aditya-ratnaparkhi-022345208/\n\n**YASH UPASE**\n**About:** Yash Upase, with over three years of experience in the chemical industry, is transitioning to the farming sector to appl...\n📧 upase.yash102@gmail.com\n🔗 https://linkedin.com/in/www.linkedin.com/in/yash-upase-7304751a0\n\n💡 **Quick tips:**\n• Say 'more' to see additional profiles\n• Add location like 'in Mumbai' for local results\n• Specify experience level: 'senior' or 'junior'",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "11d6adfd-a006-4418-a600-6eed343d95d8",
+        "searchQuery": "chemical engineering",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "0dd47f3c-4616-457c-ba92-9cbed87cdd53",
+      "timestamp": "2025-07-22T22:39:01.510Z",
+      "userMessage": "doctors",
+      "botResponse": "Here are more profiles matching your criteria:\n\n**Punit Patel**\n**About:** Punit Patel is an M.Tech graduate in Chemical Engineering with a focus on Materials Science from IIT Guwahati, currently...\n📧 punitpatel565@gmail.com\n🔗 https://www.linkedin.com/in/punit-patel-17a158201/\n\n**Aditya Ratnaparkhi**\n**About:** Aditya Ratnaparkhi, a chemical engineer, is dedicated to sustainable innovations in the coatings industry, having develo...\n📧 aditya_ratnaparkhi@yahoo.com\n🔗 https://www.linkedin.com/in/aditya-ratnaparkhi-022345208/\n\n**YASH UPASE**\n**About:** Yash Upase, a Chemical Engineering graduate, has over three years of industry experience and is now exploring opportunit...\n📧 upase.yash102@gmail.com\n🔗 https://linkedin.com/in/www.linkedin.com/in/yash-upase-7304751a0",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "chemical engineering",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "zoho me koi work karta hai in jammu",
-    "searchQuery": "zoho me koi work karta hai in jammu",
+    "topic": "chemical engineering",
+    "searchQuery": "chemical engineering",
     "searchResults": [],
-    "followUpCount": 5,
+    "followUpCount": 6,
     "relatedQueries": []
   },
   "searchHistory": [
@@ -332,15 +360,29 @@
       "timestamp": "2025-07-18T11:55:32.861Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "chemical engineering",
+      "timestamp": "2025-07-22T22:36:55.269Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "chemical engineering",
+      "timestamp": "2025-07-22T22:39:01.510Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
     "domains": {
-      "design": 3
+      "design": 3,
+      "engineering": 2
     },
     "skills": {
       "developer": 1,
-      "designer": 3
+      "designer": 3,
+      "engineer": 2
     },
     "locations": {
       "pune": 1
@@ -348,8 +390,8 @@
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 16,
-    "followUpSearches": 5,
+    "totalSearches": 18,
+    "followUpSearches": 6,
     "profileViews": 0,
     "averageSessionLength": 0,
     "topicsExplored": {}
