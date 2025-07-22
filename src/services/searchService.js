@@ -46,8 +46,11 @@ const SEARCH_ENHANCEMENT_MAP = {
   finance: 'finance accounting financial analysis investment banking',
 };
 
+// Store shown profiles to prevent duplicates in follow-ups
+const shownProfilesCache = new Map();
+
 // Main comprehensive alumni search function
-async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
+async function comprehensiveAlumniSearch(query, userWhatsApp = null, excludeProfiles = []) {
   try {
     // Check if no relevant profiles found - suggest alternative profiles
     const handleNoResults = async (originalQuery) => {
@@ -69,14 +72,14 @@ async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
               'basicProfile.email': 1,
               'basicProfile.about': 1,
               'basicProfile.linkedin': 1,
-              enhancedProfile: 1,
+              'enhancedProfile': 1,
             },
           },
         ])
         .toArray();
 
       if (suggestions.length > 0) {
-        const response = `No exact matches for "${originalQuery}", but here are 2 alumni you might find interesting:\n\n`;
+        let response = `No exact matches for "${originalQuery}"\n\nSimilar professionals you might find helpful:\n\n`;
         const formattedSuggestions = await generateCleanSearchResponse(
           suggestions,
           originalQuery,
@@ -85,7 +88,7 @@ async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
         return response + formattedSuggestions;
       }
 
-      return generateNoResultsResponse(originalQuery);
+      return `No profiles found for "${originalQuery}".\n\nTry different keywords or broader search terms.`;
     };
     const db = getDatabase();
     if (!db) {
@@ -104,7 +107,7 @@ async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
     const keywords = await extractSearchKeywords(correctedQuery);
 
     // Step 2: Database search with enhanced queries
-    const searchResults = await performDatabaseSearch(keywords, userWhatsApp);
+    const searchResults = await performDatabaseSearch(keywords, userWhatsApp, excludeProfiles);
 
     if (searchResults.length === 0) {
       return await handleNoResults(sanitizedQuery);
@@ -117,7 +120,14 @@ async function comprehensiveAlumniSearch(query, userWhatsApp = null) {
     const enhancedResults = await enhanceProfilesWithAI(topResults, sanitizedQuery);
 
     // Step 5: Generate clean, focused response
-    const response = await generateCleanSearchResponse(enhancedResults, sanitizedQuery);
+    const response = await generateCleanSearchResponse(enhancedResults, sanitizedQuery, userWhatsApp);
+    
+    // Track shown profiles to prevent duplicates in follow-ups
+    if (userWhatsApp && topResults.length > 0) {
+      const shownEmails = topResults.map(r => r.basicProfile?.email).filter(Boolean);
+      const currentShown = shownProfilesCache.get(userWhatsApp) || [];
+      shownProfilesCache.set(userWhatsApp, [...currentShown, ...shownEmails]);
+    }
 
     // Step 6: Log search for analytics
     await logUserQuery(
@@ -230,10 +240,14 @@ function extractKeywordsFallback(query) {
 }
 
 // Enhanced database search
-async function performDatabaseSearch(keywords, userWhatsApp = null) {
+async function performDatabaseSearch(keywords, userWhatsApp = null, excludeProfiles = []) {
   try {
     const db = getDatabase();
     const regexPattern = keywords.join('|');
+
+    // Get previously shown profiles for this user
+    const shownProfiles = shownProfilesCache.get(userWhatsApp) || [];
+    const excludeEmails = [...new Set([...shownProfiles, ...(excludeProfiles || [])])];
 
     // Build search query
     const searchQuery = {
@@ -253,6 +267,10 @@ async function performDatabaseSearch(keywords, userWhatsApp = null) {
             { 'enhancedProfile.yatraImpact': { $regex: regexPattern, $options: 'i' } },
           ],
         },
+        // Exclude previously shown profiles
+        ...(excludeEmails.length > 0
+          ? [{ 'basicProfile.email': { $nin: excludeEmails } }]
+          : []),
         // Exclude the searching user
         ...(userWhatsApp
           ? [
@@ -536,17 +554,38 @@ ${JSON.stringify(
 }
 
 // Generate clean, focused search response with length limit handling
-async function generateCleanSearchResponse(results, originalQuery) {
+async function generateCleanSearchResponse(results, originalQuery, userWhatsapp = null) {
   try {
     if (results.length === 0) {
       return generateNoResultsResponse(originalQuery);
     }
 
     const MAX_MESSAGE_LENGTH = 1500; // Leave some buffer for WhatsApp limit
+    const INITIAL_PROFILES_TO_SHOW = 2; // Show 2 complete profiles initially
     let response = '';
     let addedProfiles = 0;
 
-    for (let i = 0; i < results.length; i++) {
+    // If more than 2 results, store extras for later
+    if (results.length > INITIAL_PROFILES_TO_SHOW && userWhatsapp) {
+      const db = getDatabase();
+      await db.collection('search_overflow').updateOne(
+        { whatsappNumber: userWhatsapp },
+        {
+          $set: {
+            remainingResults: results.slice(INITIAL_PROFILES_TO_SHOW),
+            originalQuery,
+            timestamp: new Date(),
+            totalResults: results.length
+          }
+        },
+        { upsert: true }
+      );
+    }
+
+    // Show only initial profiles to prevent truncation
+    const profilesToShow = results.slice(0, INITIAL_PROFILES_TO_SHOW);
+
+    for (let i = 0; i < profilesToShow.length; i++) {
       const user = results[i];
       const basicProfile = user.basicProfile || {};
       const enhancedProfile = user.enhancedProfile || {};
@@ -570,20 +609,44 @@ async function generateCleanSearchResponse(results, originalQuery) {
       const { email } = enhancedProfileData;
       const { linkedin } = enhancedProfileData;
 
-      // Truncate about section if too long
-      if (about.length > 120) {
-        about = `${about.substring(0, 120)}...`;
+      // Show complete about section without truncation
+
+      // Build profile string with COMPLETE information
+      let profileString = `**${name}**\n`;
+      
+      // Add professional role and company if available
+      if (enhancedProfile.professionalRole) {
+        profileString += `💼 ${enhancedProfile.professionalRole}`;
+        if (enhancedProfile.company || enhancedProfile.organization) {
+          profileString += ` at ${enhancedProfile.company || enhancedProfile.organization}`;
+        }
+        profileString += '\n';
+      }
+      
+      // Add location if available
+      if (enhancedProfile.city || enhancedProfile.state) {
+        profileString += `📍 ${enhancedProfile.city || ''}${enhancedProfile.city && enhancedProfile.state ? ', ' : ''}${enhancedProfile.state || ''}\n`;
       }
 
-      // Build profile string
-      let profileString = `**${name}**\n`;
-
+      // Add complete about section
       if (about && about.length > 10) {
         profileString += `**About:** ${about}\n`;
       }
+      
+      // Add skills/domain if available
+      if (enhancedProfile.domain || enhancedProfile.skills) {
+        profileString += `🎯 **Skills:** ${enhancedProfile.domain || enhancedProfile.skills}\n`;
+      }
+      
+      // Add what they can give to community
+      if (enhancedProfile.communityGives && enhancedProfile.communityGives.length > 0) {
+        profileString += `🤝 **Can help with:** ${enhancedProfile.communityGives.slice(0, 2).join(', ')}\n`;
+      }
 
+      // Add complete email
       profileString += `📧 ${email}\n`;
 
+      // Add complete LinkedIn URL
       if (linkedin) {
         // Ensure LinkedIn URL is complete
         const linkedinUrl = linkedin.startsWith('http')
@@ -615,13 +678,23 @@ async function generateCleanSearchResponse(results, originalQuery) {
       addedProfiles++;
     }
 
-    // Add footer if we couldn't fit all results
-    if (addedProfiles < results.length) {
-      const remainingCount = results.length - addedProfiles;
-      const footerMessage = `\n\n📋 +${remainingCount} more result${remainingCount > 1 ? 's' : ''} found. Try a more specific search to see other matches.`;
-
-      if (response.length + footerMessage.length <= MAX_MESSAGE_LENGTH) {
-        response += footerMessage;
+    // Store remaining results for "show more" functionality without showing the prompts
+    if (results.length > INITIAL_PROFILES_TO_SHOW) {
+      // Store overflow results in database for "show more" requests
+      try {
+        const db = getDatabase();
+        await db.collection('search_overflow').replaceOne(
+          { whatsappNumber: userWhatsApp },
+          {
+            whatsappNumber: userWhatsApp,
+            remainingResults: results.slice(INITIAL_PROFILES_TO_SHOW),
+            originalQuery,
+            timestamp: new Date()
+          },
+          { upsert: true }
+        );
+      } catch (error) {
+        // Fail silently - main search still works
       }
     }
 
@@ -634,16 +707,15 @@ async function generateCleanSearchResponse(results, originalQuery) {
 
 // Generate no results response with suggestions
 function generateNoResultsResponse(query) {
-  return `I searched our network but couldn't find alumni matching "${query}". 🔍
+  return `No exact matches for "${query}" found.
 
-Try these suggestions:
-- Use broader terms: "technology", "business", "marketing"
-- Search by role: "entrepreneur", "developer", "consultant"
-- Search by industry: "fintech", "healthtech", "edtech"
-- Search by location: "Mumbai", "Bangalore", "Delhi"
-- Try different keywords: "web dev" instead of "programming"
+Try:
+• Broader terms: "developer", "business", "marketing"
+• By role: "entrepreneur", "consultant", "founder"
+• By industry: "fintech", "healthtech", "edtech"
+• By location: "Mumbai", "Bangalore", "Delhi"
 
-What other expertise would be helpful?`;
+What expertise are you looking for?`;
 }
 
 // Generate error responses

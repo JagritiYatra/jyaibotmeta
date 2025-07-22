@@ -75,11 +75,14 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
       return await handleInstagramURLInput(userMessage, intent, userSession, whatsappNumber);
     }
 
-    // PRIORITY 4: Handle AI-detected intents (casual chat, Jagriti info, general knowledge)
+    // PRIORITY 4: Handle AI-detected intents (casual chat, Jagriti info, general knowledge, knowledge_and_connect, show_more_results, policy violations)
     if (
       intent.type === 'casual_chat' ||
       intent.type === 'jagriti_info' ||
-      intent.type === 'general_knowledge'
+      intent.type === 'general_knowledge' ||
+      intent.type === 'knowledge_and_connect' ||
+      intent.type === 'show_more_results' ||
+      intent.type === 'policy_violation'
     ) {
       // Don't handle casual chat if we're waiting for profile input
       if (userSession.waiting_for && userSession.waiting_for.includes('updating_')) {
@@ -111,6 +114,32 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
           whatsappNumber
         );
         return knowledgeResponse;
+      }
+
+      if (intent.type === 'knowledge_and_connect') {
+        // Handle "define X and connect" queries
+        const response = await UnifiedIntelligenceService.generateResponse(
+          userMessage,
+          intent,
+          whatsappNumber,
+          { profiles: [] }
+        );
+        return response;
+      }
+
+      if (intent.type === 'show_more_results') {
+        // Handle "show more" requests
+        const response = await UnifiedIntelligenceService.generateResponse(
+          userMessage,
+          intent,
+          whatsappNumber,
+          {}
+        );
+        return response;
+      }
+
+      if (intent.type === 'policy_violation') {
+        return UnifiedIntelligenceService.generatePolicyViolationResponse();
       }
     }
 
@@ -861,14 +890,45 @@ ${generateCompletionCelebration(firstName)}`;
 function generateProgressBar(percentage) {
   const filled = Math.floor(percentage / 10);
   const empty = 10 - filled;
-  return '█'.repeat(filled) + '░'.repeat(empty);
+  
+  // Enhanced visual progress bar with emojis
+  let progressBar = '';
+  for (let i = 0; i < 10; i++) {
+    if (i < filled) {
+      progressBar += '🟩';
+    } else {
+      progressBar += '⬜';
+    }
+  }
+  
+  // Add milestone indicators
+  let milestone = '';
+  if (percentage === 100) {
+    milestone = ' 🏆 COMPLETE!';
+  } else if (percentage >= 75) {
+    milestone = ' 🎯 Almost there!';
+  } else if (percentage >= 50) {
+    milestone = ' 💪 Halfway!';
+  } else if (percentage >= 25) {
+    milestone = ' 🚀 Great start!';
+  }
+  
+  return progressBar + milestone;
 }
 
 function generateFieldProgressBar(current, total) {
   const percentage = Math.floor((current / total) * 100);
   const filled = Math.floor(percentage / 10);
   const empty = 10 - filled;
-  return '🟩'.repeat(filled) + '⬜'.repeat(empty);
+  
+  // Visual progress with milestone celebrations
+  let bar = '🟩'.repeat(filled) + '⬜'.repeat(empty);
+  
+  // Add time estimate
+  const remainingFields = total - current;
+  const timeEstimate = remainingFields <= 3 ? 'Just 2-3 minutes left!' : `About ${remainingFields} minutes to go`;
+  
+  return `${bar} ${percentage}% | ${timeEstimate}`;
 }
 
 function getTimeBasedEmoji() {
@@ -880,20 +940,62 @@ function getTimeBasedEmoji() {
 
 function getCelebrationMessage(currentStep, totalSteps) {
   const percentage = Math.floor((currentStep / totalSteps) * 100);
-
-  if (percentage >= 90) return '🎯 Almost there! Final stretch!';
-  if (percentage >= 75) return '🔥 On fire! Keep it up!';
-  if (percentage >= 50) return '💪 Halfway champion!';
-  if (percentage >= 25) return '🚀 Great momentum!';
-  return '✨ Excellent start!';
+  const completedFields = currentStep;
+  
+  // Enhanced celebrations with specific achievements
+  if (percentage === 100) {
+    return `🎉 **PROFILE COMPLETE!** Welcome to the elite club!\n🏆 Achievement Unlocked: Network Master\n✨ 9000+ connections now available!`;
+  }
+  if (percentage >= 90) {
+    return `🎯 **${completedFields} fields done!** Just ${totalSteps - currentStep} more!\n🔥 You're unstoppable!`;
+  }
+  if (percentage >= 75) {
+    return `🌟 **75% Milestone!** ${completedFields} fields completed!\n💎 Achievement: Almost There!`;
+  }
+  if (percentage >= 50) {
+    return `💪 **HALFWAY HERO!** ${completedFields}/${totalSteps} fields done!\n🎖️ Achievement: Persistence Pays!`;
+  }
+  if (percentage >= 25) {
+    return `🚀 **25% Milestone!** Great momentum with ${completedFields} fields!\n⭐ Achievement: Quick Starter!`;
+  }
+  return `✨ **Journey Started!** ${completedFields} field${completedFields > 1 ? 's' : ''} completed!`;
 }
 
 function getMotivationalTip(percentage) {
-  if (percentage >= 80) return '💡 So close! Just a few more fields to unlock 9000+ connections!';
-  if (percentage >= 60) return "🌟 You're doing great! Each field helps alumni find you better.";
-  if (percentage >= 40) return '🎯 Keep going! Your complete profile attracts better connections.';
-  if (percentage >= 20) return '🚀 Building your professional presence step by step!';
-  return '✨ Every field you complete makes your profile stronger!';
+  const motivations = {
+    80: [
+      '💡 So close! Just a few more fields to unlock 9000+ connections!',
+      '🎯 Almost done! Your complete profile = more opportunities!',
+      '🔥 Final stretch! Each field increases your visibility!'
+    ],
+    60: [
+      "🌟 You're doing great! Each field helps alumni find you better.",
+      '💪 Over halfway! Your network is waiting to connect!',
+      '🚀 Keep it up! Complete profiles get 3x more connections!'
+    ],
+    40: [
+      '🎯 Keep going! Your complete profile attracts better connections.',
+      '⭐ Nice progress! Every field adds value to your profile.',
+      '💎 Building momentum! The best connections await!'
+    ],
+    20: [
+      '🚀 Building your professional presence step by step!',
+      '✨ Great start! Each field opens new opportunities.',
+      '🌱 Growing your network one field at a time!'
+    ],
+    0: [
+      '✨ Every field you complete makes your profile stronger!',
+      '🎯 Start your journey to 9000+ alumni connections!',
+      '🚀 Your professional network awaits - let\'s build your profile!'
+    ]
+  };
+  
+  // Find appropriate motivation tier
+  const tier = percentage >= 80 ? 80 : percentage >= 60 ? 60 : percentage >= 40 ? 40 : percentage >= 20 ? 20 : 0;
+  const tierMotivations = motivations[tier];
+  
+  // Return random motivation from tier
+  return tierMotivations[Math.floor(Math.random() * tierMotivations.length)];
 }
 
 function generateSearchingMessage(query) {
@@ -923,23 +1025,39 @@ function generateSearchSuggestions(user) {
 }
 
 function generateCompletionCelebration(firstName) {
-  return `🎉 **PROFILE COMPLETED!**
+  const celebrations = [
+    '🎉🎊🎉', '🏆🌟🏆', '✨💫✨', '🚀🔥🚀', '💎🎯💎'
+  ];
+  const randomCelebration = celebrations[Math.floor(Math.random() * celebrations.length)];
+  
+  return `${randomCelebration} **PROFILE COMPLETED!** ${randomCelebration}
 
-🎊 Congratulations, ${firstName}! 🎊
+🎊 **Congratulations, ${firstName}!** 🎊
+You're officially a verified alumni member!
 
-You've unlocked:
-✅ Full access to 9000+ alumni
-✅ Enhanced search capabilities
-✅ Priority in search results
-✅ Complete networking features
+**🏆 ACHIEVEMENTS UNLOCKED:**
+⭐ **Network Master** - 100% profile completion
+🔓 **Full Access** - 9000+ alumni connections
+🎯 **Search Pro** - Advanced search features
+💎 **Elite Member** - Priority in results
+🚀 **Changemaker** - Part of exclusive network
 
-🚀 **You're now part of an exclusive network of changemakers!**
+**📊 YOUR STATS:**
+✅ Profile: 100% Complete
+✅ Status: Verified Alumni
+✅ Network: 9000+ Connections
+✅ Rank: Top 10% Early Adopters
 
-Ready to make your first connection?
+**🎁 BONUS UNLOCKED:**
+• First search gives 5 premium results
+• Weekly featured alumni updates
+• Priority support access
 
-**Try searching for:**
+Ready to explore your network? 
+
+**🔥 Quick Start Searches:**
 • Your industry experts
-• Mentors in your field
+• Mentors in your field  
 • Potential collaborators
 • Alumni in your city
 

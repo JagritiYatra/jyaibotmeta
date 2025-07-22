@@ -180,23 +180,7 @@ class ContextAwareSearchService {
   static async generateSmartSuggestions(searchContext, userContext) {
     const suggestions = [];
 
-    if (searchContext.isFollowUp && userContext.followUpCount < 3) {
-      suggestions.push('💡 **Try these refinements:**');
-
-      if (!searchContext.refinements.includes('senior')) {
-        suggestions.push("• Type 'senior' for experienced professionals");
-      }
-      if (!searchContext.refinements.includes('startup')) {
-        suggestions.push("• Type 'startup' for those with startup experience");
-      }
-      suggestions.push("• Type 'different' to see other profiles");
-      suggestions.push('• Ask for specific skills or locations');
-    } else if (!searchContext.isFollowUp) {
-      suggestions.push('💡 **Quick tips:**');
-      suggestions.push("• Say 'more' to see additional profiles");
-      suggestions.push("• Add location like 'in Mumbai' for local results");
-      suggestions.push("• Specify experience level: 'senior' or 'junior'");
-    }
+    // Remove all quick tips as requested by user
 
     return suggestions.length > 1 ? suggestions.join('\n') : null;
   }

@@ -32,21 +32,23 @@ class UnifiedIntelligenceService {
     }
 
     try {
-      // Get conversation context from MongoDB
+      // Get minimal conversation context to prevent session confusion
       const context = await this.getConversationContext(whatsappNumber);
 
       const systemPrompt = `You are an intelligent assistant for Jagriti Yatra alumni network.
             
-Analyze the user's message considering their last 3 messages for context.
+Analyze the user's message considering ONLY their last 1 message for context.
 
 Determine:
 1. Primary intent - Choose the MOST appropriate:
    - "casual_chat" - Greetings, thanks, how are you, general conversation
    - "jagriti_info" - Questions about Jagriti Yatra, JECP, team, vision, route
    - "general_knowledge" - Questions like "what is X", "tell me about Y"
+   - "knowledge_and_connect" - When user asks to "define/explain X AND connect" or "what is X and can you connect"
    - "profile_search" - Looking for people/alumni with skills, asking "can you find someone", "any X in the list", "help me find", "is there anyone"
    - "location_search" - Looking for people from specific places
    - "follow_up_search" - Asking for people after learning about a topic (e.g., after asking about chemical engineering, then asking "find someone from this domain")
+   - "show_more_results" - When user says "show more", "more results", "next", "show remaining"
 
 2. Extract key information:
    - searchTerms: Skills/expertise they're looking for
@@ -54,11 +56,15 @@ Determine:
    - topic: Main subject of discussion
    - isFollowUp: true if continuing previous conversation
    - needsProfiles: true if response should include profile suggestions
+   - wantsDefinitionAndConnect: true if user asks for both definition AND connections
    
 IMPORTANT: If user asks variations of "can you help find someone", "any X in the list", "someone from this domain/field" - mark intent as profile_search
 If the previous message was about a topic and now they ask for "someone from this domain" - use the topic as searchTerms
+If user asks "define/explain X AND connect" or "what is X and can you connect me" - mark intent as knowledge_and_connect with wantsDefinitionAndConnect: true
 
-Context of last 3 messages: ${JSON.stringify(context.recentMessages)}
+POLICY: If user asks about adult content, sex, girlfriend/boyfriend in inappropriate context, politics, or religion - mark intent as "policy_violation"
+
+Recent context (last 1-2 messages): ${JSON.stringify(context.recentMessages.slice(0, 2) || [])}
 
 Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, confidence}`;
 
@@ -115,7 +121,7 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
     }
 
     try {
-      // Get user context and history
+      // Get user context and history - ONLY previous 1-2 messages to prevent session issues
       const context = await this.getConversationContext(whatsappNumber);
 
       switch (intent.intent) {
@@ -126,7 +132,11 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
           return await this.generateJagritiResponse(message, context);
 
         case 'general_knowledge':
-          return await this.generateKnowledgeResponse(message, context, additionalContext.profiles);
+          return await this.generateKnowledgeResponse(message, context);
+
+        case 'knowledge_and_connect':
+          // Handle "define X and connect" queries
+          return await this.generateKnowledgeAndConnectResponse(message, context, intent);
 
         case 'profile_search':
         case 'location_search':
@@ -134,6 +144,12 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
 
         case 'follow_up':
           return await this.generateFollowUpResponse(message, intent, context);
+
+        case 'show_more_results':
+          return await this.generateShowMoreResponse(whatsappNumber);
+
+        case 'policy_violation':
+          return this.generatePolicyViolationResponse();
 
         default:
           return await this.generateSmartFallback(message, context);
@@ -146,13 +162,20 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
 
   // Generate natural casual conversation response
   static async generateCasualResponse(message, context) {
-    const systemPrompt = `You are a friendly, warm chatbot for Jagriti Yatra alumni.
+    const systemPrompt = `You are a friendly alumni network assistant. Be human, warm, and conversational.
 
-Generate a SHORT (1-2 lines), natural response to the user's message.
-Be conversational and engaging. If appropriate, gently guide toward using bot features.
-Use maximum 1 emoji. Be warm but professional.
+Rules:
+- Keep responses VERY SHORT (5-15 words max)
+- Sound natural, like texting a friend
+- Use casual language without being unprofessional
+- NO explanations or elaborations
+- If asked how you are: give a short, human response
+- For greetings: warm but brief acknowledgment
 
-User's recent context: ${JSON.stringify(context.summary)}`;
+Examples:
+User: "how are you" → "Doing great! How about you?"
+User: "thanks" → "Happy to help! 😊"
+User: "what's up" → "Hey! Ready to help you connect!"`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -160,15 +183,21 @@ User's recent context: ${JSON.stringify(context.summary)}`;
         { role: 'system', content: systemPrompt },
         { role: 'user', content: message },
       ],
-      temperature: 0.8,
-      max_tokens: 100,
+      temperature: 0.9,
+      max_tokens: 30,
     });
 
     return completion.choices[0].message.content;
   }
 
-  // Generate Jagriti Yatra information response
+  // Generate Jagriti Yatra information response - Direct search and answer
   static async generateJagritiResponse(message, context) {
+    // Use AI search to get latest Jagriti info directly
+    try {
+      return await require('../services/jagritiYatraKnowledge').JagritiYatraKnowledgeService.getFormattedResponse(message);
+    } catch (error) {
+      // Fallback to knowledge base
+    }
     const jagritiKnowledge = {
       overview:
         'Jagriti Yatra is a 15-day, 8000km train journey across India for 450 young changemakers to meet social and business entrepreneurs.',
@@ -201,9 +230,9 @@ Be inspiring, accurate, and concise. Focus on impact and transformation.`;
   }
 
   // Generate general knowledge response with profile suggestions
-  static async generateKnowledgeResponse(message, context, availableProfiles = []) {
-    const systemPrompt = `Answer this question concisely in EXACTLY 5 lines.
-Be informative, practical, and helpful. Each line should add value.`;
+  static async generateKnowledgeResponse(message, context) {
+    const systemPrompt = `Answer this question concisely in EXACTLY 4 lines.
+Be informative, practical, and helpful. Make it casual and engaging.`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -217,15 +246,16 @@ Be informative, practical, and helpful. Each line should add value.`;
 
     let response = completion.choices[0].message.content;
 
-    // Find relevant profiles if available
-    if (availableProfiles && availableProfiles.length > 0) {
-      const relevantProfiles = await this.findRelevantProfiles(message, availableProfiles);
-      if (relevantProfiles.length > 0) {
-        response += '\n\n**Alumni who might help:**';
-        relevantProfiles.forEach((profile) => {
-          response += `\n• ${profile.name} - ${profile.enhancedAbout || profile.about}`;
-        });
+    // Auto-search for relevant alumni profiles using search service
+    try {
+      const searchService = require('./searchService');
+      const searchResults = await searchService.comprehensiveAlumniSearch(message, context.whatsappNumber || 'system');
+      
+      if (searchResults && typeof searchResults === 'string' && searchResults.length > 100) {
+        response += '\n\n**Related Alumni:**\n\n' + searchResults;
       }
+    } catch (error) {
+      // If search fails, continue with just the knowledge response
     }
 
     return response;
@@ -333,12 +363,12 @@ Return only the indices as JSON array like [0, 5].`;
     try {
       const db = getDatabase();
 
-      // Get user's recent messages from MongoDB
+      // Get user's recent messages from MongoDB - ONLY LAST 2 MESSAGES to prevent session issues
       const recentMessages = await db
         .collection('conversations')
         .find({ whatsappNumber })
         .sort({ timestamp: -1 })
-        .limit(3)
+        .limit(2)
         .toArray();
 
       // Get user's last search
@@ -533,6 +563,91 @@ Write an engaging bio highlighting their expertise.`;
     } catch (error) {
       return `${profile.professionalRole || 'Professional'} with expertise in ${profile.skills || 'various fields'}.`;
     }
+  }
+
+  // Generate show more results response
+  static async generateShowMoreResponse(whatsappNumber) {
+    try {
+      const db = getDatabase();
+      
+      // Get stored overflow results
+      const overflowData = await db.collection('search_overflow').findOne({ whatsappNumber });
+      
+      if (!overflowData || !overflowData.remainingResults || overflowData.remainingResults.length === 0) {
+        return "No additional results to show. Try a new search!";
+      }
+      
+      // Check if results are still fresh (within 10 minutes)
+      const resultAge = (new Date() - new Date(overflowData.timestamp)) / 1000 / 60;
+      if (resultAge > 10) {
+        await db.collection('search_overflow').deleteOne({ whatsappNumber });
+        return "Previous search results have expired. Please perform a new search!";
+      }
+      
+      // Generate response for remaining results
+      const searchService = require('./searchService');
+      const response = await searchService.generateCleanSearchResponse(
+        overflowData.remainingResults,
+        overflowData.originalQuery,
+        whatsappNumber
+      );
+      
+      // Clear the overflow after showing
+      await db.collection('search_overflow').deleteOne({ whatsappNumber });
+      
+      return `**Remaining results for "${overflowData.originalQuery}":**\n\n${response}`;
+    } catch (error) {
+      logError('Generate show more response error:', error);
+      return "Unable to retrieve additional results. Please try a new search!";
+    }
+  }
+
+  // Generate knowledge and connect response
+  static async generateKnowledgeAndConnectResponse(message, context) {
+    try {
+      // Extract the topic from the message
+      const topicMatch = message.match(/(?:define|explain|what is|tell me about)\s+(.+?)(?:\s+and\s+(?:can\s+)?connect|$)/i);
+      const topic = topicMatch ? topicMatch[1] : intent.topic || message;
+      
+      // First, generate the knowledge response
+      const knowledgePrompt = `Answer this question concisely in EXACTLY 5 lines.
+Be informative, practical, and helpful. Each line should add value.`;
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: knowledgePrompt },
+          { role: 'user', content: `What is ${topic}?` },
+        ],
+        temperature: 0.6,
+        max_tokens: 200,
+      });
+
+      let response = completion.choices[0].message.content;
+      
+      // Now search for relevant profiles
+      const searchService = require('./searchService');
+      const searchResults = await searchService.comprehensiveAlumniSearch(topic, context.whatsappNumber);
+      
+      // Combine the knowledge response with the search results
+      response += '\n\n**Alumni who can help with ' + topic + ':**\n\n';
+      response += searchResults;
+      
+      return response;
+    } catch (error) {
+      logError('Generate knowledge and connect response error:', error);
+      // Fallback to regular knowledge response
+      return await this.generateKnowledgeResponse(message, context);
+    }
+  }
+
+  // Generate policy violation response
+  static generatePolicyViolationResponse() {
+    return `I understand you're looking for help, but I can't assist with topics related to adult content, inappropriate relationships, politics, or religious discussions.
+
+I'm here to help you connect with Jagriti Yatra alumni for professional networking, career guidance, and business opportunities.
+
+How can I help you with your professional journey today?`;
   }
 }
 

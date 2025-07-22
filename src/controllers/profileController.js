@@ -173,7 +173,53 @@ Example: 1,3,7`,
   }
 }
 
-// Enhanced field validation with strict rules
+// Get progressive error message based on attempt count
+function getProgressiveErrorMessage(fieldName, baseMessage, attempt, value = '') {
+  const messages = {
+    fullName: [
+      baseMessage,
+      `${baseMessage}\n\n💡 Example: Priya Sharma or Amit Kumar Singh`,
+      `${baseMessage}\n\n💡 Examples:\n• Priya Sharma\n• Amit Kumar Singh\n• Dr. Rajesh Verma\n\nJust type your complete name (first & last name).`,
+      `I see you're having trouble. Let me help!\n\nYour full name should have:\n✓ First name and last name\n✓ Only letters and spaces\n✗ No numbers or special characters\n\nExample: If your name is Priya, type "Priya Sharma"\n\nOr type "skip" to continue.`
+    ],
+    phone: [
+      baseMessage,
+      `${baseMessage}\n\n💡 Examples:\n• +91 9876543210\n• 9876543210`,
+      `${baseMessage}\n\n💡 Phone format help:\n• India: +91 9876543210 or 9876543210\n• USA: +1 2025551234\n• UK: +44 7911123456\n\nJust type your number with country code!`,
+      `Let me help with your phone number!\n\nFormat: [Country Code] [Number]\n\nFor India: +91 followed by 10 digits\nExample: +91 9876543210\n\nYou entered: "${value}"\n${value.length < 10 ? 'Too short - needs 10 digits' : ''}\n${!/^\+?[0-9\s-]+$/.test(value) ? 'Only numbers allowed' : ''}\n\nOr type "skip" to continue.`
+    ],
+    email: [
+      baseMessage,
+      `${baseMessage}\n\n💡 Example: priya.sharma@gmail.com`,
+      `${baseMessage}\n\n💡 Email examples:\n• yourname@gmail.com\n• firstname.lastname@company.com\n• name123@yahoo.com\n\nMake sure to include @ and domain!`,
+      `I see the issue with your email!\n\nYou entered: "${value}"\n${!value.includes('@') ? '❌ Missing @ symbol' : ''}\n${!value.includes('.') ? '❌ Missing domain (.com, .in, etc)' : ''}\n\nCorrect format: username@domain.com\n\nExamples:\n• priya@gmail.com\n• amit.kumar@company.in\n\nOr type "skip" to continue.`
+    ],
+    dateOfBirth: [
+      baseMessage,
+      `${baseMessage}\n\n💡 Examples: 15 08 1995 or 15/08/1995`,
+      `${baseMessage}\n\n💡 Date formats accepted:\n• 15 08 1995\n• 15/08/1995\n• 15-08-1995\n• 15-Aug-1995\n\nJust type day, month, and year in any format!`,
+      `Let me help with your birth date!\n\nYou entered: "${value}"\n\nAccepted formats:\n✓ DD MM YYYY (15 08 1995)\n✓ DD/MM/YYYY (15/08/1995)\n✓ DD-MM-YYYY (15-08-1995)\n\nMake sure:\n• Day: 1-31\n• Month: 1-12\n• Year: 1950-2010\n\nOr type "skip" to continue.`
+    ],
+    linkedin: [
+      baseMessage,
+      `${baseMessage}\n\n💡 Examples:\n• https://linkedin.com/in/johndoe\n• johndoe`,
+      `${baseMessage}\n\n💡 LinkedIn format:\n• Full URL: https://linkedin.com/in/yourname\n• Short URL: linkedin.com/in/yourname\n• Just username: yourname\n\nAny format works!`,
+      `Let me help with your LinkedIn!\n\nYou entered: "${value}"\n\nAccepted formats:\n✓ https://linkedin.com/in/priya-sharma\n✓ linkedin.com/in/priya-sharma\n✓ priya-sharma\n✓ Just your LinkedIn username\n\nDon't have LinkedIn? Type "skip" to continue.`
+    ],
+    address: [
+      baseMessage,
+      `${baseMessage}\n\n💡 Example: Mumbai, Maharashtra, India`,
+      `${baseMessage}\n\n💡 Location examples:\n• Mumbai, Maharashtra, India\n• Bangalore, Karnataka\n• New York, USA\n• Just your city and state`,
+      `Let me help with your location!\n\nJust type your city, state, and country:\n\nExamples:\n• Mumbai, Maharashtra, India\n• Delhi, India\n• Pune, Maharashtra\n• San Francisco, CA, USA\n\nYou can type it in any format you prefer!\n\nOr type "skip" to continue.`
+    ]
+  };
+
+  const fieldMessages = messages[fieldName] || [baseMessage];
+  const messageIndex = Math.min(attempt - 1, fieldMessages.length - 1);
+  return fieldMessages[messageIndex];
+}
+
+// Enhanced field validation with progressive error messages
 async function validateProfileField(fieldName, value, userSession = {}) {
   try {
     const cleanValue = sanitizeInput(value);
@@ -184,6 +230,8 @@ async function validateProfileField(fieldName, value, userSession = {}) {
     if (!userSession.attempts) userSession.attempts = {};
     if (!userSession.attempts[fieldName]) userSession.attempts[fieldName] = 0;
     userSession.attempts[fieldName]++;
+    
+    const attempt = userSession.attempts[fieldName];
 
     switch (fieldName) {
       case 'fullName':
@@ -191,7 +239,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         if (!nameResult.valid) {
           return {
             valid: false,
-            message: nameResult.message,
+            message: getProgressiveErrorMessage('fullName', nameResult.message, attempt, cleanValue),
           };
         }
         return nameResult;
@@ -226,7 +274,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         if (!dobResult.valid) {
           return {
             valid: false,
-            message: dobResult.message,
+            message: getProgressiveErrorMessage('dateOfBirth', dobResult.message, attempt, cleanValue),
           };
         }
         return dobResult;
@@ -248,7 +296,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         if (!addressResult.valid) {
           return {
             valid: false,
-            message: addressResult.message,
+            message: getProgressiveErrorMessage('address', addressResult.message, attempt, cleanValue),
           };
         }
         return addressResult;
@@ -258,7 +306,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         if (!phoneResult.valid) {
           return {
             valid: false,
-            message: phoneResult.message,
+            message: getProgressiveErrorMessage('phone', phoneResult.message, attempt, cleanValue),
           };
         }
         return phoneResult;
@@ -279,7 +327,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         if (!emailValidation.valid) {
           return {
             valid: false,
-            message: emailValidation.message,
+            message: getProgressiveErrorMessage('email', emailValidation.message, attempt, cleanValue),
           };
         }
         return emailValidation;
@@ -289,7 +337,7 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         if (!linkedinResult.valid) {
           return {
             valid: false,
-            message: linkedinResult.message,
+            message: getProgressiveErrorMessage('linkedin', linkedinResult.message, attempt, cleanValue),
           };
         }
         console.log(`✅ LinkedIn validation successful: ${linkedinResult.value}`);

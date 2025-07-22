@@ -10,14 +10,18 @@ class GeneralQuestionService {
   // Process general knowledge questions with profile suggestions
   static async processGeneralQuestion(message, whatsappNumber) {
     try {
-      // Get available profiles from database for matching
+      // First check if structured response is available
       const profiles = await this.getAvailableProfiles();
+      const structuredResponse = await this.generateStructuredResponse(message, profiles);
+      
+      if (structuredResponse) {
+        return structuredResponse;
+      }
 
-      // Use unified intelligence to generate response
+      // Otherwise use unified intelligence to generate response
       const response = await UnifiedIntelligenceService.generateKnowledgeResponse(
         message,
-        {},
-        profiles
+        { whatsappNumber: whatsappNumber || 'system' }
       );
 
       return response;
@@ -113,9 +117,18 @@ The future involves ethical AI, AGI research, and human-AI collaboration.`;
       .slice(0, 2);
 
     if (aiProfiles.length > 0) {
-      response += '\n\n**Alumni working in AI:**';
+      response += '\n\n**AI Professionals:**';
       aiProfiles.forEach((p) => {
-        response += `\n• ${p.name} - ${p.professionalRole || 'AI Professional'} at ${p.company || 'Tech Company'}`;
+        const name = p.name || 'Alumni Member';
+        const role = p.professionalRole || 'AI Professional';
+        const company = p.company || 'Tech Company';
+        const email = p.email || 'Contact via network';
+        const linkedin = p.linkedin 
+          ? (p.linkedin.startsWith('http') ? p.linkedin : `https://linkedin.com/in/${p.linkedin}`)
+          : null;
+        
+        response += `\n\n👤 **${name}**\n${role} at ${company}\n📧 ${email}`;
+        if (linkedin) response += `\n🔗 ${linkedin}`;
       });
     }
 
@@ -140,9 +153,18 @@ India's startup ecosystem is thriving with 100+ unicorns and growing.`;
       .slice(0, 2);
 
     if (startupProfiles.length > 0) {
-      response += '\n\n**Alumni entrepreneurs:**';
+      response += '\n\n**Entrepreneurs:**';
       startupProfiles.forEach((p) => {
-        response += `\n• ${p.name} - ${p.professionalRole || 'Entrepreneur'} at ${p.company || 'Startup'}`;
+        const name = p.name || 'Alumni Member';
+        const role = p.professionalRole || 'Entrepreneur';
+        const company = p.company || 'Startup';
+        const email = p.email || 'Contact via network';
+        const linkedin = p.linkedin 
+          ? (p.linkedin.startsWith('http') ? p.linkedin : `https://linkedin.com/in/${p.linkedin}`)
+          : null;
+        
+        response += `\n\n👤 **${name}**\n${role} at ${company}\n📧 ${email}`;
+        if (linkedin) response += `\n🔗 ${linkedin}`;
       });
     }
 
@@ -166,9 +188,18 @@ Success requires understanding consumer psychology and market dynamics.`;
       .slice(0, 2);
 
     if (marketingProfiles.length > 0) {
-      response += '\n\n**Marketing experts in network:**';
+      response += '\n\n**Marketing Experts:**';
       marketingProfiles.forEach((p) => {
-        response += `\n• ${p.name} - ${p.professionalRole || 'Marketing Professional'} at ${p.company || 'Company'}`;
+        const name = p.name || 'Alumni Member';
+        const role = p.professionalRole || 'Marketing Professional';
+        const company = p.company || 'Company';
+        const email = p.email || 'Contact via network';
+        const linkedin = p.linkedin 
+          ? (p.linkedin.startsWith('http') ? p.linkedin : `https://linkedin.com/in/${p.linkedin}`)
+          : null;
+        
+        response += `\n\n👤 **${name}**\n${role} at ${company}\n📧 ${email}`;
+        if (linkedin) response += `\n🔗 ${linkedin}`;
       });
     }
 
@@ -194,9 +225,18 @@ Continuous learning is essential as technology evolves rapidly.`;
       .slice(0, 2);
 
     if (techProfiles.length > 0) {
-      response += '\n\n**Tech professionals to connect with:**';
+      response += '\n\n**Tech Professionals:**';
       techProfiles.forEach((p) => {
-        response += `\n• ${p.name} - ${p.professionalRole || 'Tech Professional'} at ${p.company || 'Tech Company'}`;
+        const name = p.name || 'Alumni Member';
+        const role = p.professionalRole || 'Tech Professional';
+        const company = p.company || 'Tech Company';
+        const email = p.email || 'Contact via network';
+        const linkedin = p.linkedin 
+          ? (p.linkedin.startsWith('http') ? p.linkedin : `https://linkedin.com/in/${p.linkedin}`)
+          : null;
+        
+        response += `\n\n👤 **${name}**\n${role} at ${company}\n📧 ${email}`;
+        if (linkedin) response += `\n🔗 ${linkedin}`;
       });
     }
 
@@ -221,9 +261,18 @@ India's agricultural sector employs 44% of the workforce and drives rural econom
       .slice(0, 2);
 
     if (agriProfiles.length > 0) {
-      response += '\n\n**Agriculture innovators:**';
+      response += '\n\n**Agriculture Innovators:**';
       agriProfiles.forEach((p) => {
-        response += `\n• ${p.name} - ${p.professionalRole || 'Agriculture Professional'} at ${p.company || 'AgriTech'}`;
+        const name = p.name || 'Alumni Member';
+        const role = p.professionalRole || 'Agriculture Professional';
+        const company = p.company || 'AgriTech';
+        const email = p.email || 'Contact via network';
+        const linkedin = p.linkedin 
+          ? (p.linkedin.startsWith('http') ? p.linkedin : `https://linkedin.com/in/${p.linkedin}`)
+          : null;
+        
+        response += `\n\n👤 **${name}**\n${role} at ${company}\n📧 ${email}`;
+        if (linkedin) response += `\n🔗 ${linkedin}`;
       });
     }
 
