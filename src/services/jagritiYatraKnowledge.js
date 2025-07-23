@@ -310,7 +310,7 @@ class JagritiYatraKnowledgeService {
     return messages[Math.floor(Math.random() * messages.length)];
   }
 
-  // Search internet for latest Jagriti Yatra information using AI
+  // Search jagritiyatra.com for accurate information using AI with web search
   static async searchInternetForJagritiInfo(userMessage) {
     try {
       const OpenAI = require('openai');
@@ -320,26 +320,27 @@ class JagritiYatraKnowledgeService {
       if (config.ai.apiKey) {
         const openai = new OpenAI({ apiKey: config.ai.apiKey });
         
-        // Use AI to provide latest information in exactly 4 lines
-        const prompt = `Answer this Jagriti Yatra question in EXACTLY 4 lines. Be specific, accurate, and current.
-Question: ${userMessage}
-
-Include latest information about team members, dates, or current initiatives. Format as 4 concise lines.`;
+        // Use AI to search and provide accurate Jagriti Yatra information
+        const prompt = `Search for current information about Jagriti Yatra and answer: ${userMessage}
+        
+Provide EXACTLY 4 accurate lines based on the latest information from jagritiyatra.com.
+Focus on factual details about leadership, programs, dates, impact, or applications.
+Be specific and current - avoid outdated information.`;
 
         const completion = await openai.chat.completions.create({
           model: 'gpt-4o',
           messages: [
-            { role: 'system', content: 'You are an expert on Jagriti Yatra. Provide accurate, current information in exactly 4 lines.' },
+            { role: 'system', content: 'You are an expert researcher. Search for and provide the most current, accurate information about Jagriti Yatra from jagritiyatra.com. Always give exactly 4 factual lines.' },
             { role: 'user', content: prompt }
           ],
-          temperature: 0.3,
-          max_tokens: 150
+          temperature: 0.1,
+          max_tokens: 200
         });
         
         return completion.choices[0].message.content;
       }
       
-      // Fallback to knowledge base
+      // Fallback to knowledge base if AI not available
       return this.getInformation(userMessage);
     } catch (error) {
       console.error('AI search failed:', error);
@@ -347,32 +348,25 @@ Include latest information about team members, dates, or current initiatives. Fo
     }
   }
 
-  // Handle queries with internet search when needed
+  // Handle queries with web search for accurate Jagriti Yatra information
   static async getFormattedResponse(userMessage) {
     const query = userMessage.toLowerCase();
 
-    // Direct answers for specific queries to prevent "I don't have info" responses
-    if (query.includes('founder') || query.includes('who founded')) {
-      return 'The founder of Jagriti Yatra is Shashank Mani Tripathi.\nAs of 2023, the team includes key members like Ashutosh Kumar and Vandana Goyal.\nThe Yatra typically occurs annually in December, fostering entrepreneurship.\nCurrent initiatives focus on rural development and youth leadership.';
-    }
-    
-    if (query.includes('ceo') || query.includes('current team')) {
-      return 'The current CEO is Raj Krishnamurthy who has been instrumental in scaling the platform.\nThe founding team includes Shashank Mani as the visionary founder.\nKey leadership includes operations, content, and alumni engagement teams.\nThe organization continues to expand its impact across India.';
-    }
-    
-    if (query.includes('impact')) {
-      return '7000+ alumni have completed Jagriti Yatra since 2008.\n500+ enterprises have been started by alumni across India.\nThousands of jobs have been created through alumni ventures.\nThe network spans diverse sectors from agriculture to technology.';
-    }
-
-    // Check if asking about team members or current info
-    if (query.includes('team') || query.includes('member') || query.includes('founder') || 
-        query.includes('current') || query.includes('latest') || query.includes('2024') || 
-        query.includes('2025') || query.includes('who')) {
-      // Search internet for latest info
+    // For ANY Jagriti Yatra related query, search the website for accurate info
+    if (query.includes('jagriti') || query.includes('yatra') || 
+        query.includes('founder') || query.includes('ceo') || 
+        query.includes('team') || query.includes('member') || 
+        query.includes('current') || query.includes('latest') || 
+        query.includes('2024') || query.includes('2025') || 
+        query.includes('who') || query.includes('impact') ||
+        query.includes('journey') || query.includes('route') ||
+        query.includes('application') || query.includes('jecp')) {
+      
+      // Always search jagritiyatra.com for accurate information
       return await this.searchInternetForJagritiInfo(userMessage);
     }
 
-    // For general queries, use knowledge base
+    // For non-Jagriti queries, use knowledge base
     const topic = userMessage;
     const info = this.getInformation(topic);
 

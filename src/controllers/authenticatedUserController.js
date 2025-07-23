@@ -75,13 +75,14 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
       return await handleInstagramURLInput(userMessage, intent, userSession, whatsappNumber);
     }
 
-    // PRIORITY 4: Handle AI-detected intents (casual chat, Jagriti info, general knowledge, knowledge_and_connect, show_more_results, policy violations)
+    // PRIORITY 4: Handle AI-detected intents (casual chat, Jagriti info, general knowledge, knowledge_and_connect, show_more_results, follow_up_profiles, policy violations)
     if (
       intent.type === 'casual_chat' ||
       intent.type === 'jagriti_info' ||
       intent.type === 'general_knowledge' ||
       intent.type === 'knowledge_and_connect' ||
       intent.type === 'show_more_results' ||
+      intent.type === 'follow_up_profiles' ||
       intent.type === 'policy_violation'
     ) {
       // Don't handle casual chat if we're waiting for profile input
@@ -129,6 +130,25 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
 
       if (intent.type === 'show_more_results') {
         // Handle "show more" requests
+        const response = await UnifiedIntelligenceService.generateResponse(
+          userMessage,
+          intent,
+          whatsappNumber,
+          {}
+        );
+        return response;
+      }
+
+      if (intent.type === 'follow_up_profiles') {
+        // Handle "any more", "any profiles related to it" requests
+        if (!isProfileComplete) {
+          return `🔒 **Search Access Required**
+
+Complete your profile first to search for alumni profiles.
+
+Type "hi" to continue profile completion!`;
+        }
+        
         const response = await UnifiedIntelligenceService.generateResponse(
           userMessage,
           intent,
@@ -310,6 +330,35 @@ What expertise are you looking for?`;
 
     // PRIORITY 7: Enhanced casual conversation
     if (intent.type === 'casual') {
+      // Check if "any more" is actually asking for more profiles
+      const messageLower = userMessage.toLowerCase().trim();
+      if ((messageLower === 'any more' || messageLower === 'more') && 
+          userSession.lastActivity === 'search_results') {
+        
+        if (!isProfileComplete) {
+          return `🔒 **Search Access Required**
+
+Complete your profile first to search for more alumni profiles.
+
+Type "hi" to continue profile completion!`;
+        }
+        
+        // Treat as follow-up profile request
+        const followUpIntent = {
+          type: 'follow_up_profiles',
+          searchTerms: userSession.lastSearchQuery || 'professionals',
+          isFollowUp: true
+        };
+        
+        const response = await UnifiedIntelligenceService.generateResponse(
+          userMessage,
+          followUpIntent,
+          whatsappNumber,
+          {}
+        );
+        return response;
+      }
+      
       // If we just showed search results, don't show the full welcome again
       if (
         userSession.lastActivity === 'search_results' &&

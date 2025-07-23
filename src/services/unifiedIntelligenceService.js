@@ -94,8 +94,19 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
         }
       }
 
-      // Store intent in MongoDB for learning
+      // Store intent in MongoDB for learning and track topic for context
       await this.storeIntentAnalysis(whatsappNumber, message, analysis);
+      
+      // Store current topic for future follow-up queries
+      if (analysis.topic || analysis.searchTerms) {
+        await this.storeCurrentTopic(whatsappNumber, analysis.topic || analysis.searchTerms);
+      } else if (analysis.intent === 'general_knowledge') {
+        // Extract topic from the message for general knowledge queries
+        const extractedTopic = this.extractTopicFromMessage(message);
+        if (extractedTopic) {
+          await this.storeCurrentTopic(whatsappNumber, extractedTopic);
+        }
+      }
 
       logAIOperation('unified_intent_analysis', {
         message: message.substring(0, 50),
@@ -143,6 +154,7 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
           return await this.generateSearchGuidance(intent, context);
 
         case 'follow_up':
+        case 'follow_up_profiles':
           return await this.generateFollowUpResponse(message, intent, context);
 
         case 'show_more_results':
@@ -245,11 +257,17 @@ Be informative, practical, and helpful. Make it casual and engaging.`;
     });
 
     let response = completion.choices[0].message.content;
+    
+    // Extract and store topic for future follow-up queries
+    const topic = this.extractTopicFromMessage(message);
+    if (topic && context.whatsappNumber) {
+      await this.storeCurrentTopic(context.whatsappNumber, topic);
+    }
 
     // Auto-search for relevant alumni profiles using search service
     try {
       const searchService = require('./searchService');
-      const searchResults = await searchService.comprehensiveAlumniSearch(message, context.whatsappNumber || 'system');
+      const searchResults = await searchService.comprehensiveAlumniSearch(topic || message, context.whatsappNumber || 'system');
       
       if (searchResults && typeof searchResults === 'string' && searchResults.length > 100) {
         response += '\n\n**Related Alumni:**\n\n' + searchResults;
@@ -278,12 +296,40 @@ Type "hi" to begin!`;
 
   // Generate follow-up response based on context
   static async generateFollowUpResponse(message, intent, context) {
-    if (!context.lastSearch) {
-      return "I'm not sure what you're referring to. Could you please clarify what you're looking for?";
+    const messageLower = message.toLowerCase();
+    
+    // Check if user is asking for profiles related to the last topic discussed
+    if (messageLower.includes('any profiles') || messageLower.includes('profiles related') ||
+        messageLower.includes('any more') || messageLower.includes('related to it') ||
+        messageLower.includes('profiles for this')) {
+      
+      // Get the last response topic from context
+      const lastTopic = context.lastResponseTopic || context.lastSearch;
+      
+      if (lastTopic) {
+        // Use search service to find profiles for the last discussed topic
+        try {
+          const searchService = require('./searchService');
+          const searchResults = await searchService.comprehensiveAlumniSearch(lastTopic, context.whatsappNumber || 'system');
+          
+          if (searchResults && typeof searchResults === 'string' && searchResults.length > 100) {
+            // Clean formatting for follow-up searches
+            const cleanedResults = searchResults.replace(/\*\*Related Alumni:\*\*\n\n/, '');
+            return `**More ${lastTopic} professionals:**\n\n${cleanedResults}`;
+          }
+        } catch (error) {
+          // Fall back to generic response
+        }
+      }
+    }
+    
+    // If no specific topic context, provide helpful guidance
+    if (!context.lastSearch && !context.lastResponseTopic) {
+      return "What specific expertise or field would you like me to search for? I can help you find alumni with particular skills or from specific domains.";
     }
 
-    const systemPrompt = `The user is asking a follow-up question to their previous search.
-Previous search: "${context.lastSearch}"
+    const systemPrompt = `The user is asking a follow-up question to their previous conversation.
+Previous topic: "${context.lastResponseTopic || context.lastSearch}"
 Current message: "${message}"
 
 Generate a helpful response that acknowledges the follow-up nature and guides them appropriately.
@@ -379,6 +425,11 @@ Return only the indices as JSON array like [0, 5].`;
       // Get user profile completion status
       const user = await db.collection('users').findOne({ whatsappNumber });
 
+      // Get the last response topic for context tracking
+      const lastResponseTopic = await db
+        .collection('conversation_topics')
+        .findOne({ whatsappNumber }, { sort: { timestamp: -1 } });
+
       return {
         recentMessages: recentMessages.map((m) => ({
           message: m.message,
@@ -386,8 +437,10 @@ Return only the indices as JSON array like [0, 5].`;
           timestamp: m.timestamp,
         })),
         lastSearch: lastSearch?.query || null,
+        lastResponseTopic: lastResponseTopic?.topic || null,
         profileComplete: user?.enhancedProfile?.completed || false,
         userName: user?.enhancedProfile?.fullName || user?.basicProfile?.name || null,
+        whatsappNumber: whatsappNumber,
         summary: {
           messageCount: recentMessages.length,
           lastActivity: recentMessages[0]?.timestamp || null,
@@ -648,6 +701,80 @@ Be informative, practical, and helpful. Each line should add value.`;
 I'm here to help you connect with Jagriti Yatra alumni for professional networking, career guidance, and business opportunities.
 
 How can I help you with your professional journey today?`;
+  }
+
+  // Store current topic for follow-up context
+  static async storeCurrentTopic(whatsappNumber, topic) {
+    try {
+      const db = getDatabase();
+      
+      await db.collection('conversation_topics').insertOne({
+        whatsappNumber,
+        topic: topic,
+        timestamp: new Date(),
+      });
+      
+      // Keep only last 5 topics to prevent database bloat
+      const allTopics = await db
+        .collection('conversation_topics')
+        .find({ whatsappNumber })
+        .sort({ timestamp: -1 })
+        .skip(5)
+        .toArray();
+      
+      if (allTopics.length > 0) {
+        const idsToDelete = allTopics.map(t => t._id);
+        await db.collection('conversation_topics').deleteMany({
+          _id: { $in: idsToDelete }
+        });
+      }
+    } catch (error) {
+      logError('Store current topic error:', error);
+    }
+  }
+  
+  // Extract topic from user message for context tracking
+  static extractTopicFromMessage(message) {
+    const messageLower = message.toLowerCase();
+    
+    // Direct topic extractions
+    if (messageLower.includes('fintech')) return 'fintech';
+    if (messageLower.includes('agriculture') || messageLower.includes('farming') || messageLower.includes('agri')) return 'agriculture';
+    if (messageLower.includes('doctor') || messageLower.includes('medical') || messageLower.includes('healthcare')) return 'healthcare';
+    if (messageLower.includes('marketing')) return 'marketing';
+    if (messageLower.includes('technology') || messageLower.includes('tech')) return 'technology';
+    if (messageLower.includes('startup') || messageLower.includes('entrepreneur')) return 'startup';
+    if (messageLower.includes('ai') || messageLower.includes('artificial intelligence')) return 'artificial intelligence';
+    if (messageLower.includes('blockchain')) return 'blockchain';
+    if (messageLower.includes('design')) return 'design';
+    if (messageLower.includes('sales')) return 'sales';
+    if (messageLower.includes('finance') || messageLower.includes('financial')) return 'finance';
+    if (messageLower.includes('legal') || messageLower.includes('law')) return 'legal';
+    if (messageLower.includes('consulting')) return 'consulting';
+    if (messageLower.includes('education') || messageLower.includes('teaching')) return 'education';
+    
+    // Extract from "what is X" patterns
+    const whatIsMatch = messageLower.match(/what is ([\w\s]+)/i);
+    if (whatIsMatch) {
+      return whatIsMatch[1].trim();
+    }
+    
+    const tellMeAboutMatch = messageLower.match(/tell me about ([\w\s]+)/i);
+    if (tellMeAboutMatch) {
+      return tellMeAboutMatch[1].trim();
+    }
+    
+    const explainMatch = messageLower.match(/explain ([\w\s]+)/i);
+    if (explainMatch) {
+      return explainMatch[1].trim();
+    }
+    
+    const scopeMatch = messageLower.match(/scope in ([\w\s]+) field/i);
+    if (scopeMatch) {
+      return scopeMatch[1].trim();
+    }
+    
+    return null;
   }
 }
 
