@@ -37,7 +37,7 @@ class UnifiedIntelligenceService {
 
       const systemPrompt = `You are an intelligent assistant for Jagriti Yatra alumni network.
             
-Analyze the user's message considering ONLY their last 1 message for context.
+Analyze the user's message considering their last 2 messages for context.
 
 Determine:
 1. Primary intent - Choose the MOST appropriate:
@@ -45,22 +45,28 @@ Determine:
    - "jagriti_info" - Questions about Jagriti Yatra, JECP, team, vision, route
    - "general_knowledge" - Questions like "what is X", "tell me about Y"
    - "knowledge_and_connect" - When user asks to "define/explain X AND connect" or "what is X and can you connect"
-   - "profile_search" - Looking for people/alumni with skills, asking "can you find someone", "any X in the list", "help me find", "is there anyone"
+   - "profile_search" - Looking for people/alumni with skills, asking "can you find someone", "any X in the list", "help me find", "is there anyone". CRITICAL: If user mentions ANY specific profession (lawyers, doctors, engineers, teachers, etc.), this is ALWAYS profile_search regardless of previous context
    - "location_search" - Looking for people from specific places
    - "follow_up_search" - Asking for people after learning about a topic (e.g., after asking about chemical engineering, then asking "find someone from this domain")
    - "show_more_results" - When user says "show more", "more results", "next", "show remaining"
+   - "follow_up_profiles" - ONLY when user asks "any profiles related to it", "any more", "more profiles" WITHOUT mentioning a new specific profession
 
 2. Extract key information:
-   - searchTerms: Skills/expertise they're looking for
-   - location: Specific location mentioned
-   - topic: Main subject of discussion
-   - isFollowUp: true if continuing previous conversation
+   - searchTerms: EXACT profession/skill mentioned by user (lawyers, doctors, engineers, etc.) - DO NOT use previous context if new profession mentioned
+   - location: Specific location mentioned  
+   - topic: Current message topic (prioritize over previous context)
+   - isFollowUp: true ONLY if asking "more" without mentioning new profession
    - needsProfiles: true if response should include profile suggestions
    - wantsDefinitionAndConnect: true if user asks for both definition AND connections
+   - isNewSearch: true if user mentions different profession from previous context
    
-IMPORTANT: If user asks variations of "can you help find someone", "any X in the list", "someone from this domain/field" - mark intent as profile_search
-If the previous message was about a topic and now they ask for "someone from this domain" - use the topic as searchTerms
-If user asks "define/explain X AND connect" or "what is X and can you connect me" - mark intent as knowledge_and_connect with wantsDefinitionAndConnect: true
+CRITICAL RULES - READ CAREFULLY: 
+- NEW PROFESSION MENTIONED = NEW SEARCH: If user says "lawyers", "doctors", "engineers", etc. - ALWAYS mark as profile_search with that exact profession as searchTerms, even if previous context was different
+- CONTEXT OVERRIDE: "lawyers" after agriculture discussion = search for LAWYERS (not agriculture)
+- If user asks "any profiles related to it", "any more" WITHOUT mentioning specific profession - mark as follow_up_profiles
+- If user asks "define/explain X AND connect" - mark as knowledge_and_connect
+- RESET RULE: Any specific profession mentioned resets the search context completely
+- Examples: "lawyers" = {intent: "profile_search", searchTerms: "lawyers"}, "any more" = {intent: "follow_up_profiles"}
 
 POLICY: If user asks about adult content, sex, girlfriend/boyfriend in inappropriate context, politics, or religion - mark intent as "policy_violation"
 
@@ -81,16 +87,28 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
 
       const analysis = JSON.parse(completion.choices[0].message.content);
 
-      // Enhanced context extraction for follow-up searches
+      // Enhanced context extraction for follow-up searches ONLY if no specific profession mentioned
       if (
         (analysis.intent === 'profile_search' || analysis.intent === 'follow_up_search') &&
-        (!analysis.searchTerms || analysis.searchTerms === 'this domain')
+        (!analysis.searchTerms || analysis.searchTerms === 'this domain') &&
+        !this.hasSpecificProfession(message)
       ) {
         // Extract domain/topic from recent messages
         const extractedContext = await this.extractSearchContext(message, context);
         if (extractedContext) {
           analysis.searchTerms = extractedContext;
           analysis.isFollowUp = true;
+        }
+      }
+      
+      // Override context if specific profession is mentioned (critical fix)
+      if (this.hasSpecificProfession(message)) {
+        const profession = this.extractSpecificProfession(message);
+        if (profession) {
+          analysis.intent = 'profile_search';
+          analysis.searchTerms = profession;
+          analysis.isFollowUp = false;
+          analysis.isNewSearch = true;
         }
       }
 
@@ -772,6 +790,49 @@ How can I help you with your professional journey today?`;
     const scopeMatch = messageLower.match(/scope in ([\w\s]+) field/i);
     if (scopeMatch) {
       return scopeMatch[1].trim();
+    }
+    
+    return null;
+  }
+  
+  // Check if message contains specific profession
+  static hasSpecificProfession(message) {
+    const messageLower = message.toLowerCase();
+    const professions = [
+      'lawyer', 'lawyers', 'doctor', 'doctors', 'engineer', 'engineers',
+      'teacher', 'teachers', 'nurse', 'nurses', 'accountant', 'accountants',
+      'architect', 'architects', 'designer', 'designers', 'developer', 'developers',
+      'manager', 'managers', 'consultant', 'consultants', 'analyst', 'analysts',
+      'therapist', 'therapists', 'chef', 'chefs', 'pilot', 'pilots',
+      'pharmacist', 'pharmacists', 'dentist', 'dentists', 'veterinarian', 'veterinarians',
+      'journalist', 'journalists', 'photographer', 'photographers'
+    ];
+    
+    return professions.some(profession => {
+      // Check for exact word match
+      const regex = new RegExp(`\\b${profession}\\b`, 'i');
+      return regex.test(messageLower);
+    });
+  }
+  
+  // Extract specific profession from message
+  static extractSpecificProfession(message) {
+    const messageLower = message.toLowerCase();
+    const professions = [
+      'lawyer', 'lawyers', 'doctor', 'doctors', 'engineer', 'engineers',
+      'teacher', 'teachers', 'nurse', 'nurses', 'accountant', 'accountants',
+      'architect', 'architects', 'designer', 'designers', 'developer', 'developers',
+      'manager', 'managers', 'consultant', 'consultants', 'analyst', 'analysts',
+      'therapist', 'therapists', 'chef', 'chefs', 'pilot', 'pilots',
+      'pharmacist', 'pharmacists', 'dentist', 'dentists', 'veterinarian', 'veterinarians',
+      'journalist', 'journalists', 'photographer', 'photographers'
+    ];
+    
+    for (const profession of professions) {
+      const regex = new RegExp(`\\b${profession}\\b`, 'i');
+      if (regex.test(messageLower)) {
+        return profession;
+      }
     }
     
     return null;
