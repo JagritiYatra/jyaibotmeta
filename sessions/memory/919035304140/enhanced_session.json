@@ -2,7 +2,7 @@
   "sessionId": "f3e4195a-4ba9-4904-bbd4-d0441465d05b",
   "userId": "+919035304140",
   "startedAt": "2025-07-18T08:48:15.402Z",
-  "lastActivity": "2025-07-22T22:39:01.510Z",
+  "lastActivity": "2025-07-24T10:08:47.254Z",
   "conversationFlow": [
     {
       "id": "fab1dd1c-ecf0-4f52-9fe4-8633e883a12c",
@@ -255,11 +255,39 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "d3d6dae1-ac22-4b42-86ee-dc7cb9d685b1",
+      "timestamp": "2025-07-24T10:08:08.463Z",
+      "userMessage": "Akash Jadhav",
+      "botResponse": "**Akash Jadhav**\n💼 NGO Founder\n📍 Mumbai, karnataka\n**About:** Akash Jadhav is a Chartered Accountant in training with a focus on finance, marketing, and strategic management. He is currently applying his skills to grow an FMCG startup, blending entrepreneurship with innovative business strategies to drive sustainable growth.\n🎯 **Skills:** Cybersecurity\n🤝 **Can help with:** Mentorship & Guidance, Market Access & Collaborations\n📧 thealcworldwebsite@gmail.com\n🔗 https://linkedin.com/in/yes\n\n**Akash Sambhaji Jadhav**\n💼 Startup Founder\n**About:** Akash Sambhaji Jadhav is a forward-thinking entrepreneur dedicated to creating innovative solutions that address real-world challenges. By integrating technology, AI, and healthcare, he aims to drive meaningful change and contribute to a more sustainable and advanced future.\n🎯 **Skills:** Education\n🤝 **Can help with:** Market Access & Collaborations\n📧 jadhavakashoffcial@gmail.com\n🔗 https://www.linkedin.com/in/karthiknagpuri/",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Akash Jadhav",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "2d2a93d8-7f65-43d7-8324-58d0be68ac07",
+      "timestamp": "2025-07-24T10:08:47.254Z",
+      "userMessage": "developers",
+      "botResponse": "Here are more profiles matching your criteria:\n\nNo exact matches for \"Akash Jadhav\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Akash Jadhav",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "chemical engineering",
-    "searchQuery": "chemical engineering",
+    "topic": "Akash Jadhav",
+    "searchQuery": "Akash Jadhav",
     "searchResults": [],
     "followUpCount": 6,
     "relatedQueries": []
@@ -372,6 +400,18 @@
       "timestamp": "2025-07-22T22:39:01.510Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "Akash Jadhav",
+      "timestamp": "2025-07-24T10:08:08.463Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Akash Jadhav",
+      "timestamp": "2025-07-24T10:08:47.254Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
@@ -390,7 +430,7 @@
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 18,
+    "totalSearches": 20,
     "followUpSearches": 6,
     "profileViews": 0,
     "averageSessionLength": 0,

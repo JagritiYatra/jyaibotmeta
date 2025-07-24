@@ -37,19 +37,18 @@ class UnifiedIntelligenceService {
 
       const systemPrompt = `You are an intelligent assistant for Jagriti Yatra alumni network.
             
-Analyze the user's message considering their last 2 messages for context.
+IMPORTANT: Treat EACH message as a NEW request unless explicitly referring to previous context.
 
-Determine:
-1. Primary intent - Choose the MOST appropriate:
-   - "casual_chat" - Greetings, thanks, how are you, general conversation
-   - "jagriti_info" - Questions about Jagriti Yatra, JECP, team, vision, route
-   - "general_knowledge" - Questions like "what is X", "tell me about Y"
-   - "knowledge_and_connect" - When user asks to "define/explain X AND connect" or "what is X and can you connect"
-   - "profile_search" - Looking for people/alumni with skills, asking "can you find someone", "any X in the list", "help me find", "is there anyone". CRITICAL: If user mentions ANY specific profession (lawyers, doctors, engineers, teachers, etc.), this is ALWAYS profile_search regardless of previous context
-   - "location_search" - Looking for people from specific places
-   - "follow_up_search" - Asking for people after learning about a topic (e.g., after asking about chemical engineering, then asking "find someone from this domain")
-   - "show_more_results" - When user says "show more", "more results", "next", "show remaining"
-   - "follow_up_profiles" - ONLY when user asks "any profiles related to it", "any more", "more profiles" WITHOUT mentioning a new specific profession
+Analyze the CURRENT message and determine intent:
+
+1. Primary intents:
+   - "casual_chat" - Greetings (hi, hello), thanks, how are you, general chat
+   - "jagriti_info" - Questions about Jagriti Yatra, founders, mission, routes, JECP
+   - "general_knowledge" - Educational questions (what is X, explain Y, tell me about Z)
+   - "profile_search" - Looking for people/alumni. Keywords: developers, lawyers, doctors, engineers, designers, founders, entrepreneurs, marketing, finance, any profession/skill/role
+   - "location_search" - Looking for people from specific places only
+   - "show_more_results" - ONLY when user says "show more", "more results", "next" 
+   - "knowledge_and_connect" - When user asks to both learn AND find people
 
 2. Extract key information:
    - searchTerms: EXACT profession/skill mentioned by user (lawyers, doctors, engineers, etc.) - DO NOT use previous context if new profession mentioned
@@ -60,15 +59,21 @@ Determine:
    - wantsDefinitionAndConnect: true if user asks for both definition AND connections
    - isNewSearch: true if user mentions different profession from previous context
    
-CRITICAL RULES - READ CAREFULLY: 
-- NEW PROFESSION MENTIONED = NEW SEARCH: If user says "lawyers", "doctors", "engineers", etc. - ALWAYS mark as profile_search with that exact profession as searchTerms, even if previous context was different
-- CONTEXT OVERRIDE: "lawyers" after agriculture discussion = search for LAWYERS (not agriculture)
-- If user asks "any profiles related to it", "any more" WITHOUT mentioning specific profession - mark as follow_up_profiles
-- If user asks "define/explain X AND connect" - mark as knowledge_and_connect
-- RESET RULE: Any specific profession mentioned resets the search context completely
-- Examples: "lawyers" = {intent: "profile_search", searchTerms: "lawyers"}, "any more" = {intent: "follow_up_profiles"}
+CRITICAL RULES:
+- EACH MESSAGE IS INDEPENDENT - Don't carry over search terms from previous messages
+- "developers" = profile_search for developers (NOT previous search)
+- "web developers" = profile_search for web developers (NOT previous search)
+- "connect me with X" = profile_search for X
+- "who is the founder" = jagriti_info
+- Educational questions = general_knowledge
+- Only use previous context if user says "more", "show more", "next"
 
-POLICY: If user asks about adult content, sex, girlfriend/boyfriend in inappropriate context, politics, or religion - mark intent as "policy_violation"
+Examples:
+- "developers" → intent: "profile_search", searchTerms: "developers"
+- "web developers" → intent: "profile_search", searchTerms: "web developers"
+- "connect me with akash" → intent: "profile_search", searchTerms: "akash"
+- "who is the founder" → intent: "jagriti_info"
+- "what is blockchain" → intent: "general_knowledge"
 
 Recent context (last 1-2 messages): ${JSON.stringify(context.recentMessages.slice(0, 2) || [])}
 
@@ -80,35 +85,31 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message },
         ],
-        temperature: 0.3,
-        max_tokens: 200,
+        temperature: 0.2,
+        max_tokens: 300,
         response_format: { type: 'json_object' },
       });
 
       const analysis = JSON.parse(completion.choices[0].message.content);
 
-      // Enhanced context extraction for follow-up searches ONLY if no specific profession mentioned
-      if (
-        (analysis.intent === 'profile_search' || analysis.intent === 'follow_up_search') &&
-        (!analysis.searchTerms || analysis.searchTerms === 'this domain') &&
-        !this.hasSpecificProfession(message)
-      ) {
-        // Extract domain/topic from recent messages
-        const extractedContext = await this.extractSearchContext(message, context);
-        if (extractedContext) {
-          analysis.searchTerms = extractedContext;
-          analysis.isFollowUp = true;
+      // ALWAYS extract search terms from current message for profile searches
+      if (analysis.intent === 'profile_search') {
+        // Extract search terms directly from message
+        const searchTerms = this.extractSearchTermsFromMessage(message);
+        if (searchTerms) {
+          analysis.searchTerms = searchTerms;
+          analysis.isFollowUp = false;
+          analysis.isNewSearch = true;
         }
       }
       
-      // Override context if specific profession is mentioned (critical fix)
-      if (this.hasSpecificProfession(message)) {
-        const profession = this.extractSpecificProfession(message);
-        if (profession) {
-          analysis.intent = 'profile_search';
-          analysis.searchTerms = profession;
-          analysis.isFollowUp = false;
-          analysis.isNewSearch = true;
+      // Only use context for explicit "show more" requests
+      if (analysis.intent === 'show_more_results' && !analysis.searchTerms) {
+        // Use previous search query
+        const lastSearch = context.recentMessages.find(m => m.intent === 'profile_search');
+        if (lastSearch) {
+          analysis.searchTerms = lastSearch.searchQuery;
+          analysis.isFollowUp = true;
         }
       }
 
@@ -195,12 +196,11 @@ Return JSON: {intent, searchTerms, location, topic, isFollowUp, needsProfiles, c
     const systemPrompt = `You are a friendly alumni network assistant. Be human, warm, and conversational.
 
 Rules:
-- Keep responses VERY SHORT (5-15 words max)
-- Sound natural, like texting a friend
-- Use casual language without being unprofessional
-- NO explanations or elaborations
-- If asked how you are: give a short, human response
-- For greetings: warm but brief acknowledgment
+- Be friendly and conversational
+- Keep responses natural and warm
+- 2-3 sentences maximum
+- Sound helpful and approachable
+- Match the user's energy
 
 Examples:
 User: "how are you" → "Doing great! How about you?"
@@ -213,8 +213,8 @@ User: "what's up" → "Hey! Ready to help you connect!"`;
         { role: 'system', content: systemPrompt },
         { role: 'user', content: message },
       ],
-      temperature: 0.9,
-      max_tokens: 30,
+      temperature: 0.7,
+      max_tokens: 150,
     });
 
     return completion.choices[0].message.content;
@@ -222,29 +222,35 @@ User: "what's up" → "Hey! Ready to help you connect!"`;
 
   // Generate Jagriti Yatra information response - Direct search and answer
   static async generateJagritiResponse(message, context) {
-    // Use AI search to get latest Jagriti info directly
-    try {
-      return await require('../services/jagritiYatraKnowledge').JagritiYatraKnowledgeService.getFormattedResponse(message);
-    } catch (error) {
-      // Fallback to knowledge base
-    }
-    const jagritiKnowledge = {
-      overview:
-        'Jagriti Yatra is a 15-day, 8000km train journey across India for 450 young changemakers to meet social and business entrepreneurs.',
-      vision: 'Building India through enterprise - inspiring youth to become job creators.',
-      mission:
-        'Creating a national ecosystem of enterprise through experiential learning and peer engagement.',
-      route:
-        'Covers 12-15 locations including Mumbai, Bengaluru, Chennai, Delhi, visiting metros and villages.',
-      team: 'Founded by Shashank Mani in 2008, run by dedicated professionals.',
-      impact: '7000+ alumni, 500+ enterprises started, thousands of jobs created.',
-    };
+    const systemPrompt = `You are an expert on Jagriti Yatra, a transformative train journey for young entrepreneurs across India.
 
-    const systemPrompt = `You are an expert on Jagriti Yatra. Use this knowledge:
-${JSON.stringify(jagritiKnowledge, null, 2)}
+Key facts:
+- Founded by Shashank Mani in 2008
+- 15-day, 8000km train journey across India
+- 450 young participants (age 20-27) per year
+- Visits 12-15 locations including metros and villages
+- Focus: Building India through enterprise
+- Impact: 7000+ alumni, 500+ enterprises started
 
-Answer the user's question in EXACTLY 4-5 short lines.
-Be inspiring, accurate, and concise. Focus on impact and transformation.`;
+Answer the specific question in 4 concise lines. Be accurate and inspiring.`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: message },
+      ],
+      temperature: 0.4,
+      max_tokens: 200,
+    });
+
+    return completion.choices[0].message.content;
+  }
+
+  // Generate general knowledge response with profile suggestions
+  static async generateKnowledgeResponse(message, context) {
+    const systemPrompt = `You are a knowledgeable assistant. Answer the question in 4 clear, informative lines.
+Be accurate, helpful, and conversational. After answering, mention if alumni with related expertise are available.`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -253,25 +259,7 @@ Be inspiring, accurate, and concise. Focus on impact and transformation.`;
         { role: 'user', content: message },
       ],
       temperature: 0.5,
-      max_tokens: 150,
-    });
-
-    return completion.choices[0].message.content;
-  }
-
-  // Generate general knowledge response with profile suggestions
-  static async generateKnowledgeResponse(message, context) {
-    const systemPrompt = `Answer this question concisely in EXACTLY 4 lines.
-Be informative, practical, and helpful. Make it casual and engaging.`;
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: message },
-      ],
-      temperature: 0.6,
-      max_tokens: 200,
+      max_tokens: 300,
     });
 
     let response = completion.choices[0].message.content;
@@ -793,6 +781,57 @@ How can I help you with your professional journey today?`;
     }
     
     return null;
+  }
+  
+  // Extract search terms directly from message
+  static extractSearchTermsFromMessage(message) {
+    const messageLower = message.toLowerCase();
+    
+    // Remove common phrases to get the core search term
+    let searchTerm = message;
+    const phrasesToRemove = [
+      'can you connect me with',
+      'connect me with',
+      'find me',
+      'looking for',
+      'i need',
+      'show me',
+      'any',
+      'some',
+      'the'
+    ];
+    
+    phrasesToRemove.forEach(phrase => {
+      const regex = new RegExp(phrase, 'gi');
+      searchTerm = searchTerm.replace(regex, '').trim();
+    });
+    
+    // If the message is just a profession/skill word, return it
+    if (searchTerm && searchTerm.split(' ').length <= 3) {
+      return searchTerm;
+    }
+    
+    // Check for specific professions
+    const professions = [
+      'developers', 'developer', 'web developers', 'web developer',
+      'lawyers', 'lawyer', 'doctors', 'doctor', 'engineers', 'engineer',
+      'designers', 'designer', 'founders', 'founder', 'entrepreneurs', 'entrepreneur',
+      'marketers', 'marketer', 'marketing', 'finance', 'financial',
+      'consultants', 'consultant', 'analysts', 'analyst'
+    ];
+    
+    for (const profession of professions) {
+      if (messageLower.includes(profession)) {
+        // Check if there's a modifier before the profession
+        const regex = new RegExp(`(\\w+\\s+)?${profession}`, 'i');
+        const match = message.match(regex);
+        if (match) {
+          return match[0].trim();
+        }
+      }
+    }
+    
+    return searchTerm || message;
   }
   
   // Check if message contains specific profession

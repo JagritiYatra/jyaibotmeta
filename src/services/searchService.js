@@ -27,6 +27,9 @@ try {
 const SEARCH_ENHANCEMENT_MAP = {
   'web dev': 'web development frontend backend javascript react nodejs',
   'web development': 'web development frontend backend javascript react nodejs',
+  'web developers': 'web development frontend backend javascript react nodejs developers',
+  'developers': 'developers software engineering programming coding development',
+  'developer': 'developer software engineering programming coding development',
   devops: 'devops development operations infrastructure deployment automation cloud',
   react: 'react javascript frontend development programming web ui',
   marketing: 'marketing advertising digital promotion branding social media',
@@ -44,14 +47,36 @@ const SEARCH_ENHANCEMENT_MAP = {
   legal: 'legal compliance law regulatory corporate legal',
   consulting: 'consulting advisory strategy business consulting',
   finance: 'finance accounting financial analysis investment banking',
+  'akash': 'akash',
+  'akash jadhav': 'akash jadhav',
 };
 
 // Store shown profiles to prevent duplicates in follow-ups
 const shownProfilesCache = new Map();
 
+// Clear cache when new search is different from previous
+function shouldClearCache(newQuery, userWhatsApp) {
+  const lastQuery = shownProfilesCache.get(`${userWhatsApp}_lastQuery`);
+  if (!lastQuery || lastQuery.toLowerCase() !== newQuery.toLowerCase()) {
+    clearShownProfilesForUser(userWhatsApp);
+    shownProfilesCache.set(`${userWhatsApp}_lastQuery`, newQuery);
+    return true;
+  }
+  return false;
+}
+
+// Clear shown profiles cache when switching searches
+function clearShownProfilesForUser(userWhatsApp) {
+  if (userWhatsApp) {
+    shownProfilesCache.delete(userWhatsApp);
+  }
+}
+
 // Main comprehensive alumni search function
 async function comprehensiveAlumniSearch(query, userWhatsApp = null, excludeProfiles = []) {
   try {
+    // Clear cache if this is a new search
+    shouldClearCache(query, userWhatsApp);
     // Check if no relevant profiles found - suggest alternative profiles
     const handleNoResults = async (originalQuery) => {
       const db = getDatabase();
@@ -163,14 +188,18 @@ async function extractSearchKeywords(query) {
             content: `Extract relevant search keywords from user queries for professional alumni networking.
 
 Rules:
-- Return 8-12 keywords/phrases that help find relevant professionals
-- Include synonyms, related terms, and domain-specific language
-- Focus on skills, roles, industries, and expertise areas
+- Extract EXACT search terms from the query
+- If query is just "developers", focus on developer-related keywords
+- If query is "web developers", focus on web development keywords
+- For names, return the exact name as primary keyword
+- Include 5-8 relevant related terms
 - Return as JSON array of strings only, no other text
 
 Examples:
-"web development help" → ["web development", "frontend", "backend", "javascript", "react", "nodejs", "programming", "developer", "software", "coding"]
-"marketing expert" → ["marketing", "digital marketing", "advertising", "branding", "social media", "growth", "strategy", "promotion", "campaigns", "expert"]`,
+"developers" → ["developers", "developer", "software", "engineering", "programming", "coding", "tech"]
+"web developers" → ["web developers", "web development", "frontend", "backend", "javascript", "react", "nodejs"]
+"akash jadhav" → ["akash jadhav", "akash", "jadhav"]
+"connect me with developers" → ["developers", "developer", "software", "engineering", "programming"]`,
           },
           {
             role: 'user',

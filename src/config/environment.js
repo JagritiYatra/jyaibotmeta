@@ -14,8 +14,8 @@ const requiredEnvVars = [
 
 const optionalEnvVars = {
   AI_MODEL: 'gpt-4o',
-  AI_MAX_TOKENS: '1500',
-  AI_TEMPERATURE: '0.7',
+  AI_MAX_TOKENS: '3000',
+  AI_TEMPERATURE: '0.6',
   MAX_SEARCH_RESULTS: '6',
   DAILY_QUERY_LIMIT: '30',
   SESSION_TIMEOUT_HOURS: '48',
@@ -77,8 +77,8 @@ function getConfig() {
     // AI Configuration
     ai: {
       model: process.env.AI_MODEL || 'gpt-4o',
-      maxTokens: parseInt(process.env.AI_MAX_TOKENS) || 1500,
-      temperature: parseFloat(process.env.AI_TEMPERATURE) || 0.7,
+      maxTokens: parseInt(process.env.AI_MAX_TOKENS) || 3000,
+      temperature: parseFloat(process.env.AI_TEMPERATURE) || 0.6,
       apiKey: process.env.OPENAI_API_KEY,
     },
 
