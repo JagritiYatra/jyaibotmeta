@@ -1,0 +1,136 @@
+{
+  "sessionId": "23092d39-de81-4e04-9778-ec268d943385",
+  "userId": "+918147284140",
+  "startedAt": "2025-07-24T10:26:43.444Z",
+  "lastActivity": "2025-07-24T10:33:56.630Z",
+  "conversationFlow": [
+    {
+      "id": "5a0d6e74-6f95-4388-8e30-d9530ffcb31b",
+      "timestamp": "2025-07-24T10:26:48.792Z",
+      "userMessage": "Ok do you know who is akash jadhav",
+      "botResponse": "**Akash Jadhav**\n💼 NGO Founder\n📍 Mumbai, karnataka\n**About:** Akash Jadhav is a Chartered Accountant in training with a strong focus on finance, marketing, and strategic management. He is currently channeling his entrepreneurial skills into building a successful FMCG startup, leveraging his expertise to drive growth and sustainability. Akash is committed to balancing creativity and logic to embrace opportunities for personal and professional development.\n🎯 **Skills:** Cybersecurity\n🤝 **Can help with:** Mentorship & Guidance, Market Access & Collaborations\n📧 thealcworldwebsite@gmail.com\n🔗 https://linkedin.com/in/yes\n\n**Akash Sambhaji Jadhav**\n💼 Startup Founder\n**About:** Akash Sambhaji Jadhav is a forward-thinking entrepreneur dedicated to developing sustainable and innovative solutions through technology, AI, and healthcare. He focuses on creating impactful products that address real-world challenges, aiming to contribute to a more futuristic and improved quality of life. Akash is passionate about pioneering changes that positively transform human experiences.\n🎯 **Skills:** Education\n🤝 **Can help with:** Market Access & Collaborations\n📧 jadhavakashoffcial@gmail.com\n🔗 https://www.linkedin.com/in/karthiknagpuri/",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Ok do you know who is akash jadhav",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "ac82f0e5-1a3d-4eb4-bb7d-8b3ee6975f08",
+      "timestamp": "2025-07-24T10:30:40.160Z",
+      "userMessage": "Can you help me to connect with one who can help to get civil tenders from govt",
+      "botResponse": "**Sagar Runghe**\n**About:** Sagar Runghe is a Civil Engineer and owner of Tirupati Construction, specializing in government building projects and consultancy in Madhya Pradesh. His expertise extends to roads and bridges, with a focus on quality and integrity, and he is also a registered valuer for land and buildings. Sagar is exploring opportunities to expand into manufacturing.\n📧 sagarrunghe1@gmail.com\n🔗 https://www.linkedin.com/in/sagar-runghe/\n\n**Abhishek NM**\n**About:** Abhishek NM is a Civil Engineer with a strong focus on improving construction processes, from raw material supply to project delivery. His professional journey is characterized by a drive to innovate and address challenges within the construction ecosystem. Abhishek is dedicated to pushing boundaries and achieving excellence in the industry.\n📧 abhisheknmabhi200@gmail.com\n🔗 https://www.linkedin.com/in/abhishek-nm-a6446326a?\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Can you help me to connect with one who can help to get civil tenders from govt",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "a72d2cb1-27a1-48c2-971b-08f3c66cf95b",
+      "timestamp": "2025-07-24T10:31:57.913Z",
+      "userMessage": "Who is pakshik mittal",
+      "botResponse": "**Abhishek Mittal**\n**About:** Abhishek Mittal is an entrepreneur with a focus on the skill development industry, driven by a commitment to continuous growth and innovation. He is working towards making a significant impact in the industry while maintaining a resilient and determined work ethic.\n📧 abhishek.bmasterz@gmail.com\n🔗 https://www.linkedin.com/in/abhishekmittal\n\n**Ashish Mittal**\n**About:** Ashish Mittal combines his passion for blockchain technology with his love for cars and photography, constantly exploring new horizons. He is dedicated to capturing life's beauty while staying at the forefront of technological advancements.\n📧 ashish.mittal731@gmail.com\n🔗 https://linkedin.com/in/ashwol\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "ac82f0e5-1a3d-4eb4-bb7d-8b3ee6975f08",
+        "searchQuery": "Who is pakshik mittal",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "a06709f8-795d-4fd7-afbe-8d667b6a816c",
+      "timestamp": "2025-07-24T10:33:33.516Z",
+      "userMessage": "I am asking about pakshik",
+      "botResponse": "No exact matches for \"I am asking about pakshik\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "a72d2cb1-27a1-48c2-971b-08f3c66cf95b",
+        "searchQuery": "I am asking about pakshik",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "0cea6e47-ffd8-4724-8d27-302504055a45",
+      "timestamp": "2025-07-24T10:33:56.630Z",
+      "userMessage": "Ok n for akash jadhav ?",
+      "botResponse": "**Akash Jadhav**\n💼 NGO Founder\n📍 Mumbai, karnataka\n**About:** Akash Jadhav is a Chartered Accountant in training with a strong focus on finance, marketing, and strategic management. He is currently leveraging his entrepreneurial skills to build a successful FMCG startup with his family, emphasizing growth and sustainability. Akash is dedicated to exploring innovative business models and fostering personal and professional development.\n🎯 **Skills:** Cybersecurity\n🤝 **Can help with:** Mentorship & Guidance, Market Access & Collaborations\n📧 thealcworldwebsite@gmail.com\n🔗 https://linkedin.com/in/yes\n\n**Akash Sambhaji Jadhav**\n💼 Startup Founder\n**About:** Akash Sambhaji Jadhav is a forward-thinking entrepreneur dedicated to creating sustainable and innovative products. He focuses on integrating technology, AI, and healthcare to develop solutions for real-world challenges. Akash aims to drive impactful change through pioneering inventions that enhance the future for all.\n🎯 **Skills:** Education\n🤝 **Can help with:** Market Access & Collaborations\n📧 jadhavakashoffcial@gmail.com\n🔗 https://www.linkedin.com/in/karthiknagpuri/",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "a06709f8-795d-4fd7-afbe-8d667b6a816c",
+        "searchQuery": "Ok n for akash jadhav ?",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    }
+  ],
+  "currentContext": {
+    "topic": "Ok n for akash jadhav ?",
+    "searchQuery": "Ok n for akash jadhav ?",
+    "searchResults": [],
+    "followUpCount": 3,
+    "relatedQueries": []
+  },
+  "searchHistory": [
+    {
+      "query": "Ok do you know who is akash jadhav",
+      "timestamp": "2025-07-24T10:26:48.792Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Can you help me to connect with one who can help to get civil tenders from govt",
+      "timestamp": "2025-07-24T10:30:40.160Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Who is pakshik mittal",
+      "timestamp": "2025-07-24T10:31:57.914Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "I am asking about pakshik",
+      "timestamp": "2025-07-24T10:33:33.516Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Ok n for akash jadhav ?",
+      "timestamp": "2025-07-24T10:33:56.630Z",
+      "resultsCount": 0,
+      "followedBy": []
+    }
+  ],
+  "profileInterests": {
+    "domains": {},
+    "skills": {},
+    "locations": {},
+    "roles": {}
+  },
+  "behaviorMetrics": {
+    "totalSearches": 5,
+    "followUpSearches": 3,
+    "profileViews": 0,
+    "averageSessionLength": 0,
+    "topicsExplored": {}
+  },
+  "aiMemory": {
+    "userPreferences": {},
+    "communicationStyle": null,
+    "interests": [],
+    "learnings": []
+  }
+}
