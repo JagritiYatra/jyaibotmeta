@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "web/public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/js/(.*)",
+      "dest": "/web/public/js/$1"
+    },
+    {
+      "src": "/profile-form.html",
+      "dest": "/web/public/profile-form.html"
+    },
+    {
+      "src": "/profile-setup",
+      "dest": "/index.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["bom1"]
+}

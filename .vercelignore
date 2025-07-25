@@ -1,0 +1,7 @@
+allCountries.txt
+countries-states-cities-database/
+*.log
+.git
+node_modules
+.env
+*.md

@@ -1,0 +1,134 @@
+{
+  "countries": [
+    {"id": "IN", "name": "India"},
+    {"id": "US", "name": "United States"},
+    {"id": "GB", "name": "United Kingdom"},
+    {"id": "CA", "name": "Canada"},
+    {"id": "AU", "name": "Australia"},
+    {"id": "DE", "name": "Germany"},
+    {"id": "FR", "name": "France"},
+    {"id": "AE", "name": "United Arab Emirates"},
+    {"id": "SG", "name": "Singapore"},
+    {"id": "MY", "name": "Malaysia"}
+  ],
+  "states": {
+    "IN": [
+      {"id": "AN", "name": "Andaman and Nicobar Islands"},
+      {"id": "AP", "name": "Andhra Pradesh"},
+      {"id": "AR", "name": "Arunachal Pradesh"},
+      {"id": "AS", "name": "Assam"},
+      {"id": "BR", "name": "Bihar"},
+      {"id": "CH", "name": "Chandigarh"},
+      {"id": "CT", "name": "Chhattisgarh"},
+      {"id": "DN", "name": "Dadra and Nagar Haveli"},
+      {"id": "DD", "name": "Daman and Diu"},
+      {"id": "DL", "name": "Delhi"},
+      {"id": "GA", "name": "Goa"},
+      {"id": "GJ", "name": "Gujarat"},
+      {"id": "HR", "name": "Haryana"},
+      {"id": "HP", "name": "Himachal Pradesh"},
+      {"id": "JK", "name": "Jammu and Kashmir"},
+      {"id": "JH", "name": "Jharkhand"},
+      {"id": "KA", "name": "Karnataka"},
+      {"id": "KL", "name": "Kerala"},
+      {"id": "LD", "name": "Lakshadweep"},
+      {"id": "MP", "name": "Madhya Pradesh"},
+      {"id": "MH", "name": "Maharashtra"},
+      {"id": "MN", "name": "Manipur"},
+      {"id": "ML", "name": "Meghalaya"},
+      {"id": "MZ", "name": "Mizoram"},
+      {"id": "NL", "name": "Nagaland"},
+      {"id": "OR", "name": "Odisha"},
+      {"id": "PY", "name": "Puducherry"},
+      {"id": "PB", "name": "Punjab"},
+      {"id": "RJ", "name": "Rajasthan"},
+      {"id": "SK", "name": "Sikkim"},
+      {"id": "TN", "name": "Tamil Nadu"},
+      {"id": "TG", "name": "Telangana"},
+      {"id": "TR", "name": "Tripura"},
+      {"id": "UP", "name": "Uttar Pradesh"},
+      {"id": "UT", "name": "Uttarakhand"},
+      {"id": "WB", "name": "West Bengal"}
+    ]
+  },
+  "cities": {
+    "MH": [
+      {"id": "1", "name": "Mumbai"},
+      {"id": "2", "name": "Pune"},
+      {"id": "3", "name": "Nagpur"},
+      {"id": "4", "name": "Thane"},
+      {"id": "5", "name": "Nashik"},
+      {"id": "6", "name": "Aurangabad"},
+      {"id": "7", "name": "Solapur"},
+      {"id": "8", "name": "Navi Mumbai"},
+      {"id": "9", "name": "Kalyan"},
+      {"id": "10", "name": "Vasai-Virar"}
+    ],
+    "DL": [
+      {"id": "11", "name": "New Delhi"},
+      {"id": "12", "name": "Delhi"},
+      {"id": "13", "name": "North Delhi"},
+      {"id": "14", "name": "South Delhi"},
+      {"id": "15", "name": "East Delhi"},
+      {"id": "16", "name": "West Delhi"}
+    ],
+    "KA": [
+      {"id": "17", "name": "Bangalore"},
+      {"id": "18", "name": "Mysore"},
+      {"id": "19", "name": "Mangalore"},
+      {"id": "20", "name": "Hubli"},
+      {"id": "21", "name": "Belgaum"},
+      {"id": "22", "name": "Shimoga"}
+    ],
+    "TN": [
+      {"id": "23", "name": "Chennai"},
+      {"id": "24", "name": "Coimbatore"},
+      {"id": "25", "name": "Madurai"},
+      {"id": "26", "name": "Tiruchirappalli"},
+      {"id": "27", "name": "Salem"},
+      {"id": "28", "name": "Tirunelveli"}
+    ],
+    "GJ": [
+      {"id": "29", "name": "Ahmedabad"},
+      {"id": "30", "name": "Surat"},
+      {"id": "31", "name": "Vadodara"},
+      {"id": "32", "name": "Rajkot"},
+      {"id": "33", "name": "Gandhinagar"}
+    ],
+    "UP": [
+      {"id": "34", "name": "Lucknow"},
+      {"id": "35", "name": "Kanpur"},
+      {"id": "36", "name": "Agra"},
+      {"id": "37", "name": "Noida"},
+      {"id": "38", "name": "Ghaziabad"},
+      {"id": "39", "name": "Varanasi"},
+      {"id": "40", "name": "Allahabad"}
+    ],
+    "WB": [
+      {"id": "41", "name": "Kolkata"},
+      {"id": "42", "name": "Howrah"},
+      {"id": "43", "name": "Durgapur"},
+      {"id": "44", "name": "Asansol"},
+      {"id": "45", "name": "Siliguri"}
+    ],
+    "RJ": [
+      {"id": "46", "name": "Jaipur"},
+      {"id": "47", "name": "Jodhpur"},
+      {"id": "48", "name": "Udaipur"},
+      {"id": "49", "name": "Kota"},
+      {"id": "50", "name": "Ajmer"}
+    ],
+    "TG": [
+      {"id": "51", "name": "Hyderabad"},
+      {"id": "52", "name": "Secunderabad"},
+      {"id": "53", "name": "Warangal"},
+      {"id": "54", "name": "Nizamabad"}
+    ],
+    "KL": [
+      {"id": "55", "name": "Thiruvananthapuram"},
+      {"id": "56", "name": "Kochi"},
+      {"id": "57", "name": "Kozhikode"},
+      {"id": "58", "name": "Thrissur"}
+    ]
+  }
+}

@@ -12,6 +12,7 @@ const { validateEnvironment } = require('./src/config/environment');
 const webhookRoutes = require('./src/routes/webhook');
 const healthRoutes = require('./src/routes/health');
 const adminRoutes = require('./src/routes/admin');
+const profileFormRoutes = require('./web/routes/profileFormRoutes');
 const { requestLogger } = require('./src/middleware/logging');
 const { errorHandler, notFoundHandler } = require('./src/middleware/errorHandlers');
 
@@ -29,10 +30,14 @@ app.use(requestLogger);
 // Serve static files for admin dashboard
 app.use('/admin', express.static('admin-dashboard/build'));
 
+// Serve static files for profile form
+app.use(express.static('web/public'));
+
 // Routes
 app.use('/webhook', webhookRoutes);
 app.use('/health', healthRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/', profileFormRoutes);
 
 // Error handling middleware
 app.use(notFoundHandler);

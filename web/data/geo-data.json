@@ -1,0 +1,165 @@
+{
+  "countries": [
+    {
+      "id": 1,
+      "name": "India",
+      "code": "IN"
+    },
+    {
+      "id": 2,
+      "name": "United States",
+      "code": "US"
+    },
+    {
+      "id": 3,
+      "name": "United Kingdom",
+      "code": "GB"
+    }
+  ],
+  "states": {
+    "1": [
+      {"id": 101, "name": "Maharashtra"},
+      {"id": 102, "name": "Karnataka"},
+      {"id": 103, "name": "Delhi"},
+      {"id": 104, "name": "Tamil Nadu"},
+      {"id": 105, "name": "Gujarat"},
+      {"id": 106, "name": "West Bengal"},
+      {"id": 107, "name": "Rajasthan"},
+      {"id": 108, "name": "Uttar Pradesh"},
+      {"id": 109, "name": "Kerala"},
+      {"id": 110, "name": "Telangana"}
+    ],
+    "2": [
+      {"id": 201, "name": "California"},
+      {"id": 202, "name": "Texas"},
+      {"id": 203, "name": "New York"},
+      {"id": 204, "name": "Florida"},
+      {"id": 205, "name": "Illinois"}
+    ],
+    "3": [
+      {"id": 301, "name": "England"},
+      {"id": 302, "name": "Scotland"},
+      {"id": 303, "name": "Wales"},
+      {"id": 304, "name": "Northern Ireland"}
+    ]
+  },
+  "cities": {
+    "101": [
+      {"id": 10101, "name": "Mumbai"},
+      {"id": 10102, "name": "Pune"},
+      {"id": 10103, "name": "Nagpur"},
+      {"id": 10104, "name": "Nashik"},
+      {"id": 10105, "name": "Aurangabad"}
+    ],
+    "102": [
+      {"id": 10201, "name": "Bangalore"},
+      {"id": 10202, "name": "Mysore"},
+      {"id": 10203, "name": "Mangalore"},
+      {"id": 10204, "name": "Hubli"}
+    ],
+    "103": [
+      {"id": 10301, "name": "New Delhi"},
+      {"id": 10302, "name": "North Delhi"},
+      {"id": 10303, "name": "South Delhi"},
+      {"id": 10304, "name": "East Delhi"},
+      {"id": 10305, "name": "West Delhi"}
+    ],
+    "104": [
+      {"id": 10401, "name": "Chennai"},
+      {"id": 10402, "name": "Coimbatore"},
+      {"id": 10403, "name": "Madurai"},
+      {"id": 10404, "name": "Salem"}
+    ],
+    "105": [
+      {"id": 10501, "name": "Ahmedabad"},
+      {"id": 10502, "name": "Surat"},
+      {"id": 10503, "name": "Vadodara"},
+      {"id": 10504, "name": "Rajkot"}
+    ],
+    "106": [
+      {"id": 10601, "name": "Kolkata"},
+      {"id": 10602, "name": "Howrah"},
+      {"id": 10603, "name": "Durgapur"},
+      {"id": 10604, "name": "Siliguri"}
+    ],
+    "107": [
+      {"id": 10701, "name": "Jaipur"},
+      {"id": 10702, "name": "Jodhpur"},
+      {"id": 10703, "name": "Udaipur"},
+      {"id": 10704, "name": "Kota"}
+    ],
+    "108": [
+      {"id": 10801, "name": "Lucknow"},
+      {"id": 10802, "name": "Kanpur"},
+      {"id": 10803, "name": "Agra"},
+      {"id": 10804, "name": "Varanasi"},
+      {"id": 10805, "name": "Noida"}
+    ],
+    "109": [
+      {"id": 10901, "name": "Kochi"},
+      {"id": 10902, "name": "Thiruvananthapuram"},
+      {"id": 10903, "name": "Kozhikode"},
+      {"id": 10904, "name": "Thrissur"}
+    ],
+    "110": [
+      {"id": 11001, "name": "Hyderabad"},
+      {"id": 11002, "name": "Secunderabad"},
+      {"id": 11003, "name": "Warangal"},
+      {"id": 11004, "name": "Nizamabad"}
+    ],
+    "201": [
+      {"id": 20101, "name": "Los Angeles"},
+      {"id": 20102, "name": "San Francisco"},
+      {"id": 20103, "name": "San Diego"},
+      {"id": 20104, "name": "Sacramento"}
+    ],
+    "202": [
+      {"id": 20201, "name": "Houston"},
+      {"id": 20202, "name": "Dallas"},
+      {"id": 20203, "name": "Austin"},
+      {"id": 20204, "name": "San Antonio"}
+    ],
+    "203": [
+      {"id": 20301, "name": "New York City"},
+      {"id": 20302, "name": "Buffalo"},
+      {"id": 20303, "name": "Rochester"},
+      {"id": 20304, "name": "Syracuse"}
+    ],
+    "204": [
+      {"id": 20401, "name": "Miami"},
+      {"id": 20402, "name": "Orlando"},
+      {"id": 20403, "name": "Tampa"},
+      {"id": 20404, "name": "Jacksonville"}
+    ],
+    "205": [
+      {"id": 20501, "name": "Chicago"},
+      {"id": 20502, "name": "Aurora"},
+      {"id": 20503, "name": "Rockford"},
+      {"id": 20504, "name": "Naperville"}
+    ],
+    "301": [
+      {"id": 30101, "name": "London"},
+      {"id": 30102, "name": "Manchester"},
+      {"id": 30103, "name": "Birmingham"},
+      {"id": 30104, "name": "Liverpool"}
+    ],
+    "302": [
+      {"id": 30201, "name": "Edinburgh"},
+      {"id": 30202, "name": "Glasgow"},
+      {"id": 30203, "name": "Aberdeen"},
+      {"id": 30204, "name": "Dundee"}
+    ],
+    "303": [
+      {"id": 30301, "name": "Cardiff"},
+      {"id": 30302, "name": "Swansea"},
+      {"id": 30303, "name": "Newport"},
+      {"id": 30304, "name": "Wrexham"}
+    ],
+    "304": [
+      {"id": 30401, "name": "Belfast"},
+      {"id": 30402, "name": "Derry"},
+      {"id": 30403, "name": "Lisburn"},
+      {"id": 30404, "name": "Newry"}
+    ]
+  }
+}

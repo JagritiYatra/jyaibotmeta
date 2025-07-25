@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - Jagriti Yatra</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .form-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .form-section:nth-child(1) { animation-delay: 0.1s; }
+        .form-section:nth-child(2) { animation-delay: 0.2s; }
+        .form-section:nth-child(3) { animation-delay: 0.3s; }
+        .form-section:nth-child(4) { animation-delay: 0.4s; }
+        
+        .checkbox-group label {
+            transition: all 0.3s ease;
+        }
+        .checkbox-group input:checked + label {
+            background-color: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl md:text-4xl font-bold text-center">Complete Your Profile</h1>
+            <p class="text-center mt-2 opacity-90">Join the Jagriti Yatra Alumni Network</p>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <form id="profileForm" class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+            
+            <!-- Basic Information -->
+            <div class="form-section mb-8">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                    <i class="fas fa-user-circle mr-3 text-purple-600"></i>
+                    Basic Information
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Full Name *</label>
+                        <input type="text" name="name" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                               placeholder="Enter your full name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Gender *</label>
+                        <select name="gender" required 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Date of Birth *</label>
+                        <input type="date" name="dateOfBirth" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Professional Role *</label>
+                        <select name="professionalRole" required 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                            <option value="">Select Role</option>
+                            <option value="Entrepreneur">Entrepreneur</option>
+                            <option value="Student">Student</option>
+                            <option value="Working Professional">Working Professional</option>
+                            <option value="Government Official">Government Official</option>
+                            <option value="Freelancer">Freelancer</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Information -->
+            <div class="form-section mb-8">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                    <i class="fas fa-map-marker-alt mr-3 text-purple-600"></i>
+                    Location Information
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Country *</label>
+                        <select name="country" id="countrySelect" required 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                            <option value="">Select Country</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">State *</label>
+                        <select name="state" id="stateSelect" required disabled
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                            <option value="">Select State</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">City *</label>
+                        <select name="city" id="citySelect" required disabled
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-section mb-8">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                    <i class="fas fa-phone-alt mr-3 text-purple-600"></i>
+                    Contact Information
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Phone Number *</label>
+                        <input type="tel" name="phoneNumber" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                               placeholder="+91 9876543210">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Additional Email (Optional)</label>
+                        <input type="email" name="additionalEmail" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                               placeholder="additional@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">LinkedIn Profile URL *</label>
+                        <input type="url" name="linkedInProfile" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                               placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Instagram Profile (Optional)</label>
+                        <input type="text" name="instagramProfile" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                               placeholder="@yourhandle">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Information -->
+            <div class="form-section mb-8">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                    <i class="fas fa-briefcase mr-3 text-purple-600"></i>
+                    Professional Information
+                </h2>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Industry Domain *</label>
+                    <select name="industryDomain" required 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                        <option value="">Select Industry</option>
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Education">Education</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Arts and Entertainment">Arts and Entertainment</option>
+                        <option value="Social Impact">Social Impact</option>
+                        <option value="Environment">Environment</option>
+                        <option value="Tourism">Tourism</option>
+                        <option value="Food and Beverage">Food and Beverage</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Consulting">Consulting</option>
+                        <option value="Government">Government</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Media">Media</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <!-- Yatra Impact -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-3">Yatra Impact (Select all that apply)</label>
+                    <div class="checkbox-group space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="yatraImpact" value="Started Enterprise Post-Yatra" class="mr-3">
+                            <span class="px-4 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors block w-full">
+                                Started Enterprise Post-Yatra
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="yatraImpact" value="Found Clarity on Life Goals" class="mr-3">
+                            <span class="px-4 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors block w-full">
+                                Found Clarity on Life Goals
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="yatraImpact" value="Received Funding for Venture" class="mr-3">
+                            <span class="px-4 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors block w-full">
+                                Received Funding for Venture
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Community Asks -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-3">What are you looking for from the community? (Max 3)</label>
+                    <div class="grid md:grid-cols-2 gap-2 checkbox-group" id="communityAsks">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityAsks" value="Mentorship" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Mentorship
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityAsks" value="Business Partnerships" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Business Partnerships
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityAsks" value="Funding Support" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Funding Support
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityAsks" value="Co-founder Search" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Co-founder Search
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityAsks" value="Career Opportunities" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Career Opportunities
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityAsks" value="Industry Insights" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Industry Insights
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Community Gives -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-3">What can you offer to the community? (Max 3)</label>
+                    <div class="grid md:grid-cols-2 gap-2 checkbox-group" id="communityGives">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityGives" value="Mentorship" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Mentorship
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityGives" value="Industry Insights" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Industry Insights
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityGives" value="Investment" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Investment
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityGives" value="Business Development" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Business Development
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityGives" value="Technical Skills" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Technical Skills
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="communityGives" value="Networking" class="mr-2">
+                            <span class="px-3 py-2 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors text-sm block w-full">
+                                Networking
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-8 text-center">
+                <button type="submit" id="submitBtn" 
+                        class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
+                    Complete Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="/js/hybrid-locations.js"></script>
+    <script src="/js/profile-form.js"></script>
+</body>
+</html>

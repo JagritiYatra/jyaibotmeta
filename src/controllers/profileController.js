@@ -20,6 +20,15 @@ const {
 } = require('../utils/validation');
 const { validateAddress } = require('../utils/simpleValidation');
 const { logError, logSuccess } = require('../middleware/logging');
+const {
+  getCountries,
+  getStates,
+  getCities,
+  formatCountriesForWhatsApp,
+  formatStatesForWhatsApp,
+  formatCitiesForWhatsApp,
+  parseUserSelection
+} = require('../services/locationService');
 
 // Professional field prompts - concise and clear
 async function getFieldPrompt(fieldName, userSession = {}) {
@@ -166,7 +175,13 @@ Select 1-3 options: Example: 1,3,5`,
 Example: 1,3,7`,
     };
 
-    return prompts[fieldName] || `Please provide your ${fieldName}:`;
+    // Handle async prompts (for country, state, city)
+    const prompt = prompts[fieldName];
+    if (typeof prompt === 'function') {
+      return await prompt();
+    }
+    
+    return prompt || `Please provide your ${fieldName}:`;
   } catch (error) {
     logError(error, { operation: 'getFieldPrompt', fieldName });
     return `Please provide your ${fieldName}:`;
@@ -280,7 +295,18 @@ async function validateProfileField(fieldName, value, userSession = {}) {
         return dobResult;
 
       case 'country':
-        // Use simple validation - no AI
+        // For country, check if user selected from list or typed directly
+        if (userSession && userSession.availableCountries) {
+          const selected = parseUserSelection(cleanValue, userSession.availableCountries);
+          if (selected) {
+            return {
+              valid: true,
+              value: selected.name,
+              countryCode: selected.id
+            };
+          }
+        }
+        // Fall back to regular country validation
         const countryResult = validateCountryInput(cleanValue);
         if (!countryResult.valid) {
           return {

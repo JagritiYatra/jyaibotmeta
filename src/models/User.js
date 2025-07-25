@@ -303,7 +303,7 @@ function getIncompleteFields(user) {
     'professionalRole',
     'dateOfBirth',
     'country',
-    'address',
+    'address',   // Keep original address field for WhatsApp
     'phone',
     'domain',
   ];

@@ -10,6 +10,8 @@ const {
   findUserByWhatsAppNumber,
   linkAdditionalEmail,
 } = require('../models/User');
+const { generateProfileToken } = require('../utils/tokenGenerator');
+const { handleGreetingWithFormLink } = require('./profileFormController');
 const { comprehensiveAlumniSearch } = require('../services/searchService');
 const ContextAwareSearchService = require('../services/contextAwareSearchService');
 const EnhancedMemoryService = require('../services/enhancedMemoryService');
@@ -55,25 +57,8 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
     const isProfileComplete =
       user.enhancedProfile?.completed === true || incompleteFields.length === 0;
 
-    // PRIORITY 1: Handle profile updates FIRST (before AI intents)
-    if (userSession.waiting_for && userSession.waiting_for.startsWith('updating_')) {
-      return await handleProfileFieldUpdate(userMessage, intent, userSession, whatsappNumber);
-    }
+    // Profile updates are now handled via web form only
 
-    // PRIORITY 1.5: Handle profile input intent
-    if (intent.type === 'profile_input' && userSession.waiting_for) {
-      return await handleProfileFieldUpdate(userMessage, intent, userSession, whatsappNumber);
-    }
-
-    // PRIORITY 2: Handle additional email input
-    if (userSession.waiting_for === 'additional_email_input') {
-      return await handleAdditionalEmailInput(userMessage, intent, userSession, whatsappNumber);
-    }
-
-    // PRIORITY 3: Handle Instagram URL input
-    if (userSession.waiting_for === 'instagram_url_input') {
-      return await handleInstagramURLInput(userMessage, intent, userSession, whatsappNumber);
-    }
 
     // PRIORITY 4: Handle AI-detected intents (casual chat, Jagriti info, general knowledge, knowledge_and_connect, show_more_results, follow_up_profiles, policy violations)
     if (
@@ -85,10 +70,6 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
       intent.type === 'follow_up_profiles' ||
       intent.type === 'policy_violation'
     ) {
-      // Don't handle casual chat if we're waiting for profile input
-      if (userSession.waiting_for && userSession.waiting_for.includes('updating_')) {
-        return await handleProfileFieldUpdate(userMessage, intent, userSession, whatsappNumber);
-      }
 
       if (intent.type === 'casual_chat') {
         const aiResponse = await UnifiedIntelligenceService.generateResponse(
@@ -163,40 +144,28 @@ Type "hi" to continue profile completion!`;
       }
     }
 
-    // PRIORITY 5: Smart "Hi" trigger with perfect UX
-    if ((intent.type === 'casual' || intent.type === 'casual_chat') && !isProfileComplete) {
-      // Check if it's specifically a greeting
-      const greetingWords = [
-        'hi',
-        'hello',
-        'hey',
-        'hola',
-        'namaste',
-        'good morning',
-        'good evening',
-        'good afternoon',
-      ];
-      const isGreeting = greetingWords.some((word) => userMessage.toLowerCase().includes(word));
-
-      if (isGreeting && !userSession.profile_completion_started) {
-        const resumeGreeting = generateResumeGreeting(user);
-
-        // Set up session to resume from next incomplete field
-        const nextField = incompleteFields[0];
-        userSession.waiting_for = `updating_${nextField}`;
-        userSession.current_field = nextField;
-        userSession.remaining_fields = incompleteFields.slice(1);
-        userSession.incomplete_fields = incompleteFields;
-        userSession.profile_completion_started = true;
-
-        return `${resumeGreeting}
-
-Let's start with:
-
-**${getFieldDisplayName(nextField)}**
-
-${await getFieldPrompt(nextField, userSession)}`;
+    // PRIORITY 1: For ANY message when profile is incomplete, send form link
+    if (!isProfileComplete) {
+      // Always send the form link for incomplete profiles
+      const linkData = require('./profileFormController').generateProfileFormLink(whatsappNumber);
+      
+      if (!linkData) {
+        return `Hello! There was an error generating your profile form link. Please try again.`;
       }
+      
+      return `Hello! 👋
+
+📋 **Complete Your Profile First**
+
+Please complete your profile using our web form:
+
+🔗 **Click here:** ${linkData.url}
+
+⏱️ This link expires in 15 minutes
+
+The form includes all required fields with easy dropdowns for location selection.
+
+Once you complete your profile, you can access all features!`;
     }
 
     // Already handled above, so this section can be removed
@@ -777,6 +746,7 @@ Sorry, couldn't save your ${getFieldDisplayName(fieldName)}.
 Please try again or type "skip".`;
     }
 
+
     // Move to next field with celebration
     return await moveToNextProfileField(userSession, whatsappNumber, fieldName, successMessage);
   } catch (error) {
@@ -884,6 +854,7 @@ async function moveToNextProfileField(
       userSession.waiting_for = `updating_${nextField}`;
       userSession.current_field = nextField;
       userSession.remaining_fields = remainingFields.slice(1);
+
 
       // Save session
       const { saveUserSession } = require('../services/sessionManager');
