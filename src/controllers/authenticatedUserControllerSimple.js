@@ -5,6 +5,8 @@ const {
   getProfileCompletionPercentage,
 } = require('../models/User');
 const { comprehensiveAlumniSearch } = require('../services/searchService');
+const enhancedSearchService = require('../services/enhancedSearchService');
+const intelligentContextService = require('../services/intelligentContextService');
 const { handleCasualConversation } = require('./conversationController');
 const { logUserQuery } = require('../services/analyticsService');
 const { generateProfileFormLink } = require('./profileFormController');
@@ -24,9 +26,13 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
     const userName = user?.enhancedProfile?.fullName || user?.basicProfile?.name || 'there';
     const firstName = userName.split(' ')[0];
     
-    // Check profile completion
+    // Check profile completion - more thorough check
     const incompleteFields = getIncompleteFields(user);
-    const isProfileComplete = user?.enhancedProfile?.completed === true || incompleteFields.length === 0;
+    const enhancedProfile = user?.enhancedProfile || {};
+    
+    // Check if ANY required field is null, empty, or missing
+    const hasNullFields = Object.values(enhancedProfile).some(value => value === null || value === '');
+    const isProfileComplete = enhancedProfile.completed === true && incompleteFields.length === 0 && !hasNullFields;
     const completionPercentage = getProfileCompletionPercentage(user);
     
     // Log activity (with error handling)
@@ -40,52 +46,54 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
     if (!isProfileComplete) {
       const linkData = generateProfileFormLink(whatsappNumber);
       
-      return `Hello ${firstName}! 👋
+      return `Hello! 👋
 
-📋 **Complete Your Profile First**
+📋 *Complete Your Profile First*
 
-Your profile is ${completionPercentage}% complete. Please finish it using our web form:
+Please complete your profile using our web form:
 
-🔗 **Profile Form:** ${linkData?.url || 'http://localhost:3000/profile-setup'}
-⏱️ Link expires in 15 minutes
+🔗 *Click here:* ${linkData?.url || 'https://jyaibot-profile-form.vercel.app/profile-setup'}
 
-✨ Features:
-• All fields in one place
-• Easy dropdown for location (Country → State → City)
-• Takes only 5 minutes
+⏱️ This link expires in 15 minutes
 
-Once complete, you can search for alumni and access all features!`;
+The form includes all required fields with easy dropdowns for location selection.
+
+Once you complete your profile, you can access all features!`;
     }
     
     // PRIORITY 2: Handle different intents for users with complete profiles
     
-    // Search intents
-    if (intent.type === 'search' || intent.type === 'profile_search' || intent.type === 'location_search') {
-      const searchResults = await comprehensiveAlumniSearch(
-        intent.searchTerms || userMessage,
-        user,
-        userSession
+    // Check if the message looks like a search query
+    const lowerMessage = userMessage.toLowerCase();
+    const searchKeywords = [
+      'anyone from', 'alumni from', 'people from', 'who is', 'show me',
+      'find', 'looking for', 'search', 'developer', 'entrepreneur', 
+      'founder', 'startup', 'pune', 'mumbai', 'bangalore', 'delhi',
+      'coep', 'iit', 'nit', 'college', 'university', 'web developer',
+      'app developer', 'designer', 'marketing', 'sales', 'finance',
+      'technology', 'tech', 'software', 'hardware', 'ai', 'ml',
+      'data scientist', 'analyst', 'consultant', 'manager'
+    ];
+    
+    const isLikelySearch = searchKeywords.some(keyword => lowerMessage.includes(keyword));
+    
+    // For search-like queries or explicit search intents, use enhanced search
+    if (isLikelySearch || intent.type === 'search' || intent.type === 'profile_search' || intent.type === 'location_search') {
+      // Use the new enhanced search service for god-level search
+      const searchResults = await enhancedSearchService.search(
+        userMessage, // Always use original message for better context
+        user
       );
       
       userSession.lastActivity = 'search_results';
-      userSession.lastSearchQuery = intent.searchTerms || userMessage;
+      userSession.lastSearchQuery = userMessage;
       
       return searchResults;
     }
     
     // Jagriti Yatra information
-    if (intent.type === 'jagriti_info') {
+    if (intent.type === 'jagriti_info' || lowerMessage.includes('jagriti yatra')) {
       return JagritiYatraKnowledgeService.getFormattedResponse(userMessage);
-    }
-    
-    // General knowledge questions
-    if (intent.type === 'general_knowledge') {
-      return await GeneralQuestionService.processGeneralQuestion(userMessage, whatsappNumber);
-    }
-    
-    // Casual conversation
-    if (intent.type === 'casual_chat' || intent.type === 'casual') {
-      return await handleCasualConversation(userMessage, userName, whatsappNumber);
     }
     
     // Policy violations
@@ -93,15 +101,20 @@ Once complete, you can search for alumni and access all features!`;
       return UnifiedIntelligenceService.generatePolicyViolationResponse();
     }
     
-    // Default response for complete profiles
-    return `Hello ${firstName}! How can I help you today?
-
-You can:
-🔍 Search for alumni (e.g., "Show me entrepreneurs in Mumbai")
-📚 Ask about Jagriti Yatra
-💬 Have a casual chat
-
-What would you like to do?`;
+    // Use intelligent context service for all other queries
+    const contextAnalysis = await intelligentContextService.analyzeQuery(
+      userMessage,
+      user,
+      userSession
+    );
+    
+    const response = await intelligentContextService.generateResponse(
+      userMessage,
+      contextAnalysis,
+      user
+    );
+    
+    return response;
     
   } catch (error) {
     console.error('Error in handleAuthenticatedUser:', error);

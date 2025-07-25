@@ -173,12 +173,12 @@ router.get('/profile-setup', async (req, res) => {
         // Store WhatsApp number in session for form submission
         req.session = { whatsappNumber: wa || '' };
         
-        // Serve the form
-        res.sendFile(path.join(__dirname, '../public/profile-form.html'));
+        // Serve the enhanced form
+        res.sendFile(path.join(__dirname, '../public/profile-form-enhanced.html'));
     } catch (error) {
         console.error('Error validating token:', error);
         // Still serve the form even if validation fails (for testing)
-        res.sendFile(path.join(__dirname, '../public/profile-form.html'));
+        res.sendFile(path.join(__dirname, '../public/profile-form-enhanced.html'));
     }
 });
 

@@ -2,7 +2,7 @@
   "sessionId": "f3e4195a-4ba9-4904-bbd4-d0441465d05b",
   "userId": "+919035304140",
   "startedAt": "2025-07-18T08:48:15.402Z",
-  "lastActivity": "2025-07-25T22:41:17.698Z",
+  "lastActivity": "2025-07-25T23:32:10.296Z",
   "conversationFlow": [
     {
       "id": "fab1dd1c-ecf0-4f52-9fe4-8633e883a12c",
@@ -339,13 +339,97 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "73e17855-9c93-4980-95b9-afce19eb53bb",
+      "timestamp": "2025-07-25T23:09:48.108Z",
+      "userMessage": "help in web devlopemenr",
+      "botResponse": "**Keshab Chandra Mandal**\n**About:** Keshab Chandra Mandal is a seasoned web development professional skilled in technical execution and team leadership, with a notable focus on IoT technology. As a co-founder of Blockrium Network and Earnflow, he delivers innovative solutions and stays abreast of industry trends to meet client needs effectively.\n📧 mandalkeshab2018@gmail.com\n🔗 https://www.linkedin.com/in/keshab-chandra-mandal\n\n**Shivani Sahu**\n**About:** Shivani Sahu is a dedicated frontend developer with a strong interest in honing her skills and exploring new avenues in technology. She values connecting with others and sharing her insights through blogging.\n📧 shivaniofficial1904@gmail.com\n🔗 https://www.linkedin.com/in/shivani-sahu-167766229\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "help in web devlopemenr",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "47e02323-4c23-4009-bd74-4cfae2db5d5e",
+      "timestamp": "2025-07-25T23:10:05.817Z",
+      "userMessage": "akash jadhav",
+      "botResponse": "Here are more profiles matching your criteria:\n\n**Aditya Kaklij**\n**About:** Aditya Kaklij is a seasoned backend developer specializing in blockchain and Web3 technologies, with a solid foundation in AI & Data Science. As the founder of Resmic, Aditya brings innovative solutions to decentralized payment infrastructures.\n📧 adityakaklij11@gmail.com\n🔗 https://www.linkedin.com/in/adityakaklij/\n\n**Naweli Verma**\n**About:** Naweli Verma combines a passion for coding with a creative flair, bringing a unique perspective to web development projects. Her enthusiasm for technology and exploration allows her to tackle challenges with a fresh and innovative approach.\n📧 naweliverma7@gmail.com\n🔗 https://www.linkedin.com/in/naweli-verma-2a0374176/",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "help in web devlopemenr",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "515b9432-c43a-4a34-98e9-ac1eb8dea1b0",
+      "timestamp": "2025-07-25T23:10:32.362Z",
+      "userMessage": "who is akash jadhav",
+      "botResponse": "No exact matches for \"who is akash jadhav\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "who is akash jadhav",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "66e31244-f1ed-4e2b-996d-ece1c69d44a5",
+      "timestamp": "2025-07-25T23:31:32.484Z",
+      "userMessage": "i just need information anyone from COEP college pune ?",
+      "botResponse": "No exact matches for \"i just need information anyone from COEP college pune ?\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "i just need information anyone from COEP college pune ?",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "dc25aa9f-2314-47e4-a405-b4e65b0a4034",
+      "timestamp": "2025-07-25T23:31:47.024Z",
+      "userMessage": "ok so anyone from a pune",
+      "botResponse": "No exact matches for \"ok so anyone from a pune\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "66e31244-f1ed-4e2b-996d-ece1c69d44a5",
+        "searchQuery": "ok so anyone from a pune",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "0dd64c8e-afd0-41ca-8292-91eff401b7cf",
+      "timestamp": "2025-07-25T23:32:10.295Z",
+      "userMessage": "web developers",
+      "botResponse": "Here are more profiles matching your criteria:\n\nNo exact matches for \"ok so anyone from a pune\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "ok so anyone from a pune",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "jagruti belongs to which college",
-    "searchQuery": "jagruti belongs to which college",
+    "topic": "ok so anyone from a pune",
+    "searchQuery": "ok so anyone from a pune",
     "searchResults": [],
-    "followUpCount": 6,
+    "followUpCount": 7,
     "relatedQueries": []
   },
   "searchHistory": [
@@ -492,6 +576,42 @@
       "timestamp": "2025-07-25T22:41:17.698Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "help in web devlopemenr",
+      "timestamp": "2025-07-25T23:09:48.109Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "help in web devlopemenr",
+      "timestamp": "2025-07-25T23:10:05.817Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "who is akash jadhav",
+      "timestamp": "2025-07-25T23:10:32.362Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "i just need information anyone from COEP college pune ?",
+      "timestamp": "2025-07-25T23:31:32.485Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "ok so anyone from a pune",
+      "timestamp": "2025-07-25T23:31:47.024Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "ok so anyone from a pune",
+      "timestamp": "2025-07-25T23:32:10.296Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
@@ -505,13 +625,13 @@
       "engineer": 2
     },
     "locations": {
-      "pune": 2
+      "pune": 5
     },
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 24,
-    "followUpSearches": 6,
+    "totalSearches": 30,
+    "followUpSearches": 7,
     "profileViews": 0,
     "averageSessionLength": 0,
     "topicsExplored": {}

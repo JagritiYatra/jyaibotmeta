@@ -7,7 +7,7 @@ function generateProfileFormLink(whatsappNumber) {
   try {
     // Generate a simple token based on timestamp and random bytes
     const token = crypto.randomBytes(16).toString('hex') + Date.now();
-    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.PROFILE_FORM_URL || 'https://jyaibot-profile-form.vercel.app';
     const formUrl = `${baseUrl}/profile-setup?token=${token}&wa=${encodeURIComponent(whatsappNumber)}`;
     
     logSuccess('profile_form_link_generated', { whatsappNumber, token });

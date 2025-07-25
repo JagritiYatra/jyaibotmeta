@@ -13,7 +13,9 @@
       "Bash(vercel:*)",
       "Bash(cat:*)",
       "Bash(wget:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm run lint)",
+      "Bash(npm start)"
     ],
     "deny": []
   }

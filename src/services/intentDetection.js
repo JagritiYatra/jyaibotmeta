@@ -332,12 +332,12 @@ function detectUserIntent(message, userContext = {}) {
     };
   }
 
-  // 4. Profile update request
-  if (detectProfileUpdateIntent(msg)) {
+  // 4. Profile update request - DISABLED (using web form only)
+  if (false && detectProfileUpdateIntent(msg)) {
     return {
-      type: 'profile_update',
+      type: 'profile_update_disabled',
       confidence: 'medium',
-      allowedDuringProfile: true,
+      allowedDuringProfile: false,
     };
   }
 

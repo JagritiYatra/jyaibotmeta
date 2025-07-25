@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - Jagriti Yatra Alumni Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+
+        .form-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section:nth-child(1) { animation-delay: 0.1s; }
+        .form-section:nth-child(2) { animation-delay: 0.2s; }
+        .form-section:nth-child(3) { animation-delay: 0.3s; }
+        .form-section:nth-child(4) { animation-delay: 0.4s; }
+        
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .checkbox-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkbox-card input:checked + .checkbox-label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .field-icon {
+            color: var(--primary);
+            opacity: 0.8;
+        }
+
+        .success-animation {
+            animation: successPulse 0.5s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .expired-message {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 right-0 h-1 bg-gray-200 z-50">
+        <div id="progressBar" class="progress-bar h-full bg-gradient-to-r from-purple-600 to-pink-600" style="width: 0%"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="py-8 px-4">
+        <div class="container mx-auto max-w-6xl">
+            <div class="text-center text-white">
+                <h1 class="text-4xl md:text-5xl font-bold mb-3">Complete Your Profile</h1>
+                <p class="text-xl opacity-90">Join 9000+ Jagriti Yatra Alumni</p>
+                <div class="mt-4 flex justify-center items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer" class="font-mono">15:00</span> remaining
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-tasks"></i>
+                        <span id="fieldCounter">0/12</span> fields completed
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form Container -->
+    <div class="container mx-auto px-4 pb-8 max-w-6xl">
+        <div class="glass-effect rounded-2xl p-8 md:p-12">
+            
+            <!-- Link Expired Message (Hidden by default) -->
+            <div id="expiredMessage" class="expired-message hidden">
+                <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
+                <h2 class="text-2xl font-bold mb-2">Link Expired</h2>
+                <p class="mb-4">This profile form link has expired. Please request a new link.</p>
+                <a href="https://wa.me/919967744904?text=Hi%2C%20my%20profile%20link%20expired" 
+                   class="inline-block bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Request New Link on WhatsApp
+                </a>
+            </div>
+
+            <form id="profileForm" class="space-y-8">
+                
+                <!-- Section 1: Basic Information -->
+                <div class="form-section">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-purple-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-user-circle text-2xl field-icon"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Basic Information</h2>
+                            <p class="text-gray-600">Let's start with the essentials</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Full Name *
+                                <div class="tooltip inline-block ml-2">
+                                    <i class="fas fa-info-circle text-gray-400 text-sm"></i>
+                                    <span class="tooltiptext">Enter your complete name as per official documents</span>
+                                </div>
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+                                <input type="text" name="name" required 
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                       placeholder="Enter your full name">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Gender *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-venus-mars absolute left-3 top-3 text-gray-400"></i>
+                                <select name="gender" required 
+                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent appearance-none">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Others">Others</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Date of Birth *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-calendar absolute left-3 top-3 text-gray-400"></i>
+                                <input type="date" name="dateOfBirth" required 
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Professional Role *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-briefcase absolute left-3 top-3 text-gray-400"></i>
+                                <select name="professionalRole" required 
+                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent appearance-none">
+                                    <option value="">Select Role</option>
+                                    <option value="Entrepreneur">Entrepreneur</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Working Professional">Working Professional</option>
+                                    <option value="Government Official">Government Official</option>
+                                    <option value="Freelancer">Freelancer</option>
+                                    <option value="NGO Worker">NGO Worker</option>
+                                    <option value="Researcher">Researcher</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Location Information -->
+                <div class="form-section">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-green-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-map-marker-alt text-2xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Location Details</h2>
+                            <p class="text-gray-600">Help us connect you with alumni nearby</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Country *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-globe absolute left-3 top-3 text-gray-400"></i>
+                                <select name="country" id="countrySelect" required 
+                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent appearance-none">
+                                    <option value="">Loading countries...</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                State *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-map absolute left-3 top-3 text-gray-400"></i>
+                                <select name="state" id="stateSelect" required disabled
+                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent appearance-none">
+                                    <option value="">Select country first</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                City *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-city absolute left-3 top-3 text-gray-400"></i>
+                                <select name="city" id="citySelect" required disabled
+                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent appearance-none">
+                                    <option value="">Select state first</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Contact Information -->
+                <div class="form-section">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-address-card text-2xl text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Contact Information</h2>
+                            <p class="text-gray-600">Stay connected with the community</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Phone Number *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-phone absolute left-3 top-3 text-gray-400"></i>
+                                <input type="tel" name="phoneNumber" required 
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                       placeholder="+91 9876543210">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Additional Email
+                                <span class="text-gray-400 text-sm font-normal">(Optional)</span>
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+                                <input type="email" name="additionalEmail" 
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                       placeholder="additional@email.com">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                LinkedIn Profile *
+                                <div class="tooltip inline-block ml-2">
+                                    <i class="fas fa-info-circle text-gray-400 text-sm"></i>
+                                    <span class="tooltiptext">Your LinkedIn URL helps alumni connect professionally</span>
+                                </div>
+                            </label>
+                            <div class="relative">
+                                <i class="fab fa-linkedin absolute left-3 top-3 text-gray-400"></i>
+                                <input type="url" name="linkedInProfile" required 
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                       placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Instagram Handle
+                                <span class="text-gray-400 text-sm font-normal">(Optional)</span>
+                            </label>
+                            <div class="relative">
+                                <i class="fab fa-instagram absolute left-3 top-3 text-gray-400"></i>
+                                <input type="text" name="instagramProfile" 
+                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                       placeholder="@yourhandle">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Professional & Community -->
+                <div class="form-section">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-purple-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-users text-2xl text-purple-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Professional & Community</h2>
+                            <p class="text-gray-600">Share your expertise and needs</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Industry Domain -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                Industry Domain *
+                            </label>
+                            <div class="relative">
+                                <i class="fas fa-industry absolute left-3 top-3 text-gray-400"></i>
+                                <select name="industryDomain" required 
+                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent appearance-none">
+                                    <option value="">Select Industry</option>
+                                    <option value="Agriculture">Agriculture</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Manufacturing">Manufacturing</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Arts and Entertainment">Arts and Entertainment</option>
+                                    <option value="Social Impact">Social Impact</option>
+                                    <option value="Environment">Environment</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Yatra Impact -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-3">
+                                Yatra Impact
+                                <span class="text-gray-400 text-sm font-normal">(Select all that apply)</span>
+                            </label>
+                            <div class="space-y-3">
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="yatraImpact" value="Started Enterprise Post-Yatra" 
+                                           id="impact1" class="hidden">
+                                    <label for="impact1" class="checkbox-label flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition">
+                                        <i class="fas fa-rocket mr-3 text-purple-600"></i>
+                                        <span>Started Enterprise Post-Yatra</span>
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="yatraImpact" value="Found Clarity on Life Goals" 
+                                           id="impact2" class="hidden">
+                                    <label for="impact2" class="checkbox-label flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition">
+                                        <i class="fas fa-compass mr-3 text-purple-600"></i>
+                                        <span>Found Clarity on Life Goals</span>
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="yatraImpact" value="Received Funding for Venture" 
+                                           id="impact3" class="hidden">
+                                    <label for="impact3" class="checkbox-label flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition">
+                                        <i class="fas fa-hand-holding-usd mr-3 text-purple-600"></i>
+                                        <span>Received Funding for Venture</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Community Asks -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-3">
+                                What are you looking for from the community?
+                                <span class="text-gray-400 text-sm font-normal">(Max 3)</span>
+                            </label>
+                            <div class="grid md:grid-cols-2 gap-3" id="communityAsks">
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityAsks" value="Mentorship" id="ask1" class="hidden">
+                                    <label for="ask1" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-user-tie mr-2 text-purple-600"></i>
+                                        Mentorship
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityAsks" value="Business Partnerships" id="ask2" class="hidden">
+                                    <label for="ask2" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-handshake mr-2 text-purple-600"></i>
+                                        Business Partnerships
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityAsks" value="Funding Support" id="ask3" class="hidden">
+                                    <label for="ask3" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-coins mr-2 text-purple-600"></i>
+                                        Funding Support
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityAsks" value="Career Opportunities" id="ask4" class="hidden">
+                                    <label for="ask4" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-briefcase mr-2 text-purple-600"></i>
+                                        Career Opportunities
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Community Gives -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-3">
+                                What can you offer to the community?
+                                <span class="text-gray-400 text-sm font-normal">(Max 3)</span>
+                            </label>
+                            <div class="grid md:grid-cols-2 gap-3" id="communityGives">
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityGives" value="Mentorship" id="give1" class="hidden">
+                                    <label for="give1" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-chalkboard-teacher mr-2 text-purple-600"></i>
+                                        Mentorship
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityGives" value="Industry Insights" id="give2" class="hidden">
+                                    <label for="give2" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-lightbulb mr-2 text-purple-600"></i>
+                                        Industry Insights
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityGives" value="Investment" id="give3" class="hidden">
+                                    <label for="give3" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-chart-line mr-2 text-purple-600"></i>
+                                        Investment
+                                    </label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" name="communityGives" value="Networking" id="give4" class="hidden">
+                                    <label for="give4" class="checkbox-label flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition text-sm">
+                                        <i class="fas fa-network-wired mr-2 text-purple-600"></i>
+                                        Networking
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center pt-6">
+                    <button type="submit" id="submitBtn" 
+                            class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
+                        <span class="mr-2">Complete Profile</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                    <p class="mt-4 text-sm text-gray-600">
+                        By submitting, you agree to connect with the Jagriti Yatra alumni community
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal (Hidden by default) -->
+    <div id="successModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full transform success-animation">
+                <div class="text-center">
+                    <div class="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-check-circle text-5xl text-green-500"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Profile Completed!</h3>
+                    <p class="text-gray-600 mb-6">Great! You're all set to connect with 9000+ alumni.</p>
+                    <p class="text-sm text-gray-500 mb-4">Redirecting to WhatsApp in <span id="redirectCounter">3</span> seconds...</p>
+                    <div class="loader mx-auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/hybrid-locations.js"></script>
+    <script src="/js/profile-form-enhanced.js"></script>
+</body>
+</html>

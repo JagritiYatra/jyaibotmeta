@@ -6,7 +6,6 @@ const { generateAndSendOTP, verifyOTP } = require('../services/otpService');
 const { validateEmail, validateYesNo } = require('../utils/validation');
 const { logUserActivity, logError } = require('../middleware/logging');
 const { handleCasualConversation } = require('./conversationController');
-const { getFieldPrompt, getFieldDisplayName } = require('./profileController');
 
 // Main handler for new user interactions
 async function handleNewUser(userMessage, intent, userSession, whatsappNumber) {
@@ -303,6 +302,7 @@ Support: support@jagritiyatra.com`;
 
     // Check profile completion immediately after verification
     const incompleteFields = getIncompleteFields(userData);
+    const { generateProfileFormLink } = require('./profileFormController');
 
     if (incompleteFields.length === 0) {
       // Profile is complete
@@ -314,24 +314,25 @@ Your profile is complete. Ready to connect with 9000+ fellow Yatris?
 
 What expertise are you looking for today?`;
     }
-    // Profile incomplete - start completion process
-    const firstField = incompleteFields[0];
-    const totalFields = incompleteFields.length;
-
-    userSession.waiting_for = `updating_${firstField}`;
-    userSession.current_field = firstField;
-    userSession.remaining_fields = incompleteFields.slice(1);
-    userSession.incomplete_fields = incompleteFields;
-
+    
+    // Profile incomplete - send web form link instead of manual capture
+    const linkData = generateProfileFormLink(whatsappNumber);
+    
     return `✅ Verification successful!
 
-Welcome to JY Alumni Relations Cell, **${userName}**! 🌟
+Welcome ${userName}! 👋
 
-Your profile needs completion to connect with 9000+ fellow Yatris.
+📋 *Complete Your Profile First*
 
-**Step 1 of ${totalFields}:** ${getFieldDisplayName(firstField)}
+Please complete your profile using our web form:
 
-${await getFieldPrompt(firstField, userSession)}`;
+🔗 *Click here:* ${linkData?.url || 'https://jyaibot-profile-form.vercel.app/profile-setup'}
+
+⏱️ This link expires in 15 minutes
+
+The form includes all required fields with easy dropdowns for location selection.
+
+Once you complete your profile, you can access all features!`;
   } catch (error) {
     logError(error, { operation: 'handleOTPVerification', whatsappNumber });
     return `❌ Verification failed due to technical issue.
