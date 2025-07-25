@@ -2,7 +2,7 @@
   "sessionId": "f3e4195a-4ba9-4904-bbd4-d0441465d05b",
   "userId": "+919035304140",
   "startedAt": "2025-07-18T08:48:15.402Z",
-  "lastActivity": "2025-07-24T10:08:47.254Z",
+  "lastActivity": "2025-07-24T13:52:20.015Z",
   "conversationFlow": [
     {
       "id": "fab1dd1c-ecf0-4f52-9fe4-8633e883a12c",
@@ -283,11 +283,25 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "c944c441-f3bd-415e-8402-07ef2c63044f",
+      "timestamp": "2025-07-24T13:52:20.015Z",
+      "userMessage": "can i connect with  dentist",
+      "botResponse": "**Devyani Shrimal**\n**About:** Devyani Shrimal is a dedicated dentist who combines precision and creativity in her dental practice. She values meaningful interactions and enjoys exploring diverse cultures to enhance her understanding and care for patients.\n📧 devyanishrimal17@gmail.com\n🔗 https://www.linkedin.com/in/dr-devyani-shrimal-541888232\n\n**Prakruti Gotawala**\n**About:** Prakruti Gotawala is a recent dental graduate working at a private clinic to gain market insights for her envisioned startup. Her passion extends beyond dentistry to the arts and yoga, as she seeks continual growth and learning.\n📧 prakrutigotawala0002@gmail.com\n🔗 https://linkedin.com/in/www.linkedin.com/in/drprakruti-go-bbb93a1a4",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "can i connect with  dentist",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "Akash Jadhav",
-    "searchQuery": "Akash Jadhav",
+    "topic": "can i connect with  dentist",
+    "searchQuery": "can i connect with  dentist",
     "searchResults": [],
     "followUpCount": 6,
     "relatedQueries": []
@@ -412,6 +426,12 @@
       "timestamp": "2025-07-24T10:08:47.254Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "can i connect with  dentist",
+      "timestamp": "2025-07-24T13:52:20.015Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
@@ -430,7 +450,7 @@
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 20,
+    "totalSearches": 21,
     "followUpSearches": 6,
     "profileViews": 0,
     "averageSessionLength": 0,

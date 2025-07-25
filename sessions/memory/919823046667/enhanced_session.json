@@ -1,0 +1,200 @@
+{
+  "sessionId": "e2256d5a-43a4-4de6-aed4-34ab63174a73",
+  "userId": "+919823046667",
+  "startedAt": "2025-07-24T14:49:30.910Z",
+  "lastActivity": "2025-07-24T15:01:39.509Z",
+  "conversationFlow": [
+    {
+      "id": "521c866b-3b89-42c6-b726-2d6b548447c7",
+      "timestamp": "2025-07-24T14:49:36.749Z",
+      "userMessage": "UX developer",
+      "botResponse": "**Meet Thakker**\n**About:** Meet Thakker is a seasoned UX/UI Designer with over four years of experience in user research and creating sustainable, cost-effective solutions for complex challenges. His expertise lies in transforming intricate problems into user-friendly designs.\n📧 meetthakkertz@gmail.com\n🔗 https://www.linkedin.com/in/meet-thakker-47b783177/\n\n**Simran Vazirani**\n**About:** Simran Vazirani brings a wealth of experience in UX design, having transitioned from UI design to focus on user-centered solutions and UX research. Her background in startups and hackathons enriches her ability to integrate strategy with innovation effectively.\n📧 simmivazirani1415@gmail.com\n🔗 https://www.linkedin.com/in/simranvazirani14/\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "UX developer",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "91d68163-fb47-42d8-8776-21bfc138b349",
+      "timestamp": "2025-07-24T14:49:50.223Z",
+      "userMessage": "UX developer",
+      "botResponse": "Here are more profiles matching your criteria:\n\n**SIDDHESH WANDEKAR**\n**About:** Siddhesh Wandekar is a PGDM student specializing in Entrepreneurship at the Entrepreneurship Development Institute of India, with expertise in electrical engineering services and safety audits. He is driven by a passion for innovation in agricultural irrigation systems and is committed to fostering sustainable solutions in electrical services. Siddhesh enjoys mentoring entrepreneurs in ideation, prototyping, and market feasibility.\n📧 SIDDHESH26@EDIINDIA.ORG\n🔗 http://linkedin.com/in/siddhesh-wandekar-40482a193\n\n**Mayank Rajput**\n**About:** Mayank Rajput is a B.Tech student and Android developer passionate about creating intuitive user experiences and solving real-world problems through innovative applications. With a strong interest in business and entrepreneurship, he actively seeks collaborations to learn and grow alongside like-minded professionals. Mayank aspires to build a team focused on impactful solutions for societal improvement.\n📧 mayanksinghrajput1212@gmail.com\n🔗 https://www.linkedin.com/mwlite/profile/me?trk=p_mwlite_feed-secondary_nav\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "521c866b-3b89-42c6-b726-2d6b548447c7",
+        "searchQuery": "UX developer",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "9d14497d-260d-4dd5-8ac7-32cba4c3da48",
+      "timestamp": "2025-07-24T14:50:15.390Z",
+      "userMessage": "his name stated with R",
+      "botResponse": "**Riddhi Laddha**\n**About:** Riddhi Laddha combines a passion for business innovation with practical experience from her internship at AMUL, focusing on market research and product strategies. Her participation in Jagriti Yatra underscores her commitment to social impact and sustainable development.\n📧 mms23_096iom@met.edu\n🔗 https://www.linkedin.com/in/riddhi-laddha-b43952210\n\n**Arushee Kesar**\n**About:** Arushee Kesar is driven by a curiosity to explore and appreciate life's complexities, with aspirations to contribute meaningfully to her community. Her approach is marked by a desire to engage with diverse experiences and impactful conversations.\n📧 Arushikesar01@gmail.com\n🔗 https://www.linkedin.com/in/arushee-kesar/\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "91d68163-fb47-42d8-8776-21bfc138b349",
+        "searchQuery": "his name stated with R",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "659a13e3-36f1-4fe2-a165-f5c81c709c9c",
+      "timestamp": "2025-07-24T14:56:26.063Z",
+      "userMessage": "Do you know Chinmay who is from Pune I wanted to know about him",
+      "botResponse": "No exact matches for \"Do you know Chinmay who is from Pune I wanted to know about him\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Do you know Chinmay who is from Pune I wanted to know about him",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "84fdcd86-3a10-4f03-b91a-c5f9f69e07d2",
+      "timestamp": "2025-07-24T14:57:34.694Z",
+      "userMessage": "Do you know Jagriti who is from Pune I wanted to know about him",
+      "botResponse": "**Rutuja Sabane**\n**About:** Rutuja S is participating in the Jagriti Yatra to uncover personal potential and seek new opportunities for growth.\n📧 rutujamsabane@gmail.com\n🔗 https://www.linkedin.com/in/rutuja-sabane-sagare-a01523163",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Do you know Jagriti who is from Pune I wanted to know about him",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "79ec4afe-7a9a-4bd3-a43f-311c57206a1e",
+      "timestamp": "2025-07-24T15:00:06.540Z",
+      "userMessage": "I want to drink alocohol please suggest who will be interested",
+      "botResponse": "**Diya Khurdiya**\n**About:** Diya Khurdiya is a dynamic storyteller who blends her expertise in data visualization and classical dance to create compelling narratives. With over 12 years in Bharatnatyam, she brings creativity and precision to every project.\n📧 diyakhurdiya@gmail.com\n🔗 https://www.linkedin.com/in/diya-khurdiya-41b915202\n\n**Abhinandan yerpude**\n**About:** Abhinandan Yerupde is an entrepreneur with a passion for travel and global exploration. He brings a worldly perspective and innovative thinking to the business landscape.\n📧 Abhiyerpudebackup@gmail.com\n🔗 https://www.linkedin.com/in/abhinandan-yerpude-71b161171/\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "I want to drink alocohol please suggest who will be interested",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "31469fa6-4098-40f6-bff1-4a7fd48380da",
+      "timestamp": "2025-07-24T15:01:14.761Z",
+      "userMessage": "Do you know Jagruti who is from Pune I wanted to know about him",
+      "botResponse": "No exact matches for \"Do you know Jagruti who is from Pune I wanted to know about him\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Do you know Jagruti who is from Pune I wanted to know about him",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "97d41747-2573-4a41-a7f5-2a0cc9f4765e",
+      "timestamp": "2025-07-24T15:01:39.509Z",
+      "userMessage": "Jagruti Jethawani",
+      "botResponse": "Here are more profiles matching your criteria:\n\nNo exact matches for \"Do you know Jagruti who is from Pune I wanted to know about him\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "31469fa6-4098-40f6-bff1-4a7fd48380da",
+        "searchQuery": "Do you know Jagruti who is from Pune I wanted to know about him",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    }
+  ],
+  "currentContext": {
+    "topic": "Do you know Jagruti who is from Pune I wanted to know about him",
+    "searchQuery": "Do you know Jagruti who is from Pune I wanted to know about him",
+    "searchResults": [],
+    "followUpCount": 3,
+    "relatedQueries": []
+  },
+  "searchHistory": [
+    {
+      "query": "UX developer",
+      "timestamp": "2025-07-24T14:49:36.749Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "UX developer",
+      "timestamp": "2025-07-24T14:49:50.223Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "his name stated with R",
+      "timestamp": "2025-07-24T14:50:15.390Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Do you know Chinmay who is from Pune I wanted to know about him",
+      "timestamp": "2025-07-24T14:56:26.063Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Do you know Jagriti who is from Pune I wanted to know about him",
+      "timestamp": "2025-07-24T14:57:34.694Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "I want to drink alocohol please suggest who will be interested",
+      "timestamp": "2025-07-24T15:00:06.540Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Do you know Jagruti who is from Pune I wanted to know about him",
+      "timestamp": "2025-07-24T15:01:14.761Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Do you know Jagruti who is from Pune I wanted to know about him",
+      "timestamp": "2025-07-24T15:01:39.509Z",
+      "resultsCount": 0,
+      "followedBy": []
+    }
+  ],
+  "profileInterests": {
+    "domains": {},
+    "skills": {
+      "developer": 2
+    },
+    "locations": {
+      "pune": 4
+    },
+    "roles": {}
+  },
+  "behaviorMetrics": {
+    "totalSearches": 8,
+    "followUpSearches": 3,
+    "profileViews": 0,
+    "averageSessionLength": 0,
+    "topicsExplored": {}
+  },
+  "aiMemory": {
+    "userPreferences": {},
+    "communicationStyle": null,
+    "interests": [],
+    "learnings": []
+  }
+}

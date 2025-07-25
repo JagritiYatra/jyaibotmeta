@@ -2,7 +2,7 @@
   "sessionId": "23092d39-de81-4e04-9778-ec268d943385",
   "userId": "+918147284140",
   "startedAt": "2025-07-24T10:26:43.444Z",
-  "lastActivity": "2025-07-24T10:33:56.630Z",
+  "lastActivity": "2025-07-24T13:47:03.205Z",
   "conversationFlow": [
     {
       "id": "5a0d6e74-6f95-4388-8e30-d9530ffcb31b",
@@ -73,13 +73,55 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "254b6163-ab33-4203-8ccd-214bd1ba7598",
+      "timestamp": "2025-07-24T11:02:20.917Z",
+      "userMessage": "Software engineers",
+      "botResponse": "**Soumay Gupta**\n**About:** Soumay Gupta is a dedicated software engineer with expertise in software testing, development, and process optimization. He is committed to delivering innovative and high-quality solutions while seeking opportunities for professional growth and travel.\n📧 pmrs9673@gmail.com\n🔗 https://www.linkedin.com/in/soumayg9673/\n\n**Aditya Vyavahare**\n**About:** Aditya Vyavahare is a software engineer with a keen interest in technology and sustainability. He combines his technical skills with a passion for eco-friendly practices to drive impactful results.\n📧 thealcworldwebsite@gmail.com\n🔗 https://www.linkedin.com/in/vvaditya23\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "0cea6e47-ffd8-4724-8d27-302504055a45",
+        "searchQuery": "Software engineers",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "84aa81bf-714c-4b76-843d-e1b0d6dacfbe",
+      "timestamp": "2025-07-24T13:46:35.330Z",
+      "userMessage": "Any one working in swaraya",
+      "botResponse": "No exact matches for \"Any one working in swaraya\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": true,
+        "relatedTo": "254b6163-ab33-4203-8ccd-214bd1ba7598",
+        "searchQuery": "Any one working in swaraya",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "3dba6632-741f-4eaf-9b1d-81c93122f724",
+      "timestamp": "2025-07-24T13:47:03.205Z",
+      "userMessage": "Ok who is akash jadhav",
+      "botResponse": "**Akash Jadhav**\n💼 NGO Founder\n📍 Mumbai, karnataka\n**About:** Akash Jadhav is a Chartered Accountant in training with a strong focus on finance, marketing, and strategic management. He is actively involved in building a family-run FMCG startup, leveraging his entrepreneurial spirit to drive growth and sustainability. Akash balances his professional pursuits with a passion for cultural exploration and innovative business models.\n🎯 **Skills:** Cybersecurity\n🤝 **Can help with:** Mentorship & Guidance, Market Access & Collaborations\n📧 thealcworldwebsite@gmail.com\n🔗 https://linkedin.com/in/yes\n\n**Akash Sambhaji Jadhav**\n💼 Startup Founder\n**About:** Akash Sambhaji Jadhav is a forward-thinking entrepreneur focused on developing sustainable and innovative solutions that address real-world challenges. By integrating technology, AI, and healthcare, he aims to create products that improve lives and contribute to a more futuristic society. His vision is to foster positive change through impactful inventions.\n🎯 **Skills:** Education\n🤝 **Can help with:** Market Access & Collaborations\n📧 jadhavakashoffcial@gmail.com\n🔗 https://www.linkedin.com/in/karthiknagpuri/",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "Ok who is akash jadhav",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "Ok n for akash jadhav ?",
-    "searchQuery": "Ok n for akash jadhav ?",
+    "topic": "Ok who is akash jadhav",
+    "searchQuery": "Ok who is akash jadhav",
     "searchResults": [],
-    "followUpCount": 3,
+    "followUpCount": 5,
     "relatedQueries": []
   },
   "searchHistory": [
@@ -112,17 +154,37 @@
       "timestamp": "2025-07-24T10:33:56.630Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "Software engineers",
+      "timestamp": "2025-07-24T11:02:20.918Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Any one working in swaraya",
+      "timestamp": "2025-07-24T13:46:35.330Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "Ok who is akash jadhav",
+      "timestamp": "2025-07-24T13:47:03.205Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
     "domains": {},
-    "skills": {},
+    "skills": {
+      "engineer": 1
+    },
     "locations": {},
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 5,
-    "followUpSearches": 3,
+    "totalSearches": 8,
+    "followUpSearches": 5,
     "profileViews": 0,
     "averageSessionLength": 0,
     "topicsExplored": {}
