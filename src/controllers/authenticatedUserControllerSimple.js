@@ -26,14 +26,14 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
     const userName = user?.enhancedProfile?.fullName || user?.basicProfile?.name || 'there';
     const firstName = userName.split(' ')[0];
     
-    // Check profile completion - more thorough check
-    const incompleteFields = getIncompleteFields(user);
+    // Check profile completion - trust the completed flag
     const enhancedProfile = user?.enhancedProfile || {};
     
-    // Check if ANY required field is null, empty, or missing
-    const hasNullFields = Object.values(enhancedProfile).some(value => value === null || value === '');
-    const isProfileComplete = enhancedProfile.completed === true && incompleteFields.length === 0 && !hasNullFields;
-    const completionPercentage = getProfileCompletionPercentage(user);
+    // Simple check - if the profile is marked as completed, trust it
+    const isProfileComplete = enhancedProfile.completed === true;
+    
+    // Log for debugging
+    console.log(`Profile check for ${whatsappNumber}: completed=${enhancedProfile.completed}, isProfileComplete=${isProfileComplete}`);
     
     // Log activity (with error handling)
     try {
@@ -63,8 +63,23 @@ Once you complete your profile, you can access all features!`;
     
     // PRIORITY 2: Handle different intents for users with complete profiles
     
-    // Check if the message looks like a search query
+    // For simple greetings, provide a welcome message
     const lowerMessage = userMessage.toLowerCase();
+    if (['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening'].includes(lowerMessage.trim())) {
+      return `Hello ${firstName}! 👋
+
+Welcome back to JY Alumni Network. How can I help you today?
+
+You can:
+🔍 Search for alumni (e.g., "developers in Mumbai")
+📍 Find people by location (e.g., "anyone from Pune")
+🏢 Search by company or college (e.g., "people from COEP")
+💼 Find expertise (e.g., "AI experts", "entrepreneurs")
+
+What would you like to explore?`;
+    }
+    
+    // Check if the message looks like a search query
     const searchKeywords = [
       'anyone from', 'alumni from', 'people from', 'who is', 'show me',
       'find', 'looking for', 'search', 'developer', 'entrepreneur', 

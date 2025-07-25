@@ -303,16 +303,23 @@ function getIncompleteFields(user) {
     'professionalRole',
     'dateOfBirth',
     'country',
-    'address',   // Keep original address field for WhatsApp
     'phone',
     'domain',
   ];
+  
+  // Check if we have location data (either address or city/state)
+  const hasLocation = enhanced.address || (enhanced.city && enhanced.state);
 
   requiredFields.forEach((field) => {
     if (!enhanced[field] || enhanced[field] === '') {
       incomplete.push(field);
     }
   });
+  
+  // Check location separately (can be either address or city/state)
+  if (!hasLocation) {
+    incomplete.push('location');
+  }
 
   // Check LinkedIn (required)
   if (!enhanced.linkedin || enhanced.linkedin === '') {
