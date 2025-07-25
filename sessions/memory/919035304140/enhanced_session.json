@@ -2,7 +2,7 @@
   "sessionId": "f3e4195a-4ba9-4904-bbd4-d0441465d05b",
   "userId": "+919035304140",
   "startedAt": "2025-07-18T08:48:15.402Z",
-  "lastActivity": "2025-07-24T13:52:20.015Z",
+  "lastActivity": "2025-07-25T22:41:17.698Z",
   "conversationFlow": [
     {
       "id": "fab1dd1c-ecf0-4f52-9fe4-8633e883a12c",
@@ -297,11 +297,53 @@
         "searchResults": [],
         "profilesShown": []
       }
+    },
+    {
+      "id": "cfc753b2-aff5-4efc-a332-bea928966d06",
+      "timestamp": "2025-07-25T22:39:56.069Z",
+      "userMessage": "anyone from pune",
+      "botResponse": "**Shruti Gupta**\n**About:** Shruti Gupta is a software developer residing in Pune, with a keen interest in leveraging technology to educate children. She values honest communication and ethical decision-making, and enjoys reading and cooking in her spare time.\n📧 shrutigupta4895@gmail.com\n🔗 https://www.linkedin.com/in/shruti-gupta-2b767718b/\n\n**Atul Gaikwad**\n**About:** Atul Gaikwad is a mechanical engineer and marketing professional, currently an Assistant Teacher at MIT Institute in Aurangabad. He coordinates the Marathwada Bamboo Cluster, empowering local farmers through sustainable bamboo farming, blending his expertise in engineering and social impact.\n📧 gaikwadatul9060@gmail.com\n🔗 https://www.linkedin.com/in/atul-gaikwad-2076021a7\n\n",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "anyone from pune",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "58b2c2f4-db97-4372-8781-4a5fe99f216f",
+      "timestamp": "2025-07-25T22:40:46.878Z",
+      "userMessage": "want to know about jagruti jethwani",
+      "botResponse": "**Ulhas Nakhate**\n**About:** Ulhas Nakhate is an experienced entrepreneur in the IT sector, leading TechBharti Group in delivering software development and data center solutions. With deep insights into banking, insurance, and e-commerce, he actively participates in the Jagruti Yatra to share his entrepreneurial expertise and expand his understanding of Indian culture and business.\n📧 Ulhas@techbharti.co.in\n🔗 https://www.linkedin.com/in/ulhas-dn-7aa654199/\n\n**Jagruti Jethwani**\n**About:** Jagruti Jethwani is driven by a passion for tech, data, and innovative business solutions that empower communities. She seeks challenges that foster growth and is dedicated to integrating meaningful work with lifelong learning and creativity.\n📧 jagruti.jethwani99@gmail.com\n🔗 https://www.linkedin.com/in/jagrutijethwani/",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "want to know about jagruti jethwani",
+        "searchResults": [],
+        "profilesShown": []
+      }
+    },
+    {
+      "id": "cbe9a9f5-0df0-49f3-acf8-3ccfe5d6f97d",
+      "timestamp": "2025-07-25T22:41:17.698Z",
+      "userMessage": "jagruti belongs to which college",
+      "botResponse": "No exact matches for \"jagruti belongs to which college\" found.\n\nTry:\n• Broader terms: \"developer\", \"business\", \"marketing\"\n• By role: \"entrepreneur\", \"consultant\", \"founder\"\n• By industry: \"fintech\", \"healthtech\", \"edtech\"\n• By location: \"Mumbai\", \"Bangalore\", \"Delhi\"\n\nWhat expertise are you looking for?",
+      "context": {
+        "intent": "search",
+        "isFollowUp": false,
+        "relatedTo": null,
+        "searchQuery": "jagruti belongs to which college",
+        "searchResults": [],
+        "profilesShown": []
+      }
     }
   ],
   "currentContext": {
-    "topic": "can i connect with  dentist",
-    "searchQuery": "can i connect with  dentist",
+    "topic": "jagruti belongs to which college",
+    "searchQuery": "jagruti belongs to which college",
     "searchResults": [],
     "followUpCount": 6,
     "relatedQueries": []
@@ -432,6 +474,24 @@
       "timestamp": "2025-07-24T13:52:20.015Z",
       "resultsCount": 0,
       "followedBy": []
+    },
+    {
+      "query": "anyone from pune",
+      "timestamp": "2025-07-25T22:39:56.070Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "want to know about jagruti jethwani",
+      "timestamp": "2025-07-25T22:40:46.878Z",
+      "resultsCount": 0,
+      "followedBy": []
+    },
+    {
+      "query": "jagruti belongs to which college",
+      "timestamp": "2025-07-25T22:41:17.698Z",
+      "resultsCount": 0,
+      "followedBy": []
     }
   ],
   "profileInterests": {
@@ -445,12 +505,12 @@
       "engineer": 2
     },
     "locations": {
-      "pune": 1
+      "pune": 2
     },
     "roles": {}
   },
   "behaviorMetrics": {
-    "totalSearches": 21,
+    "totalSearches": 24,
     "followUpSearches": 6,
     "profileViews": 0,
     "averageSessionLength": 0,

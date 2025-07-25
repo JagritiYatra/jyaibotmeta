@@ -59,6 +59,29 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
 
     // Profile updates are now handled via web form only
 
+    // PRIORITY 1: For ANY message when profile is incomplete, send form link
+    if (!isProfileComplete) {
+      // Always send the form link for incomplete profiles
+      const linkData = require('./profileFormController').generateProfileFormLink(whatsappNumber);
+      
+      if (!linkData) {
+        return `Hello! There was an error generating your profile form link. Please try again.`;
+      }
+      
+      return `Hello! 👋
+
+📋 **Complete Your Profile First**
+
+Please complete your profile using our web form:
+
+🔗 **Click here:** ${linkData.url}
+
+⏱️ This link expires in 15 minutes
+
+The form includes all required fields with easy dropdowns for location selection.
+
+Once you complete your profile, you can access all features!`;
+    }
 
     // PRIORITY 4: Handle AI-detected intents (casual chat, Jagriti info, general knowledge, knowledge_and_connect, show_more_results, follow_up_profiles, policy violations)
     if (
@@ -70,6 +93,10 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
       intent.type === 'follow_up_profiles' ||
       intent.type === 'policy_violation'
     ) {
+      // Don't handle casual chat if we're waiting for profile input
+      if (userSession.waiting_for && userSession.waiting_for.includes('updating_')) {
+        return await handleProfileFieldUpdate(userMessage, intent, userSession, whatsappNumber);
+      }
 
       if (intent.type === 'casual_chat') {
         const aiResponse = await UnifiedIntelligenceService.generateResponse(
@@ -86,7 +113,7 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
       }
 
       if (intent.type === 'jagriti_info') {
-        const jagritiResponse = JagritiYatraKnowledgeService.getFormattedResponse(userMessage);
+        const jagritiResponse = await JagritiYatraKnowledgeService.getFormattedResponse(userMessage);
         return jagritiResponse;
       }
 
@@ -144,29 +171,6 @@ Type "hi" to continue profile completion!`;
       }
     }
 
-    // PRIORITY 1: For ANY message when profile is incomplete, send form link
-    if (!isProfileComplete) {
-      // Always send the form link for incomplete profiles
-      const linkData = require('./profileFormController').generateProfileFormLink(whatsappNumber);
-      
-      if (!linkData) {
-        return `Hello! There was an error generating your profile form link. Please try again.`;
-      }
-      
-      return `Hello! 👋
-
-📋 **Complete Your Profile First**
-
-Please complete your profile using our web form:
-
-🔗 **Click here:** ${linkData.url}
-
-⏱️ This link expires in 15 minutes
-
-The form includes all required fields with easy dropdowns for location selection.
-
-Once you complete your profile, you can access all features!`;
-    }
 
     // Already handled above, so this section can be removed
 
@@ -746,7 +750,6 @@ Sorry, couldn't save your ${getFieldDisplayName(fieldName)}.
 Please try again or type "skip".`;
     }
 
-
     // Move to next field with celebration
     return await moveToNextProfileField(userSession, whatsappNumber, fieldName, successMessage);
   } catch (error) {
@@ -854,7 +857,6 @@ async function moveToNextProfileField(
       userSession.waiting_for = `updating_${nextField}`;
       userSession.current_field = nextField;
       userSession.remaining_fields = remainingFields.slice(1);
-
 
       // Save session
       const { saveUserSession } = require('../services/sessionManager');
