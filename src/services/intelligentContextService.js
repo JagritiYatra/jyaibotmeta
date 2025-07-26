@@ -20,6 +20,7 @@ class IntelligentContextService {
   constructor() {
     this.conversationHistory = new Map(); // Store conversation context per user
     this.queryPatterns = this.initializeQueryPatterns();
+    this.lastSearchResults = new Map(); // Store last search results for follow-ups
   }
 
   // Initialize common query patterns
@@ -393,7 +394,225 @@ What specifically would you like to know?`;
 
   // Clear user conversation history
   clearUserHistory(userId) {
-    this.conversationHistory.delete(userId);
+    const userIdStr = userId?.toString() || 'anonymous';
+    this.conversationHistory.delete(userIdStr);
+    this.lastSearchResults.delete(userIdStr);
+  }
+  
+  // Store search results for follow-up queries
+  storeSearchResults(userId, results, searchQuery = null, searchIntent = null) {
+    // Convert userId to string for consistent Map storage
+    const userIdStr = userId?.toString() || 'anonymous';
+    this.lastSearchResults.set(userIdStr, {
+      results,
+      timestamp: Date.now(),
+      shown: results.length > 2 ? 2 : results.length, // Track how many were initially shown
+      originalQuery: searchQuery,
+      searchIntent: searchIntent
+    });
+  }
+  
+  // Get stored search results
+  getStoredResults(userId) {
+    // Convert userId to string for consistent Map retrieval
+    const userIdStr = userId?.toString() || 'anonymous';
+    const stored = this.lastSearchResults.get(userIdStr);
+    if (!stored) return null;
+    
+    // Clear if older than 30 minutes
+    if (Date.now() - stored.timestamp > 30 * 60 * 1000) {
+      this.lastSearchResults.delete(userIdStr);
+      return null;
+    }
+    
+    return stored;
+  }
+  
+  // Handle follow-up queries like "tell me more", "show more"
+  async handleFollowUpQuery(query, userId, user) {
+    const stored = this.getStoredResults(userId);
+    if (!stored || !stored.results || stored.results.length === 0) {
+      return "I don't have any recent search results to show more details. Please search for alumni first.";
+    }
+    
+    // Check if this is a location-specific follow-up
+    const locationMatch = /from\s+(\w+)/i.exec(query.toLowerCase());
+    if (locationMatch && stored.originalQuery) {
+      // User wants more results from a specific location
+      const location = locationMatch[1];
+      const enhancedSearch = require('./enhancedSearchService');
+      
+      // Filter stored results by location
+      const locationFilteredResults = stored.results.filter(user => {
+        const userLocation = user.basicProfile?.linkedinScrapedData?.location || 
+                           user.enhancedProfile?.currentAddress || 
+                           user.enhancedProfile?.country || '';
+        return userLocation.toLowerCase().includes(location.toLowerCase());
+      });
+      
+      if (locationFilteredResults.length === 0) {
+        // Try a new search with location specificity
+        const newQuery = `${stored.originalQuery} from ${location}`;
+        return await enhancedSearch.search(newQuery, user);
+      }
+      
+      // Show location-specific results
+      const startIdx = stored.shown;
+      const endIdx = Math.min(startIdx + 3, locationFilteredResults.length);
+      const nextResults = locationFilteredResults.slice(startIdx, endIdx);
+      
+      if (nextResults.length === 0) {
+        return `No more ${stored.originalQuery} from ${location}. Try searching for a different location.`;
+      }
+      
+      stored.shown = endIdx;
+      const formatted = await this.formatDetailedResults(nextResults, query);
+      const remaining = locationFilteredResults.length - endIdx;
+      
+      if (remaining > 0) {
+        return formatted + `\n\n[+${remaining} more from ${location}]`;
+      }
+      return formatted;
+    }
+    
+    // Determine what they want
+    const wantsMore = /more|next|another|other|any more|anything more|give.*more|additional/i.test(query);
+    const wantsDetails = /detail|about|elaborate|explain|know more/i.test(query);
+    const wantsContact = /contact|email|linkedin|connect|reach/i.test(query);
+    const specificPerson = /about (him|her|them|person|first|second|1st|2nd)|tell.*about/i.test(query);
+    const wantsToSeeResults = /where.*matches|show.*matches|where.*results/i.test(query);
+    
+    try {
+      if (wantsToSeeResults) {
+        // User asking "where is matches" - show the results they were promised
+        const resultsToShow = stored.results.slice(0, Math.min(3, stored.results.length));
+        if (resultsToShow.length === 0) {
+          return "I don't have any results to show. Please search again.";
+        }
+        const formatted = await this.formatDetailedResults(resultsToShow, stored.originalQuery || query);
+        const remaining = stored.results.length - resultsToShow.length;
+        if (remaining > 0) {
+          return formatted + `\n\n[+${remaining} more matches available. Say "show more" to see them.]`;
+        }
+        return formatted;
+      }
+      
+      if (wantsContact) {
+        // Show contact details for shown results
+        const shownResults = stored.results.slice(0, stored.shown);
+        return shownResults.map((user, i) => {
+          const profile = this.extractProfileData(user);
+          return `${i + 1}. **${profile.name}**\n📧 ${profile.email}\n🔗 ${profile.linkedin}`;
+        }).join('\n\n');
+      }
+      
+      if (wantsMore) {
+        // Check if there are more results to show
+        if (stored.shown < stored.results.length) {
+          // Show next batch
+          const startIdx = stored.shown;
+          const endIdx = Math.min(stored.shown + 3, stored.results.length);
+          const nextResults = stored.results.slice(startIdx, endIdx);
+          
+          if (nextResults.length === 0) {
+            return "No more results to show. Try a new search with different keywords.";
+          }
+          
+          stored.shown = endIdx;
+          const formatted = await this.formatDetailedResults(nextResults, query);
+          const remaining = stored.results.length - endIdx;
+          
+          if (remaining > 0) {
+            return formatted + `\n\n[+${remaining} more matches available]`;
+          }
+          return formatted;
+        } else {
+          return "No more results to show. Try a new search with different keywords.";
+        }
+      }
+      
+      if (wantsDetails || specificPerson) {
+        // Handle pronouns like "her", "him", "them"
+        const pronounMatch = /about\s+(her|him|them)|tell.*about\s+(her|him|them)/i.exec(query);
+        if (pronounMatch && stored.results.length > 0) {
+          // Show details about the last mentioned person (usually the first in recent results)
+          const personToDetail = stored.results.slice(0, 1);
+          return await this.formatDetailedResults(personToDetail, stored.originalQuery || query, true);
+        }
+        
+        // Show detailed info about current results
+        const resultsToDetail = stored.results.slice(0, Math.min(2, stored.shown));
+        return await this.formatDetailedResults(resultsToDetail, query, true);
+      }
+      
+      return "You can ask: 'show contact details', 'tell me more about them', or 'show more profiles'.";
+    } catch (error) {
+      logError(error, { operation: 'handleFollowUpQuery' });
+      return "I encountered an error. Please try searching again.";
+    }
+  }
+  
+  // Format detailed results
+  async formatDetailedResults(users, query, veryDetailed = false) {
+    const enhancedSearch = require('./enhancedSearchService');
+    const results = await Promise.all(users.map(async (user, index) => {
+      const profile = enhancedSearch.extractProfileData(user);
+      
+      if (veryDetailed) {
+        // Show everything
+        const parts = [`${index + 1}. **${profile.name}** - ${profile.location}`];
+        
+        if (profile.headline) parts.push(`💼 ${profile.headline}`);
+        if (profile.company) parts.push(`🏢 Currently at ${profile.company}`);
+        if (profile.about) parts.push(`\n📝 About: ${profile.about.substring(0, 200)}`);
+        if (profile.skills.length > 0) parts.push(`\n🛠️ Skills: ${profile.skills.join(', ')}`);
+        if (profile.experience.length > 0) {
+          const exp = profile.experience[0];
+          parts.push(`\n💼 Experience: ${exp.title} at ${exp.company}`);
+        }
+        if (profile.yatraHelp) parts.push(`\n🤝 Can help with: ${profile.yatraHelp}`);
+        
+        parts.push(`\n📧 ${profile.email}\n🔗 ${profile.linkedin}`);
+        
+        return parts.join('\n');
+      } else {
+        // Normal detail level
+        const summary = await enhancedSearch.generateIntelligentSummary(
+          profile, 
+          query, 
+          { intent: 'detailed view' },
+          true,
+          'detailed'
+        );
+        return `${index + 1}. ${summary}`;
+      }
+    }));
+    
+    return results.join('\n\n---\n\n');
+  }
+  
+  // Extract profile data helper
+  extractProfileData(user) {
+    const basicProfile = user.basicProfile || {};
+    const linkedinData = basicProfile.linkedinScrapedData || {};
+    const enhancedProfile = user.enhancedProfile || {};
+    
+    return {
+      name: enhancedProfile.fullName || linkedinData.fullName || basicProfile.name || 'Unknown',
+      headline: linkedinData.headline || linkedinData.currentCompanyTitle || enhancedProfile.professionalRole || '',
+      location: linkedinData.location || enhancedProfile.currentAddress || enhancedProfile.country || '',
+      company: linkedinData.currentCompany || linkedinData.experience?.[0]?.company || '',
+      email: basicProfile.email || enhancedProfile.email || 'Not provided',
+      linkedin: basicProfile.linkedin || enhancedProfile.linkedin || 'Not provided',
+      about: linkedinData.about || basicProfile.about || '',
+      skills: linkedinData.skills || [],
+      experience: linkedinData.experience || [],
+      education: linkedinData.education || [],
+      domain: enhancedProfile.domain || '',
+      yatraHelp: enhancedProfile.yatraHelp || '',
+      communityAsks: enhancedProfile.communityAsks || [],
+      communityGives: enhancedProfile.communityGives || []
+    };
   }
 
   // Get conversation summary

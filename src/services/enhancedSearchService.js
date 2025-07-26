@@ -61,17 +61,23 @@ class EnhancedSearchService {
   // Extract search intent using AI
   async extractSearchIntent(query) {
     try {
-      const prompt = `Analyze this search query and extract key information:
+      const prompt = `Analyze this search query and extract key information for an alumni network search:
 Query: "${query}"
+
+Important: Extract actual searchable terms, not generic descriptions.
+For colleges/universities, extract both full names and common abbreviations.
 
 Extract:
 1. Person names (if any)
-2. Locations (cities, states, countries)
-3. Companies/Organizations
-4. Skills/Technologies
+2. Locations (cities, states, countries) 
+3. Companies/Organizations/Colleges (include common abbreviations like COEP, IIT, NIT)
+4. Skills/Technologies (web developer -> web, developer, javascript, etc.)
 5. Professional roles/titles
 6. Industries/Domains
-7. Search intent (finding experts, location-based search, skill search, etc.)
+7. Gender (if mentioned: male, female, women, men)
+8. Experience level (if mentioned: senior, junior, experienced, fresher)
+9. Search intent type: location_search, skill_search, company_search, person_search, cross_filter, or general
+10. Special requests (contact number, whatsapp, phone)
 
 Return as JSON format:
 {
@@ -81,8 +87,11 @@ Return as JSON format:
   "skills": [],
   "roles": [],
   "industries": [],
-  "intent": "description of what user is looking for",
-  "keywords": []
+  "gender": "",
+  "experience": "",
+  "intent": "type of search",
+  "keywords": [],
+  "wantsContact": false
 }`;
 
       const completion = await openai.chat.completions.create({
@@ -93,19 +102,87 @@ Return as JSON format:
         response_format: { type: 'json_object' }
       });
 
-      return JSON.parse(completion.choices[0].message.content);
+      const result = JSON.parse(completion.choices[0].message.content);
+      
+      // Add common variations for colleges
+      if (result.companies) {
+        const expandedCompanies = [];
+        result.companies.forEach(company => {
+          expandedCompanies.push(company);
+          // Add common variations
+          if (company.toLowerCase().includes('coep')) {
+            expandedCompanies.push('COEP', 'College of Engineering Pune', 'College of Engineering, Pune');
+          }
+          if (company.toLowerCase().includes('iit')) {
+            expandedCompanies.push('IIT', 'Indian Institute of Technology');
+          }
+        });
+        result.companies = [...new Set(expandedCompanies)];
+      }
+      
+      return result;
     } catch (error) {
       logError(error, { operation: 'extractSearchIntent', query });
-      // Fallback to basic keyword extraction
+      // Improved fallback
+      const keywords = query.toLowerCase().split(/\s+/).filter(word => 
+        !['anyone', 'from', 'in', 'the', 'list', 'show', 'find', 'me'].includes(word)
+      );
       return {
-        keywords: query.toLowerCase().split(/\s+/),
-        intent: 'general search'
+        keywords,
+        intent: 'general search',
+        locations: keywords.filter(k => ['pune', 'mumbai', 'delhi', 'bangalore', 'chennai', 'kolkata', 'hyderabad'].includes(k)),
+        companies: keywords.filter(k => ['coep', 'iit', 'nit', 'bits'].includes(k)),
+        skills: keywords.filter(k => ['developer', 'designer', 'analyst', 'engineer', 'manager'].includes(k))
       };
     }
   }
 
   // Build MongoDB query from extracted intent
-  buildSearchQuery(intent) {
+  buildSearchQuery(intent, originalQuery) {
+    // Check if this is a location-specific search
+    const locationSpecificMatch = /(.+?)\s+from\s+(.+)/i.exec(originalQuery);
+    
+    if (locationSpecificMatch) {
+      // This is a location-specific search like "web developers from bengaluru"
+      const [, searchTerm, location] = locationSpecificMatch;
+      
+      logSuccess('location_specific_search_detected', { searchTerm, location });
+      
+      // Build AND query for location-specific searches
+      const andConditions = [];
+      
+      // Location condition
+      andConditions.push({
+        $or: [
+          { 'basicProfile.linkedinScrapedData.location': { $regex: location, $options: 'i' } },
+          { 'enhancedProfile.currentAddress': { $regex: location, $options: 'i' } },
+          { 'enhancedProfile.country': { $regex: location, $options: 'i' } }
+        ]
+      });
+      
+      // Search term condition
+      const searchConditions = [];
+      const keywords = searchTerm.toLowerCase().split(/\s+/);
+      keywords.forEach(keyword => {
+        if (!['the', 'in', 'at', 'any', 'all'].includes(keyword)) {
+          searchConditions.push(
+            { 'basicProfile.linkedinScrapedData.headline': { $regex: keyword, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.skills': { $regex: keyword, $options: 'i' } },
+            { 'basicProfile.about': { $regex: keyword, $options: 'i' } },
+            { 'enhancedProfile.professionalRole': { $regex: keyword, $options: 'i' } }
+          );
+        }
+      });
+      
+      if (searchConditions.length > 0) {
+        andConditions.push({ $or: searchConditions });
+      }
+      
+      logSuccess('location_query_built', { andConditions: JSON.stringify(andConditions) });
+      return { $and: andConditions };
+    }
+    
+    // Regular OR-based search
     const orConditions = [];
 
     // Name search
@@ -138,7 +215,9 @@ Return as JSON format:
         orConditions.push(
           { 'basicProfile.linkedinScrapedData.currentCompany': { $regex: company, $options: 'i' } },
           { 'basicProfile.linkedinScrapedData.experience.company': { $regex: company, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.education.title': { $regex: company, $options: 'i' } }
+          { 'basicProfile.linkedinScrapedData.education.title': { $regex: company, $options: 'i' } },
+          { 'basicProfile.about': { $regex: company, $options: 'i' } },
+          { 'enhancedProfile.yatraHelp': { $regex: company, $options: 'i' } }
         );
       });
     }
@@ -146,15 +225,23 @@ Return as JSON format:
     // Skills search - enhanced to check multiple fields
     if (intent.skills && intent.skills.length > 0) {
       intent.skills.forEach(skill => {
-        orConditions.push(
-          { 'basicProfile.linkedinScrapedData.skills': { $regex: skill, $options: 'i' } },
-          { 'basicProfile.about': { $regex: skill, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.about': { $regex: skill, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.headline': { $regex: skill, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.currentCompanyTitle': { $regex: skill, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.experience.title': { $regex: skill, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.experience.description': { $regex: skill, $options: 'i' } }
-        );
+        // Also search for related terms
+        const relatedTerms = this.getRelatedTerms(skill);
+        const searchTerms = [skill, ...relatedTerms];
+        
+        searchTerms.forEach(term => {
+          orConditions.push(
+            { 'basicProfile.linkedinScrapedData.skills': { $regex: term, $options: 'i' } },
+            { 'basicProfile.about': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.about': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.headline': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.currentCompanyTitle': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.experience.title': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.experience.description': { $regex: term, $options: 'i' } },
+            { 'enhancedProfile.domain': { $regex: term, $options: 'i' } },
+            { 'enhancedProfile.professionalRole': { $regex: term, $options: 'i' } }
+          );
+        });
       });
     }
 
@@ -173,34 +260,86 @@ Return as JSON format:
       });
     }
 
-    // Industry search
+    // Industry/Business search
     if (intent.industries && intent.industries.length > 0) {
       intent.industries.forEach(industry => {
-        orConditions.push(
-          { 'enhancedProfile.domain': { $regex: industry, $options: 'i' } },
-          { 'basicProfile.about': { $regex: industry, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.about': { $regex: industry, $options: 'i' } },
-          { 'basicProfile.linkedinScrapedData.headline': { $regex: industry, $options: 'i' } }
-        );
+        // Expand industry terms
+        const expandedTerms = this.expandIndustryTerms(industry);
+        expandedTerms.forEach(term => {
+          orConditions.push(
+            { 'enhancedProfile.domain': { $regex: term, $options: 'i' } },
+            { 'basicProfile.about': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.about': { $regex: term, $options: 'i' } },
+            { 'basicProfile.linkedinScrapedData.headline': { $regex: term, $options: 'i' } },
+            { 'enhancedProfile.yatraHelp': { $regex: term, $options: 'i' } },
+            { 'enhancedProfile.professionalRole': { $regex: term, $options: 'i' } }
+          );
+        });
       });
     }
 
-    // General keyword search as fallback
+    // General keyword search as fallback - search only relevant text fields
     if (intent.keywords && intent.keywords.length > 0) {
       intent.keywords.forEach(keyword => {
         // Skip common words
-        if (!['the', 'in', 'at', 'from', 'list', 'show', 'find', 'me'].includes(keyword.toLowerCase())) {
-          orConditions.push(
-            { 'basicProfile.name': { $regex: keyword, $options: 'i' } },
-            { 'basicProfile.about': { $regex: keyword, $options: 'i' } },
-            { 'basicProfile.linkedinScrapedData.headline': { $regex: keyword, $options: 'i' } },
-            { 'basicProfile.linkedinScrapedData.about': { $regex: keyword, $options: 'i' } },
-            { 'basicProfile.linkedinScrapedData.currentCompanyTitle': { $regex: keyword, $options: 'i' } }
-          );
+        if (!['the', 'in', 'at', 'from', 'list', 'show', 'find', 'me', 'any', 'all', 'anyone'].includes(keyword.toLowerCase())) {
+          // Search in text-based fields only (not email/linkedin URLs)
+          const textFields = [
+            'basicProfile.name',
+            'basicProfile.about',
+            'basicProfile.linkedinScrapedData.fullName',
+            'basicProfile.linkedinScrapedData.headline',
+            'basicProfile.linkedinScrapedData.about',
+            'basicProfile.linkedinScrapedData.currentCompanyTitle',
+            'basicProfile.linkedinScrapedData.experience.title',
+            'basicProfile.linkedinScrapedData.experience.company',
+            'basicProfile.linkedinScrapedData.education.title',
+            'basicProfile.linkedinScrapedData.skills',
+            'enhancedProfile.professionalRole',
+            'enhancedProfile.domain'
+          ];
+          textFields.forEach(field => {
+            orConditions.push({ [field]: { $regex: keyword, $options: 'i' } });
+          });
         }
       });
     }
 
+    // Gender filter
+    if (intent.gender) {
+      const genderConditions = [];
+      if (intent.gender.toLowerCase().includes('female') || intent.gender.toLowerCase().includes('women')) {
+        genderConditions.push(
+          { 'enhancedProfile.gender': { $regex: 'female', $options: 'i' } },
+          { 'basicProfile.name': { $regex: '(priya|anjali|neha|pooja|divya|shreya|anita|sita|radha)', $options: 'i' } }
+        );
+      } else if (intent.gender.toLowerCase().includes('male') || intent.gender.toLowerCase().includes('men')) {
+        genderConditions.push(
+          { 'enhancedProfile.gender': { $regex: 'male', $options: 'i' } },
+          { 'enhancedProfile.gender': { $not: { $regex: 'female', $options: 'i' } } }
+        );
+      }
+      if (genderConditions.length > 0) {
+        orConditions.push(...genderConditions);
+      }
+    }
+    
+    // Experience level filter
+    if (intent.experience) {
+      const exp = intent.experience.toLowerCase();
+      if (exp.includes('senior') || exp.includes('experienced')) {
+        orConditions.push(
+          { 'basicProfile.linkedinScrapedData.headline': { $regex: '(senior|sr\\.|lead|principal|head|director|vp|ceo|cto|founder)', $options: 'i' } },
+          { 'basicProfile.linkedinScrapedData.currentCompanyTitle': { $regex: '(senior|sr\\.|lead|principal|head|director|vp|ceo|cto|founder)', $options: 'i' } }
+        );
+      } else if (exp.includes('junior') || exp.includes('fresher')) {
+        orConditions.push(
+          { 'basicProfile.linkedinScrapedData.headline': { $regex: '(junior|jr\\.|intern|trainee|fresher|associate)', $options: 'i' } },
+          { 'basicProfile.linkedinScrapedData.currentCompanyTitle': { $regex: '(junior|jr\\.|intern|trainee|fresher|associate)', $options: 'i' } }
+        );
+      }
+    }
+    
     // Return query - use $or for all conditions
     return orConditions.length > 0 ? { $or: orConditions } : {};
   }
@@ -274,98 +413,328 @@ Return as JSON format:
     return score;
   }
 
-  // Format search results with AI-powered summaries
-  async formatSearchResults(users, query, intent) {
+  // Format search results with professional summaries
+  async formatSearchResults(users, query, intent, currentUserId) {
     try {
       if (users.length === 0) {
         return "No alumni found matching your search criteria. Try different keywords or broaden your search.";
       }
 
+      // Import cache service
+      const resultsCacheService = require('./resultsCacheService');
+      
+      // Filter out already shown profiles
+      const newUsers = resultsCacheService.filterNewProfiles(currentUserId, users);
+      
+      if (newUsers.length === 0 && users.length > 0) {
+        return "All matching profiles have been shown today. Try a different search or check back tomorrow.";
+      }
+
       // Sort by relevance score
-      const scoredUsers = users.map(user => ({
+      const scoredUsers = newUsers.map(user => ({
         user,
         score: this.calculateRelevanceScore(user, intent)
       })).sort((a, b) => b.score - a.score);
 
-      // Take top 10 results
-      const topResults = scoredUsers.slice(0, 10);
+      // Smart result selection based on query type
+      let resultCount = 2; // default
+      
+      // Determine how many to show
+      if (users.length === 1 || /who is|tell.*about|^[a-z]+ [a-z]+$/i.test(query)) {
+        resultCount = 1; // Show only 1 for specific person queries or exact names
+      } else if (intent.intent === 'person_search' && scoredUsers[0].score > 20) {
+        resultCount = 1; // High confidence person match
+      } else if (users.length > 10 && scoredUsers[0].score > 15) {
+        resultCount = 3; // Show 3 when we have many good matches
+      } else if (users.length > 20) {
+        resultCount = Math.min(4, scoredUsers.filter(s => s.score > 5).length); // Show up to 4 good matches
+      }
+      
+      const topResults = scoredUsers.slice(0, resultCount);
+      
+      // Ensure we have at least some results to show if available
+      if (topResults.length === 0 && scoredUsers.length > 0) {
+        // Force showing at least 2 results if available
+        topResults.push(...scoredUsers.slice(0, Math.min(2, scoredUsers.length)));
+      }
+      
+      // Mark these profiles as shown
+      const shownIds = topResults.map(r => r.user._id);
+      resultsCacheService.markProfilesShown(currentUserId, shownIds);
 
-      // Generate AI summary for each result
+      // Analyze what user wants
+      const wantsContact = /contact|email|linkedin|connect|reach/i.test(query);
+      const isFollowUp = /more|tell me more|details|elaborate/i.test(query);
+      const detailLevel = isFollowUp ? 'detailed' : 'normal';
+      
+      // Store ALL results in session for follow-ups (not just top results)
+      if (currentUserId && scoredUsers.length > 0) {
+        const intelligentContext = require('./intelligentContextService');
+        intelligentContext.storeSearchResults(
+          currentUserId, 
+          scoredUsers.map(r => r.user), // Store all scored users, not just top
+          query,
+          intent
+        );
+      }
+
+      // Check if user wants WhatsApp numbers
+      const wantsWhatsApp = intent.wantsContact || /whatsapp|phone|number|contact.*number/i.test(query);
+      
+      // Format results professionally with AI rewriting
       const formattedResults = await Promise.all(topResults.map(async (result, index) => {
         const user = result.user;
-        const profile = {
-          name: user.basicProfile?.linkedinScrapedData?.fullName || user.basicProfile?.name || 'Unknown',
-          headline: user.basicProfile?.linkedinScrapedData?.headline || '',
-          location: user.basicProfile?.linkedinScrapedData?.location || user.enhancedProfile?.country || '',
-          company: user.basicProfile?.linkedinScrapedData?.currentCompany || '',
-          role: user.basicProfile?.linkedinScrapedData?.currentCompanyTitle || user.enhancedProfile?.professionalRole || '',
-          about: user.basicProfile?.about || user.basicProfile?.linkedinScrapedData?.about || '',
-          skills: user.basicProfile?.linkedinScrapedData?.skills || [],
-          linkedin: user.basicProfile?.linkedin || ''
-        };
-
-        // Generate smart summary
-        const summary = await this.generateProfileSummary(profile, query);
+        const profile = this.extractProfileData(user);
         
-        return `${index + 1}. **${profile.name}** ${profile.location ? `📍 ${profile.location}` : ''}
-${profile.headline || profile.role}
-${profile.company ? `🏢 ${profile.company}` : ''}
-${summary}
-${profile.linkedin ? `🔗 [LinkedIn Profile](${profile.linkedin})` : ''}
-`;
+        // Add WhatsApp if requested
+        if (wantsWhatsApp && user.whatsappNumber) {
+          profile.whatsapp = user.whatsappNumber;
+        }
+        
+        // Generate AI-powered professional summary
+        const summary = await this.generateIntelligentSummary(
+          profile, 
+          query, 
+          intent, 
+          true,  // Always show email/LinkedIn
+          'normal',
+          wantsWhatsApp
+        );
+        
+        return `${index + 1}. ${summary}`;
       }));
-
-      const header = `Found ${users.length} alumni matching "${query}"\n\n`;
-      return header + formattedResults.join('\n---\n\n');
+      
+      // Format based on number of results
+      let finalMessage;
+      
+      if (topResults.length === 1) {
+        // Single result - clean format
+        finalMessage = formattedResults[0];
+      } else {
+        // Multiple results - compact format with separator
+        finalMessage = formattedResults.join('\n---\n');
+      }
+      
+      // Add count info only if many results
+      if (users.length > topResults.length && users.length > 5) {
+        finalMessage += `\n\n[+${users.length - topResults.length} more matches]`;
+      }
+      
+      // Strict length enforcement
+      if (finalMessage.length > 1400) {
+        // Reduce to fewer results
+        const reduced = Math.max(1, topResults.length - 1);
+        finalMessage = formattedResults.slice(0, reduced).join('\n---\n');
+      }
+      
+      return finalMessage;
 
     } catch (error) {
       logError(error, { operation: 'formatSearchResults' });
-      // Fallback to simple formatting
-      return this.simpleFormatResults(users, query);
+      return this.simpleFormatResults(users.slice(0, 2), query);
     }
   }
 
-  // Generate AI-powered profile summary
-  async generateProfileSummary(profile, query) {
+  // Generate intelligent AI-powered profile summary
+  async generateIntelligentSummary(profile, query, intent, includeContact = true, detailLevel = 'normal', includeWhatsApp = false) {
     try {
-      const prompt = `Based on this search query: "${query}"
-And this profile information:
+      // Determine what user is looking for
+      const wantsNameLocation = /who|name|where|location|from where|city|country/i.test(query);
+      const wantsContact = /contact|email|linkedin|connect|reach/i.test(query);
+      const wantsDetailed = /more|detail|about|tell me|elaborate/i.test(query) || detailLevel === 'detailed';
+      
+      const prompt = `Create a compelling professional summary for this alumni based on the search query.
+
+Search: "${query}"
+
+Profile:
 - Name: ${profile.name}
-- Role: ${profile.role}
+- Role: ${profile.headline || profile.professionalRole || 'Professional'}
 - Company: ${profile.company}
 - Location: ${profile.location}
-- About: ${profile.about.substring(0, 200)}...
-- Skills: ${profile.skills.slice(0, 5).join(', ')}
+- About: ${profile.about}
+- Skills: ${profile.skills.join(', ')}
+- Experience: ${profile.experience.map(e => `${e.title} at ${e.company}`).join('; ')}
+- Education: ${profile.education.map(e => e.title).join('; ')}
+- Domain: ${profile.domain}
+- Can help with: ${profile.yatraHelp}
+- Looking for: ${profile.communityAsks.join(', ')}
+- Can offer: ${profile.communityGives.join(', ')}
 
-Generate a 2-3 line summary highlighting why this person is relevant to the search query. Focus on their expertise and what value they can provide.`;
+Instructions:
+1. Write ONLY 2-3 lines maximum
+2. First line: Name, location, and primary expertise relevant to "${query}"
+3. Second line: Key skills or achievements that match the search
+4. Third line (optional): What they can offer/help with
+5. End with contact info ONLY if available: ${profile.email || profile.linkedin ? `Contact: ${profile.email || 'Email not available'}${profile.linkedin ? ' | ' + profile.linkedin : ''}` : 'Contact info not available'}${includeWhatsApp && profile.whatsapp ? ' | WhatsApp: ' + profile.whatsapp : ''}
+6. BE CONCISE - no flowery language or long sentences
+7. Focus ONLY on what matches the search query
+
+Write a brief, impactful summary:`;
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4-turbo-preview',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 100
+        temperature: 0.5,
+        max_tokens: 150
       });
 
-      return completion.choices[0].message.content.trim();
+      let summary = completion.choices[0].message.content.trim();
+      
+      // Add contact only if requested
+      if ((wantsContact || includeContact) && !summary.includes(profile.email)) {
+        if (includeWhatsApp && profile.whatsapp) {
+          summary += `\n📧 ${profile.email} | 🔗 ${profile.linkedin} | 📱 WhatsApp: ${profile.whatsapp}`;
+        } else {
+          summary += `\n📧 ${profile.email} | 🔗 ${profile.linkedin}`;
+        }
+      }
+      
+      return summary;
     } catch (error) {
-      // Fallback to basic summary
-      return `${profile.skills.slice(0, 3).join(', ')} expert with experience in ${profile.company || 'various organizations'}.`;
+      // Concise fallback
+      const lines = [];
+      
+      // Line 1: Name, location, role
+      const namePart = profile.name;
+      const locationPart = profile.location ? `, ${profile.location}` : '';
+      const rolePart = profile.headline || profile.company || 'Professional';
+      lines.push(`${namePart}${locationPart} - ${rolePart}`);
+      
+      // Line 2: Key expertise
+      if (profile.skills.length > 0) {
+        lines.push(`Skills: ${profile.skills.slice(0, 3).join(', ')}`);
+      } else if (profile.domain) {
+        lines.push(`Domain: ${profile.domain}`);
+      }
+      
+      // Contact line - only if available
+      const contactParts = [];
+      if (profile.email) contactParts.push(profile.email);
+      if (profile.linkedin) contactParts.push(profile.linkedin);
+      if (includeWhatsApp && profile.whatsapp) contactParts.push(`WhatsApp: ${profile.whatsapp}`);
+      
+      if (contactParts.length > 0) {
+        lines.push(`Contact: ${contactParts.join(' | ')}`);
+      }
+      
+      return lines.join('\n');
     }
+  }
+
+  // Get related terms for better search
+  getRelatedTerms(skill) {
+    const relatedMap = {
+      'developer': ['development', 'programmer', 'coding', 'software'],
+      'web': ['frontend', 'backend', 'fullstack', 'website'],
+      'import': ['export', 'trade', 'trading', 'international business'],
+      'export': ['import', 'trade', 'trading', 'international business'],
+      'ai': ['artificial intelligence', 'machine learning', 'ml', 'data science'],
+      'ml': ['machine learning', 'ai', 'artificial intelligence', 'data science'],
+      'entrepreneur': ['founder', 'startup', 'business owner', 'co-founder'],
+      'founder': ['entrepreneur', 'ceo', 'co-founder', 'startup']
+    };
+    
+    const lower = skill.toLowerCase();
+    return relatedMap[lower] || [];
+  }
+  
+  // Expand industry terms
+  expandIndustryTerms(industry) {
+    const lower = industry.toLowerCase();
+    const terms = [industry];
+    
+    if (lower.includes('import') || lower.includes('export')) {
+      terms.push('trade', 'trading', 'international business', 'import export', 'import-export');
+    }
+    
+    if (lower.includes('tech')) {
+      terms.push('technology', 'software', 'it');
+    }
+    
+    return terms;
+  }
+
+  // Extract profile data from user object
+  extractProfileData(user) {
+    const basicProfile = user.basicProfile || {};
+    const linkedinData = basicProfile.linkedinScrapedData || {};
+    const enhancedProfile = user.enhancedProfile || {};
+    
+    return {
+      name: enhancedProfile.fullName || linkedinData.fullName || basicProfile.name || 'Unknown',
+      headline: linkedinData.headline || linkedinData.currentCompanyTitle || enhancedProfile.professionalRole || '',
+      location: linkedinData.location || enhancedProfile.currentAddress || enhancedProfile.country || '',
+      company: linkedinData.currentCompany || linkedinData.experience?.[0]?.company || '',
+      email: basicProfile.email || enhancedProfile.email || '',
+      linkedin: basicProfile.linkedin || enhancedProfile.linkedin || '',
+      about: linkedinData.about || basicProfile.about || '',
+      skills: linkedinData.skills || [],
+      experience: linkedinData.experience || [],
+      education: linkedinData.education || [],
+      domain: enhancedProfile.domain || '',
+      yatraHelp: enhancedProfile.yatraHelp || '',
+      communityAsks: enhancedProfile.communityAsks || [],
+      communityGives: enhancedProfile.communityGives || []
+    };
+  }
+
+  // Create professional summary using all available profile data
+  createProfessionalSummary(profile, intent) {
+    let summary = [];
+    
+    // Add about section if available
+    if (profile.about) {
+      const aboutPreview = profile.about.substring(0, 150);
+      summary.push(aboutPreview + (profile.about.length > 150 ? '...' : ''));
+    }
+    
+    // Add skills if matching search intent
+    if (profile.skills.length > 0) {
+      const relevantSkills = profile.skills.slice(0, 5).join(', ');
+      summary.push(`💪 Skills: ${relevantSkills}`);
+    }
+    
+    // Add experience highlight
+    if (profile.experience.length > 0) {
+      const recentExp = profile.experience[0];
+      if (recentExp.title && recentExp.company) {
+        summary.push(`🏢 Experience: ${recentExp.title} at ${recentExp.company}`);
+      }
+    }
+    
+    // Add domain/industry
+    if (profile.domain) {
+      summary.push(`🎯 Domain: ${profile.domain}`);
+    }
+    
+    // Add what they can help with
+    if (profile.yatraHelp && typeof profile.yatraHelp === 'string') {
+      summary.push(`🤝 Can help with: ${profile.yatraHelp.substring(0, 100)}...`);
+    }
+    
+    return summary.join('\n');
   }
 
   // Simple fallback formatting
   simpleFormatResults(users, query) {
-    const results = users.slice(0, 10).map((user, index) => {
-      const name = user.basicProfile?.name || 'Unknown';
-      const location = user.basicProfile?.linkedinScrapedData?.location || '';
-      const company = user.basicProfile?.linkedinScrapedData?.currentCompany || '';
-      const role = user.basicProfile?.linkedinScrapedData?.currentCompanyTitle || '';
+    const results = users.slice(0, 3).map((user, index) => {
+      const profile = this.extractProfileData(user);
       
-      return `${index + 1}. **${name}** ${location ? `📍 ${location}` : ''}
-${role} ${company ? `at ${company}` : ''}`;
-    }).join('\n\n');
+      // Concise format: Name, Role/Location
+      const nameLine = `${index + 1}. ${profile.name}${profile.location ? `, ${profile.location}` : ''}`;
+      const roleSkills = profile.headline || (profile.skills.length > 0 ? profile.skills.slice(0, 2).join(', ') : 'Professional');
+      
+      // Contact line
+      const contactParts = [];
+      if (profile.email) contactParts.push(profile.email);
+      if (profile.linkedin) contactParts.push(profile.linkedin);
+      const contact = contactParts.length > 0 ? `Contact: ${contactParts.join(' | ')}` : '';
+      
+      return `${nameLine}\n${roleSkills}${contact ? '\n' + contact : ''}`;
+    }).join('\n---\n');
 
-    return `Found ${users.length} alumni matching "${query}"\n\n${results}`;
+    return results;
   }
 
   // Main search method
@@ -377,14 +746,90 @@ ${role} ${company ? `at ${company}` : ''}`;
       const intent = await this.extractSearchIntent(query);
       logSuccess('search_intent_extracted', { intent });
 
-      // Build MongoDB query
-      const searchQuery = this.buildSearchQuery(intent);
+      // Build MongoDB query with original query for better context
+      const searchQuery = this.buildSearchQuery(intent, query);
       
       // Execute search
       const db = getDatabase();
+      
+      // If no specific query conditions, do a broader search
+      if (Object.keys(searchQuery).length === 0 || (searchQuery.$or && searchQuery.$or.length === 0)) {
+        // Check if this is a location-specific query that wasn't caught
+        const locationSpecificMatch = /(.+?)\s+from\s+(.+)/i.exec(query);
+        if (locationSpecificMatch) {
+          // Manually build location-specific query
+          const [, searchTerm, location] = locationSpecificMatch;
+          searchQuery = {
+            $and: [
+              {
+                $or: [
+                  { 'basicProfile.linkedinScrapedData.location': { $regex: location, $options: 'i' } },
+                  { 'enhancedProfile.currentAddress': { $regex: location, $options: 'i' } },
+                  { 'enhancedProfile.country': { $regex: location, $options: 'i' } }
+                ]
+              },
+              {
+                $or: searchTerm.toLowerCase().split(/\s+/).filter(word => 
+                  !['the', 'in', 'at', 'any', 'all'].includes(word)
+                ).map(keyword => [
+                  { 'basicProfile.linkedinScrapedData.headline': { $regex: keyword, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.skills': { $regex: keyword, $options: 'i' } },
+                  { 'basicProfile.about': { $regex: keyword, $options: 'i' } },
+                  { 'enhancedProfile.professionalRole': { $regex: keyword, $options: 'i' } }
+                ]).flat()
+              }
+            ]
+          };
+        } else {
+          // Check if this is a "who is" query
+          const whoIsMatch = /who\s+is\s+(.+)/i.exec(query);
+          if (whoIsMatch) {
+            const personName = whoIsMatch[1].trim();
+            // Search specifically by name for "who is" queries
+            searchQuery = {
+              $or: [
+                { 'basicProfile.name': { $regex: personName, $options: 'i' } },
+                { 'basicProfile.linkedinScrapedData.fullName': { $regex: personName, $options: 'i' } },
+                { 'enhancedProfile.fullName': { $regex: personName, $options: 'i' } }
+              ]
+            };
+          } else {
+            // Check if searching for educational institutions like IIT
+            const educationMatch = /(IIT|NIT|BITS|COEP|college|university|institute|graduates?|alumni)/i.test(query);
+            if (educationMatch) {
+              // Focus search on education fields
+              const searchTerms = query.split(/\s+/).filter(term => term.length > 2);
+              searchQuery = {
+                $or: searchTerms.map(term => [
+                  { 'basicProfile.linkedinScrapedData.education.title': { $regex: term, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.education.degree': { $regex: term, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.education.field': { $regex: term, $options: 'i' } },
+                  { 'basicProfile.about': { $regex: term, $options: 'i' } },
+                  { 'enhancedProfile.yatraHelp': { $regex: term, $options: 'i' } }
+                ]).flat()
+              };
+            } else {
+              // Fallback to text search on the original query
+              searchQuery = {
+                $or: [
+                  { 'basicProfile.name': { $regex: query, $options: 'i' } },
+                  { 'basicProfile.about': { $regex: query, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.headline': { $regex: query, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.about': { $regex: query, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.location': { $regex: query, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.currentCompany': { $regex: query, $options: 'i' } },
+                  { 'basicProfile.linkedinScrapedData.education.title': { $regex: query, $options: 'i' } },
+                  { 'enhancedProfile.currentAddress': { $regex: query, $options: 'i' } }
+                ]
+              };
+            }
+          }
+        }
+      }
+      
       const users = await db.collection('users')
         .find(searchQuery)
-        .limit(50)
+        .limit(100)  // Increased to ensure we get more results
         .toArray();
 
       logSuccess('search_executed', { 
@@ -394,7 +839,7 @@ ${role} ${company ? `at ${company}` : ''}`;
       });
 
       // Format and return results
-      return await this.formatSearchResults(users, query, intent);
+      return await this.formatSearchResults(users, query, intent, currentUser?._id);
 
     } catch (error) {
       logError(error, { operation: 'enhancedSearch', query });

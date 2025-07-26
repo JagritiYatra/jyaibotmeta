@@ -2,6 +2,17 @@
 // Comprehensive knowledge base about Jagriti Yatra, JECP, and core team
 
 const UnifiedIntelligenceService = require('./unifiedIntelligenceService');
+const OpenAI = require('openai');
+const { getConfig } = require('../config/environment');
+
+// Initialize OpenAI
+let openai;
+const config = getConfig();
+if (config.ai?.apiKey) {
+  openai = new OpenAI({
+    apiKey: config.ai.apiKey,
+  });
+}
 
 const JAGRITI_YATRA_KNOWLEDGE = {
   // Core Information
@@ -10,6 +21,8 @@ const JAGRITI_YATRA_KNOWLEDGE = {
       'Jagriti Yatra is a 15-day, 8000 km train journey across India that takes 450 young changemakers aged 20-27 to meet social and business entrepreneurs.',
     founded:
       "Started in 2008 by Shashank Mani, Jagriti Yatra has become India's largest platform for young social entrepreneurs.",
+    founder:
+      "Shashank Mani is the founder of Jagriti Yatra. He envisioned and created this transformative journey to inspire young Indians to become entrepreneurs and change-makers.",
     purpose:
       'To inspire youth to lead development by taking to enterprise, fostering an entrepreneurial ecosystem across India.',
     participants:
@@ -348,28 +361,59 @@ Be specific and current - avoid outdated information.`;
     }
   }
 
-  // Handle queries with web search for accurate Jagriti Yatra information
+  // Handle queries with intelligent responses
   static async getFormattedResponse(userMessage) {
-    const query = userMessage.toLowerCase();
-
-    // For ANY Jagriti Yatra related query, search the website for accurate info
-    if (query.includes('jagriti') || query.includes('yatra') || 
-        query.includes('founder') || query.includes('ceo') || 
-        query.includes('team') || query.includes('member') || 
-        query.includes('current') || query.includes('latest') || 
-        query.includes('2024') || query.includes('2025') || 
-        query.includes('who') || query.includes('impact') ||
-        query.includes('journey') || query.includes('route') ||
-        query.includes('application') || query.includes('jecp')) {
+    try {
+      // First try AI-powered search if available
+      const { getConfig } = require('../config/environment');
+      const config = getConfig();
       
-      // Always search jagritiyatra.com for accurate information
-      return await this.searchInternetForJagritiInfo(userMessage);
+      if (config.ai?.apiKey && openai) {
+        const prompt = `You are an expert on Jagriti Yatra, India's transformative entrepreneurship journey. Answer this query professionally and engagingly.
+
+Query: "${userMessage}"
+
+Context:
+- Jagriti Yatra is a 15-day, 8000 km train journey across India for 450 changemakers aged 20-27
+- Founded by Shashank Mani in 2008, with 7000+ alumni creating impact
+- Shashank Mani is the visionary founder who created this journey to inspire youth entrepreneurship
+- Visits social entrepreneurs across 12 cities from Mumbai to Delhi
+- JECP in Deoria is the flagship innovation center in Purvanchal
+- Applications open July-August for December journey
+- Alumni work in agriculture, education, healthcare, technology creating grassroots solutions
+
+Instructions:
+1. Provide a clear, engaging answer without generic phrases
+2. Be specific with facts and examples where relevant
+3. Keep response conversational and inspiring
+4. Maximum 3-4 sentences, no bullet points
+5. Don't use ellipsis (...) or phrases like "and more"
+6. If asked about current team/updates, mention checking jagritiyatra.com for latest info
+
+Answer:`;
+
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4-turbo-preview',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.7,
+          max_tokens: 200
+        });
+
+        return completion.choices[0].message.content.trim();
+      }
+    } catch (error) {
+      console.error('AI response failed:', error);
     }
 
-    // For non-Jagriti queries, use knowledge base
-    const topic = userMessage;
-    const info = this.getInformation(topic);
-
+    // Fallback to enhanced knowledge base search
+    const query = userMessage.toLowerCase();
+    const info = this.getInformation(query);
+    
+    // Make response more conversational
+    if (info.includes('Jagriti Yatra')) {
+      return this.expandInformation(info, query);
+    }
+    
     return info;
   }
 }
