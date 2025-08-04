@@ -16,7 +16,9 @@
       "Bash(node:*)",
       "Bash(npm run lint)",
       "Bash(npm start)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
