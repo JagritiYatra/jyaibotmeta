@@ -313,18 +313,28 @@ function parseMetaWebhookMessage(body) {
   }
 }
 
-// Mark message as read
-async function markMessageAsRead(messageId) {
+
+// Mark message as read with optional typing indicator
+async function markMessageAsRead(messageId, showTyping = false) {
   const config = getConfig();
 
   try {
+    const payload = {
+      messaging_product: 'whatsapp',
+      status: 'read',
+      message_id: messageId,
+    };
+
+    // Add typing indicator if requested
+    if (showTyping) {
+      payload.typing_indicator = {
+        type: 'text'
+      };
+    }
+
     await axios.post(
       `${META_API_URL}/${config.meta.phoneNumberId}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        status: 'read',
-        message_id: messageId,
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${config.meta.accessToken}`,
@@ -333,7 +343,7 @@ async function markMessageAsRead(messageId) {
       }
     );
 
-    console.log(`✓ Message marked as read: ${messageId}`);
+    console.log(`✓ Message marked as read${showTyping ? ' with typing indicator' : ''}: ${messageId}`);
     return true;
   } catch (error) {
     console.error('Failed to mark message as read:', error.message);

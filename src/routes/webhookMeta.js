@@ -14,7 +14,7 @@ const {
   sendMetaMessage, 
   verifyWebhook, 
   parseMetaWebhookMessage,
-  markMessageAsRead 
+  markMessageAsRead
 } = require('../services/metaWhatsAppService');
 const { handleAuthenticatedUser } = require('../controllers/authenticatedUserControllerSimple');
 const { handleNewUser } = require('../controllers/newUserController');
@@ -83,8 +83,8 @@ router.post(
       messageType 
     } = parsedData;
 
-    // Mark message as read
-    await markMessageAsRead(messageId);
+    // Mark message as read with typing indicator
+    await markMessageAsRead(messageId, true);
 
     // Skip non-text messages for now
     if (messageType !== 'text' && messageType !== 'button' && messageType !== 'interactive') {
