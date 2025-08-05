@@ -9,7 +9,7 @@ require('dotenv').config();
 // Import configurations and services
 const { connectDatabase } = require('./src/config/database');
 const { validateEnvironment } = require('./src/config/environment');
-const webhookRoutes = require('./src/routes/webhook');
+const webhookMetaRoutes = require('./src/routes/webhookMeta');
 const healthRoutes = require('./src/routes/health');
 const adminRoutes = require('./src/routes/admin');
 const profileFormRoutes = require('./web/routes/profileFormRoutes');
@@ -34,7 +34,7 @@ app.use('/admin', express.static('admin-dashboard/build'));
 app.use(express.static('web/public'));
 
 // Routes
-app.use('/webhook', webhookRoutes);
+app.use('/webhook', webhookMetaRoutes);
 app.use('/health', healthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/', profileFormRoutes);

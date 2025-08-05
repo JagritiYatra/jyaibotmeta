@@ -5,9 +5,13 @@ const requiredEnvVars = [
   'OPENAI_API_KEY',
   'MONGODB_URI',
   'DB_NAME',
-  'TWILIO_ACCOUNT_SID',
-  'TWILIO_AUTH_TOKEN',
-  'TWILIO_PHONE_NUMBER',
+  'META_APP_ID',
+  'META_APP_SECRET',
+  'META_PERMANENT_TOKEN',
+  'PHONE_NUMBER_ID',
+  'WABA_ID',
+  'WHATSAPP_PHONE_NUMBER',
+  'WEBHOOK_VERIFY_TOKEN',
   'EMAIL_USER',
   'EMAIL_PASS',
 ];
@@ -82,11 +86,15 @@ function getConfig() {
       apiKey: process.env.OPENAI_API_KEY,
     },
 
-    // Twilio Configuration
-    twilio: {
-      accountSid: process.env.TWILIO_ACCOUNT_SID,
-      authToken: process.env.TWILIO_AUTH_TOKEN,
-      phoneNumber: process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886',
+    // Meta WhatsApp Configuration
+    meta: {
+      appId: process.env.META_APP_ID,
+      appSecret: process.env.META_APP_SECRET,
+      accessToken: process.env.META_PERMANENT_TOKEN,
+      phoneNumberId: process.env.PHONE_NUMBER_ID,
+      wabaId: process.env.WABA_ID,
+      whatsappNumber: process.env.WHATSAPP_PHONE_NUMBER,
+      webhookVerifyToken: process.env.WEBHOOK_VERIFY_TOKEN,
     },
 
     // Email Configuration
