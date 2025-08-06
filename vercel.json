@@ -20,6 +20,10 @@
       "dest": "/web/public/profile-form.html"
     },
     {
+      "src": "/plain-profile-form.html",
+      "dest": "/web/public/plain-profile-form.html"
+    },
+    {
       "src": "/profile-setup",
       "dest": "/index.js"
     },
