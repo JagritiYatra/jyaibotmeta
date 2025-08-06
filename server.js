@@ -13,6 +13,8 @@ const webhookMetaRoutes = require('./src/routes/webhookMeta');
 const healthRoutes = require('./src/routes/health');
 const adminRoutes = require('./src/routes/admin');
 const profileFormRoutes = require('./web/routes/profileFormRoutes');
+const emailVerificationRoutes = require('./src/routes/emailVerification');
+const plainFormRoutes = require('./src/routes/plainFormSubmission');
 const { requestLogger } = require('./src/middleware/logging');
 const { errorHandler, notFoundHandler } = require('./src/middleware/errorHandlers');
 
@@ -37,6 +39,8 @@ app.use(express.static('web/public'));
 app.use('/webhook', webhookMetaRoutes);
 app.use('/health', healthRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/email-verification', emailVerificationRoutes);
+app.use('/api/plain-form', plainFormRoutes);
 app.use('/', profileFormRoutes);
 
 // Error handling middleware

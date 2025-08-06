@@ -63,10 +63,14 @@ Once you complete your profile, you can access all features!`;
     
     // PRIORITY 2: Handle different intents for users with complete profiles
     
-    // For simple greetings, provide a welcome message
+    // For simple greetings, provide a welcome message with the user's name
     const lowerMessage = userMessage.toLowerCase();
     if (['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening'].includes(lowerMessage.trim())) {
-      return `Hello ${firstName}! 👋
+      // Use name from enhancedProfile (filled via form) or basicProfile
+      const userFullName = user.enhancedProfile?.fullName || user.basicProfile?.name || 'there';
+      const userFirstName = userFullName.split(' ')[0];
+      
+      return `Hello ${userFirstName}! 👋
 
 Welcome back to JY Alumni Network. How can I help you today?
 
