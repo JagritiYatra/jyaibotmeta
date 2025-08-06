@@ -149,7 +149,13 @@ const authorizedEmails = new Set([
   'nirmalmrabari@gmail.com',
   'ammu870939@gmail.com',
   'tanmayi540@gmail.com',
-  'vaibhavsharmankp@gmail.com'
+  'vaibhavsharmankp@gmail.com',
+  'techakash@jagritiyatra.com',
+  'jadhavakashofficial@gmail.com',
+  'classictechak.com@gmail.com',
+  'classictechnology.com@gmail.com',
+  'murali@jagritiyatra.com',
+  'karthik@jagritiyatra.com'
 ]);
 
 function isEmailAuthorized(email) {
