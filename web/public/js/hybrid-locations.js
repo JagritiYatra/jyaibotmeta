@@ -20,12 +20,20 @@ const LocationService = {
       const response = await fetch('https://jyaibot-profile-form.vercel.app/api/countries');
       if (response.ok) {
         const data = await response.json();
-        // The API returns an array of country names
-        this.countries = data.map(name => ({
-          id: name,
-          name: name,
-          phonecode: ''
-        }));
+        console.log('API response:', data);
+        
+        // The API returns an array of objects directly
+        if (Array.isArray(data)) {
+          this.countries = data.map(country => ({
+            id: country.id || country.code || country.name,
+            name: country.name,
+            phonecode: country.phonecode || ''
+          }));
+        } else {
+          console.error('Unexpected data format:', data);
+          throw new Error('Invalid data format');
+        }
+        
         console.log('Successfully loaded', this.countries.length, 'countries from API');
         return this.countries;
       } else {
@@ -53,25 +61,31 @@ const LocationService = {
   },
   
   // Get states for a country (load on demand)
-  async getStates(countryName) {
-    // Check cache first - now using country name as key
-    if (this.statesCache[countryName]) {
-      return this.statesCache[countryName];
+  async getStates(countryId) {
+    // Check cache first - using country ID as key
+    if (this.statesCache[countryId]) {
+      return this.statesCache[countryId];
     }
     
     try {
-      // Use the states API with country name
-      console.log('Loading states for', countryName);
-      const response = await fetch(`https://jyaibot-profile-form.vercel.app/api/states?country=${encodeURIComponent(countryName)}`);
+      // Use the states API with country code
+      console.log('Loading states for country code:', countryId);
+      const response = await fetch(`https://jyaibot-profile-form.vercel.app/api/states/${countryId}`);
       if (response.ok) {
-        const states = await response.json();
-        // API returns array of state names
-        const formattedStates = states.map(name => ({
-          id: name,
-          name: name
-        }));
-        this.statesCache[countryName] = formattedStates;
-        console.log('Successfully loaded', formattedStates.length, 'states for', countryName);
+        const data = await response.json();
+        console.log('States API response:', data);
+        
+        // The API returns an array of objects directly
+        let formattedStates = [];
+        if (Array.isArray(data)) {
+          formattedStates = data.map(state => ({
+            id: state.id || state.code || state.name,
+            name: state.name
+          }));
+        }
+        
+        this.statesCache[countryId] = formattedStates;
+        console.log('Successfully loaded', formattedStates.length, 'states for', countryId);
         return formattedStates;
       } else {
         console.error('States API returned error:', response.status);
@@ -84,8 +98,8 @@ const LocationService = {
   },
   
   // Get cities for a state (load on demand)
-  async getCities(countryName, stateName) {
-    const cacheKey = `${countryName}_${stateName}`;
+  async getCities(countryId, stateId) {
+    const cacheKey = `${countryId}_${stateId}`;
     
     // Check cache first
     if (this.citiesCache[cacheKey]) {
@@ -93,18 +107,24 @@ const LocationService = {
     }
     
     try {
-      // Use the cities API with country and state names
-      console.log('Loading cities for', stateName, ',', countryName);
-      const response = await fetch(`https://jyaibot-profile-form.vercel.app/api/cities?country=${encodeURIComponent(countryName)}&state=${encodeURIComponent(stateName)}`);
+      // Use the cities API with country and state codes
+      console.log('Loading cities for state:', stateId, ', country:', countryId);
+      const response = await fetch(`https://jyaibot-profile-form.vercel.app/api/cities/${countryId}/${stateId}`);
       if (response.ok) {
-        const cities = await response.json();
-        // API returns array of city names
-        const formattedCities = cities.map(name => ({
-          id: name,
-          name: name
-        }));
+        const data = await response.json();
+        console.log('Cities API response:', data);
+        
+        // The API returns an array of objects directly
+        let formattedCities = [];
+        if (Array.isArray(data)) {
+          formattedCities = data.map(city => ({
+            id: city.id || city.name,
+            name: city.name
+          }));
+        }
+        
         this.citiesCache[cacheKey] = formattedCities;
-        console.log('Successfully loaded', formattedCities.length, 'cities for', stateName);
+        console.log('Successfully loaded', formattedCities.length, 'cities for', stateId);
         return formattedCities;
       } else {
         console.error('Cities API returned error:', response.status);
@@ -144,6 +164,7 @@ async function initializeLocationSelects() {
     countries.forEach(country => {
       const option = document.createElement('option');
       option.value = country.name;
+      option.dataset.countryId = country.id; // Store the country ID for API calls
       option.textContent = country.name;
       countrySelect.appendChild(option);
     });
@@ -151,7 +172,8 @@ async function initializeLocationSelects() {
     // Country change handler
     countrySelect.addEventListener('change', async function() {
       const selectedOption = this.options[this.selectedIndex];
-      const countryName = selectedOption.value; // Use name instead of code
+      const countryName = selectedOption.value;
+      const countryId = selectedOption.dataset.countryId; // Get the country ID for API
       
       // Reset dependent dropdowns
       stateSelect.innerHTML = '<option value="">Select State</option>';
@@ -159,16 +181,17 @@ async function initializeLocationSelects() {
       stateSelect.disabled = true;
       citySelect.disabled = true;
       
-      if (countryName) {
-        // Load states using country name
-        const states = await LocationService.getStates(countryName);
-        console.log('Loaded states for', countryName, ':', states.length);
+      if (countryName && countryId) {
+        // Load states using country ID
+        const states = await LocationService.getStates(countryId);
+        console.log('Loaded states for', countryName, '(', countryId, '):', states.length);
         
         if (states.length > 0) {
           stateSelect.disabled = false;
           states.forEach(state => {
             const option = document.createElement('option');
             option.value = state.name;
+            option.dataset.stateId = state.id; // Store the state ID for API calls
             option.textContent = state.name;
             stateSelect.appendChild(option);
           });
@@ -184,23 +207,26 @@ async function initializeLocationSelects() {
     // State change handler
     if (stateSelect) {
       stateSelect.addEventListener('change', async function() {
-        const stateName = this.value; // Use state name
-        const countryName = countrySelect.value; // Use country name
+        const selectedOption = this.options[this.selectedIndex];
+        const stateName = selectedOption.value;
+        const stateId = selectedOption.dataset.stateId; // Get the state ID for API
+        const countryOption = countrySelect.options[countrySelect.selectedIndex];
+        const countryId = countryOption.dataset.countryId; // Get the country ID
         
         citySelect.innerHTML = '<option value="">Select City</option>';
         citySelect.disabled = true;
         
-        if (stateName && countryName) {
-          // Try to load cities using names
-          const cities = await LocationService.getCities(countryName, stateName);
-          console.log('Loaded cities:', cities.length);
+        if (stateName && stateId && countryId) {
+          // Load cities using IDs
+          const cities = await LocationService.getCities(countryId, stateId);
+          console.log('Loaded cities for', stateName, ':', cities.length);
           
           citySelect.disabled = false;
           if (cities.length > 0) {
             cities.forEach(city => {
               const option = document.createElement('option');
-              option.value = city.name || city;
-              option.textContent = city.name || city;
+              option.value = city.name;
+              option.textContent = city.name;
               citySelect.appendChild(option);
             });
           } else {
