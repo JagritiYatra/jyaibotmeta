@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeOTPInputs();
     initializeEmailVerification();
     initializeFormValidation();
-    initializeLocationDropdowns();
+    // Don't initialize location dropdowns here - will do after OTP verification
+    // initializeLocationDropdowns();
     initializeCheckboxLimits();
 });
 
@@ -182,6 +183,9 @@ async function verifyOTP() {
             
             // Show main form
             document.getElementById('mainFormSection').classList.add('active');
+            
+            // Initialize location dropdowns NOW that the form is visible
+            await initializeLocationDropdowns();
             
             // Update progress bar
             updateProgressBar(20);
