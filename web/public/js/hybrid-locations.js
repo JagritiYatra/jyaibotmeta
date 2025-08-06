@@ -22,45 +22,23 @@ const LocationService = {
         const data = await response.json();
         // The API returns an array of country names
         this.countries = data.map(name => ({
-          id: name.substring(0, 2).toUpperCase(), // Simple ID from name
+          id: name,
           name: name,
           phonecode: ''
         }));
-        console.log('Loaded', this.countries.length, 'countries from API');
+        console.log('Successfully loaded', this.countries.length, 'countries from API');
+        return this.countries;
+      } else {
+        console.error('API returned error:', response.status);
+        throw new Error('API failed');
       }
     } catch (e) {
-      console.log('API failed, loading from local/CDN...');
-      
-      // Fallback to local file
-      try {
-        const localResponse = await fetch('/data/locations-minimal.json');
-        if (localResponse.ok) {
-          const data = await localResponse.json();
-          this.countries = data.countries;
-        }
-      } catch (e2) {
-        console.log('Loading countries from CDN...');
-      }
-      
-      // If still no data, load from CDN
-      if (!this.countries) {
-        try {
-          const response = await fetch(this.CDN_BASE + 'countries.json');
-          const data = await response.json();
-          this.countries = data.map(c => ({
-            id: c.iso2,
-            name: c.name,
-            phonecode: c.phonecode
-          }));
-        } catch (error) {
-          console.error('Failed to load countries:', error);
-          // Ultimate fallback
-          this.countries = [
-            {id: 'IN', name: 'India', phonecode: '91'},
-            {id: 'US', name: 'United States', phonecode: '1'}
-          ];
-        }
-      }
+      console.error('Failed to load countries from API:', e);
+      // Simple fallback
+      this.countries = [
+        {id: 'India', name: 'India', phonecode: '91'},
+        {id: 'United States', name: 'United States', phonecode: '1'}
+      ];
     }
     
     return this.countries;
@@ -93,28 +71,12 @@ const LocationService = {
           name: name
         }));
         this.statesCache[countryName] = formattedStates;
-        console.log('Loaded', formattedStates.length, 'states for', countryName);
+        console.log('Successfully loaded', formattedStates.length, 'states for', countryName);
         return formattedStates;
+      } else {
+        console.error('States API returned error:', response.status);
+        return [];
       }
-    } catch (error) {
-      console.log('States API failed, trying CDN...');
-    }
-    
-    // Fallback to CDN
-    try {
-      const response = await fetch(this.CDN_BASE + 'states.json');
-      const allStates = await response.json();
-      
-      // Filter for this country by name
-      const countryStates = allStates
-        .filter(s => s.country_name === countryName)
-        .map(s => ({
-          id: s.state_code || s.name,
-          name: s.name
-        }));
-      
-      this.statesCache[countryName] = countryStates;
-      return countryStates;
     } catch (error) {
       console.error('Failed to load states:', error);
       return [];
@@ -132,7 +94,7 @@ const LocationService = {
     
     try {
       // Use the cities API with country and state names
-      console.log('Loading cities for', stateName, countryName);
+      console.log('Loading cities for', stateName, ',', countryName);
       const response = await fetch(`https://jyaibot-profile-form.vercel.app/api/cities?country=${encodeURIComponent(countryName)}&state=${encodeURIComponent(stateName)}`);
       if (response.ok) {
         const cities = await response.json();
@@ -142,16 +104,16 @@ const LocationService = {
           name: name
         }));
         this.citiesCache[cacheKey] = formattedCities;
-        console.log('Loaded', formattedCities.length, 'cities for', stateName);
+        console.log('Successfully loaded', formattedCities.length, 'cities for', stateName);
         return formattedCities;
+      } else {
+        console.error('Cities API returned error:', response.status);
+        return [];
       }
     } catch (error) {
-      console.log('Cities API failed:', error);
+      console.error('Failed to load cities:', error);
+      return [];
     }
-    
-    // For cities, we return empty array as CDN file is too large (40MB)
-    // Allow manual entry
-    return [];
   }
 };
 
@@ -183,7 +145,6 @@ async function initializeLocationSelects() {
       const option = document.createElement('option');
       option.value = country.name;
       option.textContent = country.name;
-      option.dataset.code = country.id;
       countrySelect.appendChild(option);
     });
     
@@ -209,7 +170,6 @@ async function initializeLocationSelects() {
             const option = document.createElement('option');
             option.value = state.name;
             option.textContent = state.name;
-            option.dataset.code = state.id;
             stateSelect.appendChild(option);
           });
         } else {
