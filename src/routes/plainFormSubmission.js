@@ -49,22 +49,33 @@ router.post('/submit-plain-form', async (req, res) => {
 
     const db = getDatabase();
     
-    // Clean phone number - remove spaces and special chars, keep only digits
-    let cleanedPhone = phoneNumber.replace(/[\s\-\(\)\.]/g, '');
-    if (!cleanedPhone.startsWith('91') && cleanedPhone.length === 10) {
+    // Clean phone number - remove all non-digit characters
+    let cleanedPhone = phoneNumber.replace(/[^\d]/g, '');
+    
+    // If number doesn't have country code and is 10 digits (Indian number), add 91
+    if (cleanedPhone.length === 10) {
       cleanedPhone = '91' + cleanedPhone;
     }
     
-    // Check if user exists with this email
+    // Ensure the phone number starts with a valid country code
+    // If user entered +91 or 91 already, it should be preserved
+    console.log(`Processing phone number: ${phoneNumber} -> ${cleanedPhone}`);
+    
+    // Check if user exists with this email or phone number
     let existingUser = await db.collection('users').findOne({ 
-      'enhancedProfile.email': normalizedEmail 
+      $or: [
+        { 'enhancedProfile.email': normalizedEmail },
+        { 'metadata.email': normalizedEmail },
+        { whatsappNumber: cleanedPhone },
+        { whatsappNumber: { $regex: cleanedPhone, $options: 'i' } },
+        { 'enhancedProfile.phoneNumber': cleanedPhone }
+      ]
     });
-
-    if (!existingUser) {
-      // Check if user exists with this phone number
-      existingUser = await db.collection('users').findOne({ 
-        whatsappNumber: cleanedPhone 
-      });
+    
+    if (existingUser) {
+      console.log(`Found existing user: ${existingUser._id} with whatsappNumber: ${existingUser.whatsappNumber}`);
+    } else {
+      console.log(`No existing user found for email: ${normalizedEmail} or phone: ${cleanedPhone}`);
     }
 
     const profileData = {
@@ -88,25 +99,32 @@ router.post('/submit-plain-form', async (req, res) => {
       communityGives: Array.isArray(communityGives) ? communityGives : [communityGives].filter(Boolean),
       formFilledVia: 'plain_link',
       formFilledAt: new Date(),
-      profileComplete: true
+      profileComplete: true,
+      completed: true // This is the flag the bot checks
     };
 
     if (existingUser) {
-      // Update existing user
+      // Update existing user - also update WhatsApp number if it changed
+      const updateData = {
+        enhancedProfile: profileData,
+        'basicProfile.name': name,
+        'basicProfile.dateOfBirth': dateOfBirth,
+        'basicProfile.gender': gender,
+        'basicProfile.professionalRole': professionalRole,
+        'basicProfile.location': `${city}, ${state}, ${country}`,
+        profileComplete: true,
+        lastUpdated: new Date()
+      };
+      
+      // Update WhatsApp number if it's different or missing
+      if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
+        updateData.whatsappNumber = cleanedPhone;
+        console.log(`Updating WhatsApp number from ${existingUser.whatsappNumber} to ${cleanedPhone}`);
+      }
+      
       await db.collection('users').updateOne(
         { _id: existingUser._id },
-        {
-          $set: {
-            enhancedProfile: profileData,
-            'basicProfile.name': name,
-            'basicProfile.dateOfBirth': dateOfBirth,
-            'basicProfile.gender': gender,
-            'basicProfile.professionalRole': professionalRole,
-            'basicProfile.location': `${city}, ${state}, ${country}`,
-            profileComplete: true,
-            lastUpdated: new Date()
-          }
-        }
+        { $set: updateData }
       );
 
       logSuccess('plain_form_profile_updated', { 

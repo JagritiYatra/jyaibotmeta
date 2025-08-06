@@ -81,10 +81,13 @@ async function findUserByWhatsAppNumber(whatsappNumber) {
     const db = getDatabase();
     const cleanNumber = whatsappNumber.replace(/[^\d]/g, '');
 
+    // Try exact match first, then regex for flexibility
     const user = await db.collection('users').findOne({
       $or: [
-        { whatsappNumber: { $regex: cleanNumber, $options: 'i' } },
-        { whatsappNumbers: { $elemMatch: { $regex: cleanNumber, $options: 'i' } } },
+        { whatsappNumber: cleanNumber }, // Exact match
+        { whatsappNumber: { $regex: cleanNumber, $options: 'i' } }, // Regex match
+        { whatsappNumbers: cleanNumber }, // Exact match in array
+        { whatsappNumbers: { $elemMatch: { $regex: cleanNumber, $options: 'i' } } }, // Regex match in array
       ],
     });
 
@@ -92,7 +95,10 @@ async function findUserByWhatsAppNumber(whatsappNumber) {
       logSuccess('user_found_by_whatsapp', {
         userId: user._id,
         hasEnhancedProfile: !!user.enhancedProfile,
+        whatsappNumber: user.whatsappNumber,
       });
+    } else {
+      console.log(`No user found for WhatsApp number: ${cleanNumber}`);
     }
 
     return user;
