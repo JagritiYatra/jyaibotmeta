@@ -123,8 +123,115 @@ const LocationService = {
   }
 };
 
+// Initialize location selects for forms
+async function initializeLocationSelects() {
+  console.log('Initializing location selects...');
+  
+  try {
+    // Initialize the service
+    await LocationService.init();
+    
+    // Get the select elements
+    const countrySelect = document.getElementById('countrySelect');
+    const stateSelect = document.getElementById('stateSelect');
+    const citySelect = document.getElementById('citySelect');
+    
+    if (!countrySelect) {
+      console.log('Country select not found');
+      return;
+    }
+    
+    // Load countries
+    const countries = await LocationService.getCountries();
+    console.log('Loaded countries:', countries.length);
+    
+    // Populate country dropdown
+    countrySelect.innerHTML = '<option value="">Select Country</option>';
+    countries.forEach(country => {
+      const option = document.createElement('option');
+      option.value = country.name;
+      option.textContent = country.name;
+      option.dataset.code = country.id;
+      countrySelect.appendChild(option);
+    });
+    
+    // Country change handler
+    countrySelect.addEventListener('change', async function() {
+      const selectedOption = this.options[this.selectedIndex];
+      const countryCode = selectedOption.dataset.code;
+      
+      // Reset dependent dropdowns
+      stateSelect.innerHTML = '<option value="">Select State</option>';
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      stateSelect.disabled = true;
+      citySelect.disabled = true;
+      
+      if (countryCode) {
+        // Load states
+        const states = await LocationService.getStates(countryCode);
+        console.log('Loaded states for', countryCode, ':', states.length);
+        
+        if (states.length > 0) {
+          stateSelect.disabled = false;
+          states.forEach(state => {
+            const option = document.createElement('option');
+            option.value = state.name;
+            option.textContent = state.name;
+            option.dataset.code = state.id;
+            stateSelect.appendChild(option);
+          });
+        } else {
+          // No states - enable city directly
+          stateSelect.innerHTML = '<option value="N/A">N/A</option>';
+          stateSelect.value = 'N/A';
+          citySelect.disabled = false;
+        }
+      }
+    });
+    
+    // State change handler
+    if (stateSelect) {
+      stateSelect.addEventListener('change', async function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const stateCode = selectedOption.dataset.code;
+        const countryOption = countrySelect.options[countrySelect.selectedIndex];
+        const countryCode = countryOption.dataset.code;
+        
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        citySelect.disabled = true;
+        
+        if (stateCode && countryCode) {
+          // Try to load cities
+          const cities = await LocationService.getCities(countryCode, stateCode);
+          console.log('Loaded cities:', cities.length);
+          
+          citySelect.disabled = false;
+          if (cities.length > 0) {
+            cities.forEach(city => {
+              const option = document.createElement('option');
+              option.value = city.name || city;
+              option.textContent = city.name || city;
+              citySelect.appendChild(option);
+            });
+          } else {
+            // Allow manual entry
+            citySelect.innerHTML = '<option value="">Enter city manually</option>';
+          }
+        } else if (this.value) {
+          citySelect.disabled = false;
+        }
+      });
+    }
+    
+    console.log('Location selects initialized successfully');
+  } catch (error) {
+    console.error('Error initializing location selects:', error);
+  }
+}
+
 // Export for use in profile form
 window.LocationService = LocationService;
 window.getCountries = () => LocationService.getCountries();
 window.getStates = (code) => LocationService.getStates(code);
 window.getCities = (country, state) => LocationService.getCities(country, state);
+window.initializeLocationSelects = initializeLocationSelects;

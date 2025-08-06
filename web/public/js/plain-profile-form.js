@@ -185,7 +185,12 @@ async function verifyOTP() {
             document.getElementById('mainFormSection').classList.add('active');
             
             // Initialize location dropdowns NOW that the form is visible
-            await initializeLocationDropdowns();
+            if (window.initializeLocationSelects) {
+                console.log('Calling initializeLocationSelects...');
+                await window.initializeLocationSelects();
+            } else {
+                console.error('initializeLocationSelects not found');
+            }
             
             // Update progress bar
             updateProgressBar(20);
@@ -298,107 +303,7 @@ function initializeFormValidation() {
     });
 }
 
-// Initialize location dropdowns
-async function initializeLocationDropdowns() {
-    try {
-        // Initialize LocationService from hybrid-locations.js
-        if (window.LocationService) {
-            await window.LocationService.init();
-            
-            // Load countries into the dropdown
-            const countries = await window.LocationService.getCountries();
-            const countrySelect = document.getElementById('countrySelect');
-            
-            if (countrySelect && countries) {
-                countrySelect.innerHTML = '<option value="">Select Country</option>';
-                countries.forEach(country => {
-                    const option = document.createElement('option');
-                    option.value = country.name;
-                    option.textContent = country.name;
-                    option.dataset.code = country.id;
-                    countrySelect.appendChild(option);
-                });
-                
-                // Add event listener for country change
-                countrySelect.addEventListener('change', async function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const countryCode = selectedOption.dataset.code;
-                    
-                    // Clear and disable dependent dropdowns
-                    const stateSelect = document.getElementById('stateSelect');
-                    const citySelect = document.getElementById('citySelect');
-                    
-                    stateSelect.innerHTML = '<option value="">Select State</option>';
-                    citySelect.innerHTML = '<option value="">Select City</option>';
-                    stateSelect.disabled = true;
-                    citySelect.disabled = true;
-                    
-                    if (countryCode) {
-                        // Load states for selected country
-                        const states = await window.LocationService.getStates(countryCode);
-                        
-                        if (states && states.length > 0) {
-                            stateSelect.disabled = false;
-                            states.forEach(state => {
-                                const option = document.createElement('option');
-                                option.value = state.name;
-                                option.textContent = state.name;
-                                option.dataset.code = state.id;
-                                stateSelect.appendChild(option);
-                            });
-                        } else {
-                            // If no states, enable city directly
-                            stateSelect.innerHTML = '<option value="N/A">N/A</option>';
-                            stateSelect.value = 'N/A';
-                            citySelect.disabled = false;
-                            citySelect.innerHTML = '<option value="">Enter city manually</option>';
-                        }
-                    }
-                });
-                
-                // Add event listener for state change
-                const stateSelect = document.getElementById('stateSelect');
-                stateSelect.addEventListener('change', async function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const stateCode = selectedOption.dataset.code;
-                    const countryOption = countrySelect.options[countrySelect.selectedIndex];
-                    const countryCode = countryOption.dataset.code;
-                    
-                    const citySelect = document.getElementById('citySelect');
-                    citySelect.innerHTML = '<option value="">Select City</option>';
-                    
-                    if (stateCode && countryCode) {
-                        // Try to load cities
-                        const cities = await window.LocationService.getCities(countryCode, stateCode);
-                        
-                        if (cities && cities.length > 0) {
-                            citySelect.disabled = false;
-                            cities.forEach(city => {
-                                const option = document.createElement('option');
-                                option.value = city.name || city;
-                                option.textContent = city.name || city;
-                                citySelect.appendChild(option);
-                            });
-                        } else {
-                            // If no cities, allow manual entry
-                            citySelect.disabled = false;
-                            citySelect.innerHTML = '<option value="">Enter city manually</option>';
-                        }
-                    } else if (this.value) {
-                        citySelect.disabled = false;
-                    }
-                });
-            }
-        }
-    } catch (error) {
-        console.error('Error initializing location dropdowns:', error);
-        // Fallback to basic functionality
-        const countrySelect = document.getElementById('countrySelect');
-        if (countrySelect) {
-            countrySelect.innerHTML = '<option value="">Select Country</option><option value="India">India</option><option value="United States">United States</option>';
-        }
-    }
-}
+// Location dropdowns will be initialized by hybrid-locations.js
 
 // Checkbox limits
 function initializeCheckboxLimits() {
