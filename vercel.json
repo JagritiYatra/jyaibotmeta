@@ -16,8 +16,20 @@
       "dest": "/web/public/js/$1"
     },
     {
+      "src": "/data/(.*)",
+      "dest": "/web/public/data/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/web/public/css/$1"
+    },
+    {
       "src": "/profile-form.html",
       "dest": "/web/public/profile-form.html"
+    },
+    {
+      "src": "/profile-form-enhanced.html",
+      "dest": "/web/public/profile-form-enhanced.html"
     },
     {
       "src": "/plain-profile-form.html",
