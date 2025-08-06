@@ -23,10 +23,24 @@ const app = express();
 // Validate environment variables on startup
 validateEnvironment();
 
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://jyaibot-profile-form.vercel.app',
+    'https://jyaibot-meta.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Middleware setup
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(requestLogger);
 
 // Serve static files for admin dashboard
