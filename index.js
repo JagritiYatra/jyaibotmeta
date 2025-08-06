@@ -9,14 +9,30 @@ require('dotenv').config();
 
 // Import only the routes needed for profile form
 const profileFormRoutes = require('./web/routes/profileFormRoutes');
+const emailVerificationRoutes = require('./src/routes/emailVerification');
+const plainFormRoutes = require('./src/routes/plainFormSubmission');
 const { connectDatabase } = require('./src/config/database');
 
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://jyaibot-profile-form.vercel.app',
+    'https://jyaibot-meta.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Serve static files from web/public
 app.use(express.static(path.join(__dirname, 'web/public')));
@@ -59,7 +75,9 @@ app.use(async (req, res, next) => {
     next();
 });
 
-// Mount profile form routes AFTER database middleware
+// Mount routes AFTER database middleware
+app.use('/api/email-verification', emailVerificationRoutes);
+app.use('/api/plain-form', plainFormRoutes);
 app.use('/', profileFormRoutes);
 
 // Health check endpoint
