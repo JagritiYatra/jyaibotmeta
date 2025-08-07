@@ -3,6 +3,7 @@ const router = express.Router();
 const { generateAndSendOTP, verifyOTP } = require('../services/otpService');
 const { isEmailAuthorized } = require('../config/authorizedEmails');
 const { logError, logSuccess } = require('../middleware/logging');
+const { getDatabase } = require('../config/database');
 
 // Send OTP to authorized email
 router.post('/send-otp', async (req, res) => {
@@ -88,7 +89,38 @@ router.post('/verify-otp', async (req, res) => {
       const crypto = require('crypto');
       const sessionToken = crypto.randomBytes(32).toString('hex');
       
-      // Store session in memory or database (for now, we'll return it)
+      // Store session token in the user's profile
+      const db = getDatabase();
+      if (db) {
+        const sessionExpiry = new Date();
+        sessionExpiry.setHours(sessionExpiry.getHours() + 2); // 2 hour expiry
+        
+        // Find and update the user profile with this email
+        await db.collection('users').updateOne(
+          {
+            $or: [
+              { 'metadata.email': normalizedEmail },
+              { 'basicProfile.email': normalizedEmail },
+              { 'enhancedProfile.email': normalizedEmail },
+              { 'basicProfile.linkedEmails': normalizedEmail }
+            ]
+          },
+          {
+            $set: {
+              'plainFormSession': {
+                token: sessionToken,
+                email: normalizedEmail,
+                verified: true,
+                createdAt: new Date(),
+                expiresAt: sessionExpiry
+              }
+            }
+          }
+        );
+        
+        console.log(`Session token stored for email: ${normalizedEmail}`);
+      }
+      
       return res.json({
         success: true,
         message: 'OTP verified successfully',

@@ -57,8 +57,6 @@ router.post('/submit-plain-form', async (req, res) => {
       });
     }
 
-    // TODO: Verify session token (for now, we'll skip this)
-
     const db = getDatabase();
     
     if (!db) {
@@ -68,6 +66,29 @@ router.post('/submit-plain-form', async (req, res) => {
         error: 'Database connection error. Please try again.'
       });
     }
+    
+    // Verify session token matches the one stored for this email
+    const userWithSession = await db.collection('users').findOne({
+      $or: [
+        { 'metadata.email': normalizedEmail },
+        { 'basicProfile.email': normalizedEmail },
+        { 'enhancedProfile.email': normalizedEmail },
+        { 'basicProfile.linkedEmails': normalizedEmail }
+      ],
+      'plainFormSession.token': sessionToken,
+      'plainFormSession.email': normalizedEmail,
+      'plainFormSession.expiresAt': { $gt: new Date() }
+    });
+    
+    if (!userWithSession) {
+      console.error('Invalid or expired session token for email:', normalizedEmail);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid or expired session. Please verify your email again.'
+      });
+    }
+    
+    console.log(`Valid session found for user: ${userWithSession._id}`);
     
     // Clean phone number - remove all non-digit characters
     let cleanedPhone = phoneNumber ? phoneNumber.replace(/[^\d]/g, '') : '';
@@ -81,32 +102,9 @@ router.post('/submit-plain-form', async (req, res) => {
     // If user entered +91 or 91 already, it should be preserved
     console.log(`Processing phone number: ${phoneNumber} -> ${cleanedPhone}`);
     
-    // First, try to find user by email (since we pre-created profiles with emails)
-    let existingUser = await db.collection('users').findOne({ 
-      $or: [
-        { 'enhancedProfile.email': normalizedEmail },
-        { 'metadata.email': normalizedEmail },
-        { 'basicProfile.email': normalizedEmail },
-        { 'basicProfile.linkedEmails': normalizedEmail }
-      ]
-    });
-    
-    // If not found by email, check by phone number
-    if (!existingUser) {
-      existingUser = await db.collection('users').findOne({
-        $or: [
-          { whatsappNumber: cleanedPhone },
-          { whatsappNumber: { $regex: cleanedPhone, $options: 'i' } },
-          { 'enhancedProfile.phoneNumber': cleanedPhone }
-        ]
-      });
-    }
-    
-    if (existingUser) {
-      console.log(`Found existing user: ${existingUser._id} with email: ${existingUser.metadata?.email || existingUser.basicProfile?.email} and whatsappNumber: ${existingUser.whatsappNumber}`);
-    } else {
-      console.log(`No existing user found for email: ${normalizedEmail} or phone: ${cleanedPhone}`);
-    }
+    // Use the user we found with the valid session token
+    const existingUser = userWithSession;
+    console.log(`Updating profile for user: ${existingUser._id} with email: ${normalizedEmail}`);
 
     const profileData = {
       fullName: name,
@@ -170,6 +168,12 @@ router.post('/submit-plain-form', async (req, res) => {
         }
       );
 
+      // Clear the session token after successful submission
+      await db.collection('users').updateOne(
+        { _id: existingUser._id },
+        { $unset: { plainFormSession: 1 } }
+      );
+      
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
         email: normalizedEmail,
@@ -184,45 +188,11 @@ router.post('/submit-plain-form', async (req, res) => {
         isNewUser: false
       });
     } else {
-      // Create new user
-      const newUser = {
-        whatsappNumber: cleanedPhone,
-        createdAt: new Date(),
-        lastActive: new Date(),
-        basicProfile: {
-          name,
-          dateOfBirth,
-          gender,
-          professionalRole,
-          location: `${city}, ${state}, ${country}`
-        },
-        enhancedProfile: profileData,
-        profileComplete: true,
-        conversationHistory: [],
-        preferences: {
-          language: 'en',
-          notificationsEnabled: true
-        },
-        metadata: {
-          source: 'plain_form',
-          registeredVia: 'email_form',
-          email: normalizedEmail
-        }
-      };
-
-      const result = await db.collection('users').insertOne(newUser);
-
-      logSuccess('plain_form_new_user_created', { 
-        userId: result.insertedId,
-        email: normalizedEmail,
-        whatsappNumber: cleanedPhone
-      });
-
-      return res.json({
-        success: true,
-        message: 'Profile created successfully',
-        userId: result.insertedId,
-        isNewUser: true
+      // This should not happen as we pre-created profiles for all authorized emails
+      console.error('No existing user found for authorized email:', normalizedEmail);
+      return res.status(400).json({
+        success: false,
+        error: 'Profile not found. Please contact support.'
       });
     }
   } catch (error) {
