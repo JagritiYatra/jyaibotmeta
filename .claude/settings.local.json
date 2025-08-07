@@ -6,7 +6,9 @@
       "Bash(vercel env ls:*)",
       "Bash(grep:*)",
       "Bash(vercel:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(MONGODB_URI=\"mongodb+srv://jy_bot_user:JY2025Bot@cluster0.1tbvvum.mongodb.net/jagriti_yatra_community?retryWrites=true&w=majority\" node scripts/verify-profile-flow.js)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }

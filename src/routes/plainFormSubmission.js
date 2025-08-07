@@ -61,19 +61,29 @@ router.post('/submit-plain-form', async (req, res) => {
     // If user entered +91 or 91 already, it should be preserved
     console.log(`Processing phone number: ${phoneNumber} -> ${cleanedPhone}`);
     
-    // Check if user exists with this email or phone number
+    // First, try to find user by email (since we pre-created profiles with emails)
     let existingUser = await db.collection('users').findOne({ 
       $or: [
         { 'enhancedProfile.email': normalizedEmail },
         { 'metadata.email': normalizedEmail },
-        { whatsappNumber: cleanedPhone },
-        { whatsappNumber: { $regex: cleanedPhone, $options: 'i' } },
-        { 'enhancedProfile.phoneNumber': cleanedPhone }
+        { 'basicProfile.email': normalizedEmail },
+        { 'basicProfile.linkedEmails': normalizedEmail }
       ]
     });
     
+    // If not found by email, check by phone number
+    if (!existingUser) {
+      existingUser = await db.collection('users').findOne({
+        $or: [
+          { whatsappNumber: cleanedPhone },
+          { whatsappNumber: { $regex: cleanedPhone, $options: 'i' } },
+          { 'enhancedProfile.phoneNumber': cleanedPhone }
+        ]
+      });
+    }
+    
     if (existingUser) {
-      console.log(`Found existing user: ${existingUser._id} with whatsappNumber: ${existingUser.whatsappNumber}`);
+      console.log(`Found existing user: ${existingUser._id} with email: ${existingUser.metadata?.email || existingUser.basicProfile?.email} and whatsappNumber: ${existingUser.whatsappNumber}`);
     } else {
       console.log(`No existing user found for email: ${normalizedEmail} or phone: ${cleanedPhone}`);
     }
@@ -112,25 +122,39 @@ router.post('/submit-plain-form', async (req, res) => {
         'basicProfile.gender': gender,
         'basicProfile.professionalRole': professionalRole,
         'basicProfile.location': `${city}, ${state}, ${country}`,
+        'basicProfile.email': normalizedEmail,
         profileComplete: true,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
+        // Clear pre-creation flags
+        'metadata.awaitingFormSubmission': false,
+        'metadata.formSubmittedAt': new Date(),
+        'metadata.profileCompleted': true
       };
       
-      // Update WhatsApp number if it's different or missing
+      // Always update WhatsApp number from the form
+      updateData.whatsappNumber = cleanedPhone;
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
-        updateData.whatsappNumber = cleanedPhone;
-        console.log(`Updating WhatsApp number from ${existingUser.whatsappNumber} to ${cleanedPhone}`);
+        console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
       }
+      
+      // Ensure email is in linkedEmails
+      updateData.$addToSet = {
+        'basicProfile.linkedEmails': normalizedEmail
+      };
       
       await db.collection('users').updateOne(
         { _id: existingUser._id },
-        { $set: updateData }
+        { 
+          $set: updateData,
+          $addToSet: { 'basicProfile.linkedEmails': normalizedEmail }
+        }
       );
 
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
         email: normalizedEmail,
-        whatsappNumber: existingUser.whatsappNumber
+        whatsappNumber: cleanedPhone,
+        wasPreCreated: existingUser.metadata?.preCreated || false
       });
 
       return res.json({
