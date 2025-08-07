@@ -62,11 +62,14 @@ app.use(async (req, res, next) => {
             console.log('Database connected successfully');
         } catch (error) {
             console.error('Database connection error:', error.message);
-            // For critical endpoints, return error
-            if (req.path === '/api/submit-profile' || req.path === '/api/user-data') {
+            console.error('Full error:', error);
+            // For critical endpoints, return error - including plain form submission
+            if (req.path === '/api/submit-profile' || 
+                req.path === '/api/user-data' || 
+                req.path === '/api/plain-form/submit-plain-form') {
                 return res.status(503).json({ 
                     error: 'Database connection failed. Please try again later.',
-                    details: process.env.NODE_ENV === 'development' ? error.message : undefined
+                    details: error.message
                 });
             }
             // Continue anyway for other routes

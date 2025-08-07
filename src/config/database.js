@@ -2,7 +2,6 @@
 // Handles connection, reconnection, indexing, and database operations
 
 const { MongoClient } = require('mongodb');
-const { getConfig } = require('./environment');
 
 let db;
 let client;
@@ -10,10 +9,33 @@ let isConnected = false;
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
+// Try to use getConfig, but fall back to direct env vars if it fails
+let getConfig;
+try {
+  getConfig = require('./environment').getConfig;
+} catch (e) {
+  console.log('Using direct environment variables for database connection');
+  getConfig = () => ({
+    mongodb: {
+      uri: process.env.MONGODB_URI,
+      dbName: process.env.DB_NAME || 'jagriti_yatra_community',
+      options: {
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      }
+    }
+  });
+}
+
 async function connectDatabase() {
   const config = getConfig();
 
   try {
+    if (!config.mongodb.uri) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+    
     client = new MongoClient(config.mongodb.uri, config.mongodb.options);
     await client.connect();
     db = client.db(config.mongodb.dbName);
@@ -47,7 +69,14 @@ async function createEnhancedIndexes() {
     // User collection indexes for enhanced profile system
     await db.collection('users').createIndex({ whatsappNumbers: 1 });
     await db.collection('users').createIndex({ whatsappNumber: 1 });
-    await db.collection('users').createIndex({ 'basicProfile.email': 1 }, { unique: true });
+    
+    // Try to create unique email index, but don't fail if it already exists or has duplicates
+    try {
+      await db.collection('users').createIndex({ 'basicProfile.email': 1 }, { unique: true });
+    } catch (indexError) {
+      console.log('Note: Email unique index could not be created (may already exist or have duplicates)');
+    }
+    
     await db.collection('users').createIndex({ 'basicProfile.linkedEmails': 1 });
 
     // Enhanced profile indexes for new fields

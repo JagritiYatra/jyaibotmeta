@@ -14,6 +14,10 @@ const logSuccess = (operation, details = {}) => {
 
 // Submit plain form data
 router.post('/submit-plain-form', async (req, res) => {
+  console.log('Plain form submission received');
+  console.log('Request body email:', req.body.email);
+  console.log('Request body name:', req.body.name);
+  
   try {
     const { 
       email, 
@@ -222,10 +226,13 @@ router.post('/submit-plain-form', async (req, res) => {
       });
     }
   } catch (error) {
-    logError(error, { operation: 'submit_plain_form' });
+    console.error('Plain form submission error:', error);
+    console.error('Error stack:', error.stack);
+    logError(error, { operation: 'submit_plain_form', email: req.body.email });
     return res.status(500).json({
       success: false,
-      error: 'Failed to submit form'
+      error: 'Failed to submit form',
+      details: error.message // Add error details for debugging
     });
   }
 });
