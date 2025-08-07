@@ -2,7 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { getDatabase } = require('../config/database');
 const { isEmailAuthorized } = require('../config/authorizedEmails');
-const { logError, logSuccess } = require('../middleware/logging');
+
+// Simple logging functions that don't depend on environment config
+const logError = (error, context = {}) => {
+  console.error('Error:', error.message, context);
+};
+
+const logSuccess = (operation, details = {}) => {
+  console.log('Success:', operation, details);
+};
 
 // Submit plain form data
 router.post('/submit-plain-form', async (req, res) => {
@@ -49,8 +57,16 @@ router.post('/submit-plain-form', async (req, res) => {
 
     const db = getDatabase();
     
+    if (!db) {
+      console.error('Database not connected');
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection error. Please try again.'
+      });
+    }
+    
     // Clean phone number - remove all non-digit characters
-    let cleanedPhone = phoneNumber.replace(/[^\d]/g, '');
+    let cleanedPhone = phoneNumber ? phoneNumber.replace(/[^\d]/g, '') : '';
     
     // If number doesn't have country code and is 10 digits (Indian number), add 91
     if (cleanedPhone.length === 10) {
