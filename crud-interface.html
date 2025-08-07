@@ -513,17 +513,34 @@
 
         <div class="main-content">
             <div class="tabs">
-                <button class="tab active" onclick="showTab('users')">👥 Users</button>
+                <button class="tab active" onclick="showTab('plain_form_submissions')">📝 Form Submissions</button>
+                <button class="tab" onclick="showTab('users')">👥 All Profiles</button>
                 <button class="tab" onclick="showTab('sessions')">🔐 Sessions</button>
                 <button class="tab" onclick="showTab('queries')">🔍 Queries</button>
                 <button class="tab" onclick="showTab('otps')">📧 OTPs</button>
                 <button class="tab" onclick="showTab('cooldowns')">⏸️ Cooldowns</button>
-                <button class="tab" onclick="showTab('system_logs')">📋 System Logs</button>
                 <button class="tab" onclick="showTab('user_stats')">📊 User Stats</button>
             </div>
 
+            <!-- Plain Form Submissions Tab -->
+            <div id="plain_form_submissions" class="tab-content active">
+                <div class="controls">
+                    <input type="text" class="search-box" id="plainFormSubmissionsSearch" placeholder="Search by name, email, or LinkedIn URL...">
+                    <button class="btn btn-primary" onclick="refreshData('plain_form_submissions')">🔄 Refresh</button>
+                    <button class="btn btn-success" onclick="exportLinkedInIDs()">💼 Export LinkedIn IDs</button>
+                    <button class="btn btn-info" onclick="exportData('plain_form_submissions')">💾 Export All Data</button>
+                </div>
+                
+                <div class="export-section">
+                    <h3>📊 Form Submission Statistics</h3>
+                    <div id="formSubmissionStats">Loading stats...</div>
+                </div>
+
+                <div id="plainFormSubmissionsData">Loading...</div>
+            </div>
+
             <!-- Users Tab -->
-            <div id="users" class="tab-content active">
+            <div id="users" class="tab-content">
                 <div class="controls">
                     <input type="text" class="search-box" id="usersSearch" placeholder="Search users by name, email, phone, city...">
                     <button class="btn btn-primary" onclick="refreshData('users')">🔄 Refresh</button>
@@ -625,32 +642,6 @@
                 <div id="cooldownsData">Loading...</div>
             </div>
 
-            <!-- System Logs Tab -->
-            <div id="system_logs" class="tab-content">
-                <div class="controls">
-                    <input type="text" class="search-box" id="systemLogsSearch" placeholder="Search logs by event type or data...">
-                    <button class="btn btn-primary" onclick="refreshData('system_logs')">🔄 Refresh</button>
-                    <button class="btn btn-info" onclick="exportData('system_logs')">💾 Export CSV</button>
-                </div>
-                
-                <div class="filter-section">
-                    <div class="filter-row">
-                        <div class="form-group">
-                            <label class="form-label">Filter by Severity:</label>
-                            <select class="form-input" id="severityFilter" onchange="applyFilters('system_logs')" style="width: auto;">
-                                <option value="">All Levels</option>
-                                <option value="info">Info</option>
-                                <option value="warning">Warning</option>
-                                <option value="error">Error</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-warning" onclick="clearFilters('system_logs')">Clear Filters</button>
-                    </div>
-                </div>
-
-                <div id="systemLogsData">Loading...</div>
-            </div>
-
             <!-- User Stats Tab -->
             <div id="user_stats" class="tab-content">
                 <div class="controls">
@@ -701,15 +692,20 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadStats();
-            loadData('users');
+            loadData('plain_form_submissions');
+            loadFormSubmissionStats();
             setupSearchHandlers();
         });
 
         function setupSearchHandlers() {
-            const collections = ['users', 'sessions', 'queries', 'otps', 'cooldowns', 'system_logs', 'user_stats'];
+            const collections = ['plain_form_submissions', 'users', 'sessions', 'queries', 'otps', 'cooldowns', 'user_stats'];
             
             collections.forEach(collection => {
-                const searchBox = document.getElementById(collection + 'Search');
+                // Handle special naming for plain_form_submissions
+                const searchId = collection === 'plain_form_submissions' ? 
+                    'plainFormSubmissionsSearch' : 
+                    collection + 'Search';
+                const searchBox = document.getElementById(searchId);
                 if (searchBox) {
                     searchBox.addEventListener('input', debounce(() => {
                         searchTerms[collection] = searchBox.value;
@@ -756,7 +752,15 @@
             currentCollection = collection;
             currentPage = page;
             
-            const container = document.getElementById(collection + 'Data');
+            // Handle special container naming for plain_form_submissions
+            const containerId = collection === 'plain_form_submissions' ? 
+                'plainFormSubmissionsData' : 
+                collection + 'Data';
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error('Container not found for:', collection);
+                return;
+            }
             container.innerHTML = '<div class="loading">Loading data...</div>';
 
             try {
@@ -770,7 +774,12 @@
                     ...collectionFilters
                 });
 
-                const response = await fetch(`/api/${collection}?${params}`);
+                // Handle special collection names
+                const apiEndpoint = collection === 'plain_form_submissions' ? 
+                    '/api/plain-form-submissions' : 
+                    `/api/${collection}`;
+
+                const response = await fetch(`${apiEndpoint}?${params}`);
                 const data = await response.json();
 
                 currentData[collection] = data;
@@ -784,10 +793,126 @@
             }
         }
 
+        async function loadFormSubmissionStats() {
+            const statsContainer = document.getElementById('formSubmissionStats');
+            if (!statsContainer) {
+                console.warn('Stats container not found');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/plain-form-submissions?limit=1000');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch stats');
+                }
+                
+                const data = await response.json();
+                
+                const stats = {
+                    total: data.total || 0,
+                    withLinkedIn: 0,
+                    withoutLinkedIn: 0,
+                    todaySubmissions: 0
+                };
+                
+                const today = new Date().toDateString();
+                
+                if (data.data && Array.isArray(data.data)) {
+                    data.data.forEach(user => {
+                        const profile = user.enhancedProfile || {};
+                        if (profile.linkedInProfile) {
+                            stats.withLinkedIn++;
+                        } else {
+                            stats.withoutLinkedIn++;
+                        }
+                        
+                        if (profile.formFilledAt && new Date(profile.formFilledAt).toDateString() === today) {
+                            stats.todaySubmissions++;
+                        }
+                    });
+                }
+                
+                statsContainer.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${stats.total}</div>
+                            <div style="color: #666; font-size: 0.9rem;">Total Submissions</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${stats.withLinkedIn}</div>
+                            <div style="color: #666; font-size: 0.9rem;">With LinkedIn</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #ffc107;">${stats.withoutLinkedIn}</div>
+                            <div style="color: #666; font-size: 0.9rem;">Without LinkedIn</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #17a2b8;">${stats.todaySubmissions}</div>
+                            <div style="color: #666; font-size: 0.9rem;">Today's Submissions</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading form stats:', error);
+                statsContainer.innerHTML = `
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; color: #666;">
+                        <p>Unable to load statistics. Please refresh the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function exportLinkedInIDs() {
+            try {
+                const response = await fetch('/api/export-linkedin-ids');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'linkedin_profiles_export.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    showMessage('LinkedIn IDs exported successfully', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(error.error || 'Export failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Export operation failed', 'error');
+            }
+        }
+
         function generateMockData(collection) {
             const mockData = { data: [], total: 0, page: 1, pages: 1 };
             
             switch (collection) {
+                case 'plain_form_submissions':
+                    mockData.data = Array.from({length: 15}, (_, i) => ({
+                        _id: `mock_form_${i}`,
+                        enhancedProfile: {
+                            fullName: `Submitted User ${i + 1}`,
+                            email: `submitted${i + 1}@example.com`,
+                            phoneNumber: `+91987654${(i + 1).toString().padStart(4, '0')}`,
+                            linkedInProfile: i % 3 !== 0 ? `https://linkedin.com/in/user${i + 1}` : '',
+                            instagramProfile: i % 2 === 0 ? `@user${i + 1}` : '',
+                            professionalRole: ['Entrepreneur', 'Student', 'Working Professional'][i % 3],
+                            city: ['Mumbai', 'Delhi', 'Bangalore'][i % 3],
+                            state: ['Maharashtra', 'Delhi', 'Karnataka'][i % 3],
+                            country: 'India',
+                            industryDomain: ['Technology', 'Healthcare', 'Education', 'Finance'][i % 4],
+                            yatraImpact: ['Network Building', 'Career Growth', 'Social Impact'][i % 3],
+                            communityAsks: ['Mentorship', 'Funding', 'Connections'][i % 3],
+                            communityGives: ['Technical Skills', 'Business Advice', 'Industry Insights'][i % 3],
+                            formFilledAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                            completed: true
+                        },
+                        whatsappNumber: `+91987654${(i + 1).toString().padStart(4, '0')}`
+                    }));
+                    break;
+                    
                 case 'users':
                     mockData.data = Array.from({length: 10}, (_, i) => ({
                         _id: `mock_user_${i}`,
@@ -854,20 +979,6 @@
                         createdAt: new Date(Date.now() - Math.random() * 30 * 60 * 1000).toISOString(),
                         expiresAt: new Date(Date.now() + Math.random() * 15 * 60 * 1000).toISOString(),
                         minutes: [15, 10, 20][i % 3]
-                    }));
-                    break;
-                    
-                case 'system_logs':
-                    mockData.data = Array.from({length: 12}, (_, i) => ({
-                        _id: `mock_log_${i}`,
-                        eventType: ['user_login', 'search_performed', 'profile_updated', 'error_occurred'][i % 4],
-                        severity: ['info', 'warning', 'error'][i % 3],
-                        timestamp: new Date(Date.now() - Math.random() * 6 * 60 * 60 * 1000).toISOString(),
-                        data: {
-                            operation: `operation_${i}`,
-                            duration: Math.floor(Math.random() * 1000) + 100,
-                            status: i % 4 === 0 ? 'error' : 'success'
-                        }
                     }));
                     break;
                     
@@ -943,12 +1054,12 @@
 
         function getTableHeaders(collection) {
             const headers = {
+                'plain_form_submissions': ['Name', 'Email', 'Phone', 'LinkedIn', 'Instagram', 'Role', 'City', 'Industry', 'Submitted'],
                 'users': ['Name', 'Email', 'WhatsApp', 'Role', 'City', 'Profile Status', 'Last Active'],
                 'sessions': ['WhatsApp', 'State', 'Authenticated', 'Last Activity', 'Created'],
                 'queries': ['WhatsApp', 'Query', 'Type', 'Matches', 'Timestamp'],
                 'otps': ['Email', 'OTP', 'Created', 'Expires', 'Attempts'],
                 'cooldowns': ['WhatsApp', 'Reason', 'Created', 'Expires', 'Minutes'],
-                'system_logs': ['Event Type', 'Severity', 'Timestamp', 'Data'],
                 'user_stats': ['WhatsApp', 'Total Activities', 'Last Activity', 'Created']
             };
             
@@ -957,6 +1068,34 @@
 
         function formatTableCell(item, header, collection) {
             switch (collection) {
+                case 'plain_form_submissions':
+                    const profile = item.enhancedProfile || {};
+                    switch (header) {
+                        case 'Name':
+                            return profile.fullName || 'N/A';
+                        case 'Email':
+                            return profile.email || 'N/A';
+                        case 'Phone':
+                            return profile.phoneNumber ? profile.phoneNumber.replace(/[^\d]/g, '').slice(-4).padStart(4, '*') : 'N/A';
+                        case 'LinkedIn':
+                            if (profile.linkedInProfile) {
+                                return `<a href="${profile.linkedInProfile}" target="_blank" style="color: #0077b5;">View Profile</a>`;
+                            }
+                            return '<span style="color: #999;">Not provided</span>';
+                        case 'Instagram':
+                            return profile.instagramProfile || 'N/A';
+                        case 'Role':
+                            return profile.professionalRole || 'N/A';
+                        case 'City':
+                            return profile.city || 'N/A';
+                        case 'Industry':
+                            return profile.industryDomain || 'N/A';
+                        case 'Submitted':
+                            return formatDate(profile.formFilledAt);
+                        default:
+                            return 'N/A';
+                    }
+                    
                 case 'users':
                     switch (header) {
                         case 'Name':
@@ -1045,22 +1184,6 @@
                             return 'N/A';
                     }
                     
-                case 'system_logs':
-                    switch (header) {
-                        case 'Event Type':
-                            return item.eventType || 'N/A';
-                        case 'Severity':
-                            const severity = item.severity || 'info';
-                            const colors = { error: 'red', warning: 'orange', info: 'blue' };
-                            return `<span style="color: ${colors[severity] || 'blue'}; font-weight: bold;">${severity.toUpperCase()}</span>`;
-                        case 'Timestamp':
-                            return formatDate(item.timestamp);
-                        case 'Data':
-                            return `<div class="json-cell">${JSON.stringify(item.data || {}, null, 1).substring(0, 100)}...</div>`;
-                        default:
-                            return 'N/A';
-                    }
-                    
                 case 'user_stats':
                     switch (header) {
                         case 'WhatsApp':
@@ -1134,11 +1257,21 @@
             if (!currentData[tabName]) {
                 loadData(tabName);
             }
+            
+            // Load form submission stats when switching to that tab
+            if (tabName === 'plain_form_submissions') {
+                loadFormSubmissionStats();
+            }
         }
 
         function refreshData(collection) {
             delete currentData[collection];
             loadData(collection);
+            
+            // Refresh stats if on form submissions tab
+            if (collection === 'plain_form_submissions') {
+                loadFormSubmissionStats();
+            }
         }
 
         function applyFilters(collection) {
@@ -1156,9 +1289,6 @@
                 
                 if (typeFilter) filters[collection].queryType = typeFilter;
                 if (dateFilter) filters[collection].dateRange = dateFilter;
-            } else if (collection === 'system_logs') {
-                const severityFilter = document.getElementById('severityFilter').value;
-                if (severityFilter) filters[collection].severity = severityFilter;
             }
             
             loadData(collection);
@@ -1170,8 +1300,7 @@
             // Reset filter UI elements
             const filterElements = {
                 'users': ['profileFilter', 'roleFilter'],
-                'queries': ['queryTypeFilter', 'dateRangeFilter'],
-                'system_logs': ['severityFilter']
+                'queries': ['queryTypeFilter', 'dateRangeFilter']
             };
             
             (filterElements[collection] || []).forEach(elementId => {

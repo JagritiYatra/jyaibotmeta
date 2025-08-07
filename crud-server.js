@@ -109,7 +109,7 @@ app.get('/api/stats', async (req, res) => {
         }
 
         const stats = {};
-        const collections = ['users', 'sessions', 'queries', 'otps', 'cooldowns', 'system_logs', 'user_stats'];
+        const collections = ['users', 'sessions', 'queries', 'otps', 'cooldowns', 'user_stats'];
         
         for (const collection of collections) {
             try {
@@ -127,7 +127,7 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // Generic collection endpoints
-const collections = ['users', 'sessions', 'queries', 'otps', 'cooldowns', 'system_logs', 'user_stats'];
+const collections = ['users', 'sessions', 'queries', 'otps', 'cooldowns', 'user_stats'];
 
 collections.forEach(collectionName => {
     // GET collection with search, pagination, and filtering
@@ -458,14 +458,6 @@ function buildSearchQuery(collectionName, searchTerm) {
                 ]
             };
             
-        case 'system_logs':
-            return {
-                $or: [
-                    { 'eventType': searchRegex },
-                    { 'severity': searchRegex }
-                ]
-            };
-            
         case 'user_stats':
             return {
                 $or: [
@@ -517,11 +509,6 @@ function applyCollectionFilters(collectionName, queryParams) {
             }
             break;
             
-        case 'system_logs':
-            if (queryParams.severity) {
-                filters.severity = queryParams.severity;
-            }
-            break;
     }
     
     return filters;
@@ -571,6 +558,112 @@ function flattenObject(obj, prefix = '') {
     
     return flattened;
 }
+
+// Plain Form Submissions endpoint
+app.get('/api/plain-form-submissions', async (req, res) => {
+    try {
+        if (!db) {
+            return res.status(503).json({ error: 'Database not connected' });
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+        const search = req.query.search || '';
+        
+        let query = {
+            'enhancedProfile.formFilledVia': 'plain_form'
+        };
+        
+        // Build search query
+        if (search) {
+            query.$or = [
+                { 'enhancedProfile.fullName': { $regex: search, $options: 'i' } },
+                { 'enhancedProfile.email': { $regex: search, $options: 'i' } },
+                { 'enhancedProfile.linkedInProfile': { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        const collection = db.collection('users');
+        
+        // Get total count
+        const total = await collection.countDocuments(query);
+        
+        // Get paginated data with only form-filled profiles
+        const data = await collection
+            .find(query)
+            .sort({ 'enhancedProfile.formFilledAt': -1 }) // Most recent submissions first
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+        
+        res.json({
+            data,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+            limit
+        });
+        
+    } catch (error) {
+        console.error('Error fetching plain form submissions:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Export LinkedIn IDs endpoint
+app.get('/api/export-linkedin-ids', async (req, res) => {
+    try {
+        if (!db) {
+            return res.status(503).json({ error: 'Database not connected' });
+        }
+
+        const collection = db.collection('users');
+        
+        // Find all users with LinkedIn profiles
+        const users = await collection
+            .find({ 
+                'enhancedProfile.linkedInProfile': { $exists: true, $ne: '' }
+            })
+            .project({
+                'enhancedProfile.fullName': 1,
+                'enhancedProfile.email': 1,
+                'enhancedProfile.linkedInProfile': 1,
+                'enhancedProfile.professionalRole': 1,
+                'enhancedProfile.city': 1,
+                'enhancedProfile.formFilledAt': 1
+            })
+            .toArray();
+        
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'No LinkedIn profiles found' });
+        }
+        
+        // Create CSV format
+        let csv = 'Name,Email,LinkedIn URL,Role,City,Form Submitted Date\n';
+        
+        users.forEach(user => {
+            const profile = user.enhancedProfile || {};
+            const row = [
+                profile.fullName || '',
+                profile.email || '',
+                profile.linkedInProfile || '',
+                profile.professionalRole || '',
+                profile.city || '',
+                profile.formFilledAt ? new Date(profile.formFilledAt).toISOString() : ''
+            ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(',');
+            csv += row + '\n';
+        });
+        
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="linkedin_profiles_export.csv"');
+        res.send(csv);
+        
+    } catch (error) {
+        console.error('Error exporting LinkedIn IDs:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // Analytics endpoints
 app.get('/api/analytics/dashboard', async (req, res) => {
