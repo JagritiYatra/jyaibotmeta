@@ -68,6 +68,9 @@ router.post('/submit-plain-form', async (req, res) => {
     }
     
     // Verify session token matches the one stored for this email
+    console.log('Looking for session with email:', normalizedEmail);
+    console.log('Session token provided:', sessionToken ? sessionToken.substring(0, 10) + '...' : 'none');
+    
     const userWithSession = await db.collection('users').findOne({
       $or: [
         { 'metadata.email': normalizedEmail },
@@ -81,7 +84,27 @@ router.post('/submit-plain-form', async (req, res) => {
     });
     
     if (!userWithSession) {
-      console.error('Invalid or expired session token for email:', normalizedEmail);
+      // Check if user exists but session is invalid
+      const userExists = await db.collection('users').findOne({
+        $or: [
+          { 'metadata.email': normalizedEmail },
+          { 'basicProfile.email': normalizedEmail },
+          { 'enhancedProfile.email': normalizedEmail },
+          { 'basicProfile.linkedEmails': normalizedEmail }
+        ]
+      });
+      
+      if (userExists) {
+        console.error('Session validation failed for user:', userExists._id);
+        console.error('Session in DB:', userExists.plainFormSession ? 'exists' : 'missing');
+        if (userExists.plainFormSession) {
+          console.error('Session expired:', userExists.plainFormSession.expiresAt < new Date());
+          console.error('Token mismatch:', userExists.plainFormSession.token !== sessionToken);
+        }
+      } else {
+        console.error('No user found with email:', normalizedEmail);
+      }
+      
       return res.status(401).json({
         success: false,
         error: 'Invalid or expired session. Please verify your email again.'
@@ -131,8 +154,8 @@ router.post('/submit-plain-form', async (req, res) => {
       completed: true // This is the flag the bot checks
     };
 
-    if (existingUser) {
-      // Update existing user - also update WhatsApp number if it changed
+    // Update the user profile (we already have it from session validation)
+    try {
       const updateData = {
         enhancedProfile: profileData,
         'basicProfile.name': name,
@@ -143,36 +166,34 @@ router.post('/submit-plain-form', async (req, res) => {
         'basicProfile.email': normalizedEmail,
         profileComplete: true,
         lastUpdated: new Date(),
+        whatsappNumber: cleanedPhone,
         // Clear pre-creation flags
         'metadata.awaitingFormSubmission': false,
         'metadata.formSubmittedAt': new Date(),
         'metadata.profileCompleted': true
       };
       
-      // Always update WhatsApp number from the form
-      updateData.whatsappNumber = cleanedPhone;
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
         console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
       }
       
-      // Ensure email is in linkedEmails
-      updateData.$addToSet = {
-        'basicProfile.linkedEmails': normalizedEmail
-      };
-      
-      await db.collection('users').updateOne(
+      // Update profile and clear session in one operation
+      const result = await db.collection('users').updateOne(
         { _id: existingUser._id },
         { 
           $set: updateData,
-          $addToSet: { 'basicProfile.linkedEmails': normalizedEmail }
+          $addToSet: { 'basicProfile.linkedEmails': normalizedEmail },
+          $unset: { plainFormSession: 1 } // Clear session token
         }
       );
-
-      // Clear the session token after successful submission
-      await db.collection('users').updateOne(
-        { _id: existingUser._id },
-        { $unset: { plainFormSession: 1 } }
-      );
+      
+      if (result.modifiedCount === 0) {
+        console.error('No documents were modified for user:', existingUser._id);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to update profile. Please try again.'
+        });
+      }
       
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
@@ -187,13 +208,9 @@ router.post('/submit-plain-form', async (req, res) => {
         userId: existingUser._id,
         isNewUser: false
       });
-    } else {
-      // This should not happen as we pre-created profiles for all authorized emails
-      console.error('No existing user found for authorized email:', normalizedEmail);
-      return res.status(400).json({
-        success: false,
-        error: 'Profile not found. Please contact support.'
-      });
+    } catch (updateError) {
+      console.error('Error updating profile:', updateError);
+      throw updateError;
     }
   } catch (error) {
     console.error('Plain form submission error:', error);
