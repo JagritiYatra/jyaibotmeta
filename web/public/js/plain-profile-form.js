@@ -213,9 +213,50 @@ async function verifyOTP() {
     }
 }
 
+// Instagram validation function
+function validateInstagramHandle(handle) {
+    if (!handle || handle.trim() === '') {
+        return true; // Empty is valid (optional field)
+    }
+    
+    // Remove @ if present at the beginning
+    handle = handle.replace(/^@/, '');
+    
+    // Instagram username rules:
+    // - 1-30 characters
+    // - Only letters, numbers, periods, and underscores
+    // - Cannot start or end with a period
+    // - Cannot have consecutive periods
+    const instagramRegex = /^(?!.*\.\.)(?!^\.)(?!.*\.$)[a-zA-Z0-9._]{1,30}$/;
+    
+    return instagramRegex.test(handle);
+}
+
 // Form validation and submission
 function initializeFormValidation() {
     const form = document.getElementById('profileForm');
+    
+    // Add real-time Instagram validation
+    const instagramInput = document.querySelector('input[name="instagramProfile"]');
+    if (instagramInput) {
+        instagramInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value && !validateInstagramHandle(value)) {
+                this.setCustomValidity('Please enter a valid Instagram handle (letters, numbers, periods, underscores only)');
+                this.classList.add('border-red-500');
+            } else {
+                this.setCustomValidity('');
+                this.classList.remove('border-red-500');
+            }
+        });
+        
+        // Clean up @ symbol on input
+        instagramInput.addEventListener('input', function() {
+            if (this.value.startsWith('@')) {
+                this.value = this.value.substring(1);
+            }
+        });
+    }
     
     form?.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -227,6 +268,14 @@ function initializeFormValidation() {
         
         // Get form data
         const formData = new FormData(form);
+        
+        // Validate Instagram handle before submission
+        const instagramHandle = formData.get('instagramProfile');
+        if (instagramHandle && !validateInstagramHandle(instagramHandle)) {
+            alert('Please enter a valid Instagram handle');
+            document.querySelector('input[name="instagramProfile"]').focus();
+            return;
+        }
         
         // Get checkbox values
         const yatraImpact = [];

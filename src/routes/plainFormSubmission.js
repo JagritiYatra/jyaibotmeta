@@ -12,6 +12,25 @@ const logSuccess = (operation, details = {}) => {
   console.log('Success:', operation, details);
 };
 
+// Validate Instagram handle
+function validateInstagramHandle(handle) {
+  if (!handle || handle.trim() === '') {
+    return true; // Empty is valid (optional field)
+  }
+  
+  // Remove @ if present at the beginning
+  handle = handle.replace(/^@/, '');
+  
+  // Instagram username rules:
+  // - 1-30 characters
+  // - Only letters, numbers, periods, and underscores
+  // - Cannot start or end with a period
+  // - Cannot have consecutive periods
+  const instagramRegex = /^(?!.*\.\.)(?!^\.)(?!.*\.$)[a-zA-Z0-9._]{1,30}$/;
+  
+  return instagramRegex.test(handle);
+}
+
 // Submit plain form data
 router.post('/submit-plain-form', async (req, res) => {
   console.log('Plain form submission received');
@@ -57,6 +76,17 @@ router.post('/submit-plain-form', async (req, res) => {
         error: 'Unauthorized email'
       });
     }
+    
+    // Validate Instagram handle if provided
+    if (instagramProfile && !validateInstagramHandle(instagramProfile)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Instagram handle. Please use only letters, numbers, periods, and underscores (1-30 characters)'
+      });
+    }
+    
+    // Clean Instagram handle (remove @ if present)
+    const cleanedInstagram = instagramProfile ? instagramProfile.replace(/^@/, '') : '';
 
     const db = getDatabase();
     
@@ -145,7 +175,7 @@ router.post('/submit-plain-form', async (req, res) => {
       email: normalizedEmail,
       additionalEmail,
       linkedInProfile,
-      instagramProfile,
+      instagramProfile: cleanedInstagram,
       industryDomain,
       yatraImpact: Array.isArray(yatraImpact) ? yatraImpact : [yatraImpact].filter(Boolean),
       communityAsks: Array.isArray(communityAsks) ? communityAsks : [communityAsks].filter(Boolean),
@@ -178,7 +208,7 @@ router.post('/submit-plain-form', async (req, res) => {
         'enhancedProfile.email': normalizedEmail,
         'enhancedProfile.additionalEmail': additionalEmail,
         'enhancedProfile.linkedInProfile': linkedInProfile,
-        'enhancedProfile.instagramProfile': instagramProfile,
+        'enhancedProfile.instagramProfile': cleanedInstagram,
         'enhancedProfile.industryDomain': industryDomain,
         'enhancedProfile.yatraImpact': Array.isArray(yatraImpact) ? yatraImpact : [yatraImpact].filter(Boolean),
         'enhancedProfile.communityAsks': Array.isArray(communityAsks) ? communityAsks : [communityAsks].filter(Boolean),
