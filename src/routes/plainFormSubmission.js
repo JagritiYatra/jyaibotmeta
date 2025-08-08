@@ -150,17 +150,43 @@ router.post('/submit-plain-form', async (req, res) => {
       yatraImpact: Array.isArray(yatraImpact) ? yatraImpact : [yatraImpact].filter(Boolean),
       communityAsks: Array.isArray(communityAsks) ? communityAsks : [communityAsks].filter(Boolean),
       communityGives: Array.isArray(communityGives) ? communityGives : [communityGives].filter(Boolean),
-      feedbackSuggestions: feedbackSuggestions || '',
       formFilledVia: 'plain_link',
       formFilledAt: new Date(),
       profileComplete: true,
       completed: true // This is the flag the bot checks
     };
+    
+    // Only add feedback if it's provided (don't overwrite with empty string)
+    if (feedbackSuggestions && feedbackSuggestions.trim()) {
+      profileData.feedbackSuggestions = feedbackSuggestions.trim();
+    }
 
     // Update the user profile (we already have it from session validation)
     try {
+      // Use dot notation to update individual fields without overwriting the entire object
       const updateData = {
-        enhancedProfile: profileData,
+        'enhancedProfile.fullName': name,
+        'enhancedProfile.gender': gender,
+        'enhancedProfile.dateOfBirth': dateOfBirth,
+        'enhancedProfile.professionalRole': professionalRole,
+        'enhancedProfile.location': {
+          country,
+          state,
+          city
+        },
+        'enhancedProfile.phoneNumber': cleanedPhone,
+        'enhancedProfile.email': normalizedEmail,
+        'enhancedProfile.additionalEmail': additionalEmail,
+        'enhancedProfile.linkedInProfile': linkedInProfile,
+        'enhancedProfile.instagramProfile': instagramProfile,
+        'enhancedProfile.industryDomain': industryDomain,
+        'enhancedProfile.yatraImpact': Array.isArray(yatraImpact) ? yatraImpact : [yatraImpact].filter(Boolean),
+        'enhancedProfile.communityAsks': Array.isArray(communityAsks) ? communityAsks : [communityAsks].filter(Boolean),
+        'enhancedProfile.communityGives': Array.isArray(communityGives) ? communityGives : [communityGives].filter(Boolean),
+        'enhancedProfile.formFilledVia': 'plain_link',
+        'enhancedProfile.formFilledAt': new Date(),
+        'enhancedProfile.profileComplete': true,
+        'enhancedProfile.completed': true,
         'basicProfile.name': name,
         'basicProfile.dateOfBirth': dateOfBirth,
         'basicProfile.gender': gender,
@@ -176,13 +202,14 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
-        console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
+      // Only update feedback if provided (preserve existing if not)
+      if (feedbackSuggestions && feedbackSuggestions.trim()) {
+        updateData['enhancedProfile.feedbackSuggestions'] = feedbackSuggestions.trim();
+        console.log('Adding feedback to update:', feedbackSuggestions.trim());
       }
       
-      // Log the feedback field being saved
-      if (feedbackSuggestions) {
-        console.log('Saving feedback to enhancedProfile.feedbackSuggestions:', feedbackSuggestions);
+      if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
+        console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
       }
       
       // Update profile and clear session in one operation
