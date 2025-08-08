@@ -213,10 +213,9 @@ router.post('/submit-plain-form', async (req, res) => {
       completed: true // This is the flag the bot checks
     };
     
-    // Only add feedback if it's provided (don't overwrite with empty string)
-    if (feedbackSuggestions && feedbackSuggestions.trim()) {
-      profileData.feedbackSuggestions = feedbackSuggestions.trim();
-    }
+    // Add feedback - always update (even empty to clear old data)
+    const feedbackValue = feedbackSuggestions != null ? String(feedbackSuggestions).trim() : '';
+    profileData.feedbackSuggestions = feedbackValue;
 
     // Update the user profile (we already have it from session validation)
     try {
@@ -259,22 +258,17 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // Always update feedback field (even if empty, to clear old test data)
-      if (feedbackSuggestions !== undefined) {
-        const feedbackValue = feedbackSuggestions ? feedbackSuggestions.trim() : '';
-        updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
-        updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
-        
-        console.log('Feedback field received:', feedbackSuggestions ? `"${feedbackSuggestions.substring(0, 50)}..."` : '(empty)');
-        console.log('Setting feedback to:', feedbackValue ? `"${feedbackValue.substring(0, 50)}..."` : '(empty)');
-        
-        // Check if user had previous feedback
-        if (existingUser.enhancedProfile?.feedbackSuggestions) {
-          console.log('Previous feedback was:', existingUser.enhancedProfile.feedbackSuggestions.substring(0, 50) + '...');
-        }
-      } else {
-        console.log('WARNING: feedbackSuggestions field not received in request');
-      }
+      // ALWAYS update feedback field - NO CONDITIONS
+      // Convert to string and trim, or use empty string if null/undefined
+      const feedbackValue = (feedbackSuggestions || '').toString().trim();
+      updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
+      updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
+      
+      console.log('Feedback update:', {
+        received: feedbackSuggestions,
+        saving: feedbackValue || '(empty)',
+        previous: existingUser.enhancedProfile?.feedbackSuggestions?.substring(0, 30) || '(none)'
+      });
       
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
         console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);

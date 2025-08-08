@@ -322,9 +322,23 @@ function initializeFormValidation() {
             communityGives.push(cb.value);
         });
         
-        // Get feedback value explicitly
-        const feedbackValue = formData.get('feedbackSuggestions') || '';
-        console.log('Feedback textarea value:', feedbackValue ? `"${feedbackValue.substring(0, 50)}..."` : '(empty)');
+        // Get feedback value - ALWAYS capture it
+        const feedbackTextarea = document.getElementById('feedbackSuggestions');
+        let feedbackValue = '';
+        
+        // Try direct element access first (most reliable)
+        if (feedbackTextarea) {
+            feedbackValue = feedbackTextarea.value || '';
+            console.log('Got feedback from textarea element:', feedbackValue.length, 'chars');
+        } else {
+            // Fallback to FormData
+            feedbackValue = formData.get('feedbackSuggestions') || '';
+            console.log('Got feedback from FormData:', feedbackValue.length, 'chars');
+        }
+        
+        // Ensure it's a string
+        feedbackValue = String(feedbackValue).trim();
+        console.log('Final feedback to send:', feedbackValue || '(empty)');
         
         const data = {
             email: verifiedEmail,
