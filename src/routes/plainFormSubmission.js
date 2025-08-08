@@ -113,6 +113,7 @@ router.post('/submit-plain-form', async (req, res) => {
     }
     
     console.log(`Valid session found for user: ${userWithSession._id}`);
+    console.log('Feedback field received:', feedbackSuggestions ? `"${feedbackSuggestions.substring(0, 50)}..."` : 'None');
     
     // Clean phone number - remove all non-digit characters
     let cleanedPhone = phoneNumber ? phoneNumber.replace(/[^\d]/g, '') : '';
@@ -177,6 +178,11 @@ router.post('/submit-plain-form', async (req, res) => {
       
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
         console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
+      }
+      
+      // Log the feedback field being saved
+      if (feedbackSuggestions) {
+        console.log('Saving feedback to enhancedProfile.feedbackSuggestions:', feedbackSuggestions);
       }
       
       // Update profile and clear session in one operation
