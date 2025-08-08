@@ -12,23 +12,45 @@ const logSuccess = (operation, details = {}) => {
   console.log('Success:', operation, details);
 };
 
-// Validate Instagram handle
-function validateInstagramHandle(handle) {
-  if (!handle || handle.trim() === '') {
-    return true; // Empty is valid (optional field)
+// Validate and clean Instagram input (accepts both URLs and handles)
+function validateInstagramInput(input) {
+  if (!input || input.trim() === '') {
+    return { valid: true, cleaned: '' };
   }
   
-  // Remove @ if present at the beginning
-  handle = handle.replace(/^@/, '');
+  input = input.trim();
   
-  // Instagram username rules:
+  // Check if it's a URL
+  if (input.includes('instagram.com/') || input.includes('instagr.am/')) {
+    // Extract username from URL
+    const urlPattern = /(?:(?:http|https):\/\/)?(?:www\.)?(?:instagram\.com|instagr\.am)\/([A-Za-z0-9._]+)/;
+    const match = input.match(urlPattern);
+    if (match && match[1]) {
+      const username = match[1];
+      // Validate the extracted username
+      const usernameRegex = /^[a-zA-Z0-9._]{1,30}$/;
+      return { 
+        valid: usernameRegex.test(username), 
+        cleaned: username 
+      };
+    }
+    return { valid: false, cleaned: '' };
+  }
+  
+  // Otherwise treat as username/handle
+  // Remove @ if present at the beginning
+  const handle = input.replace(/^@/, '');
+  
+  // Instagram username rules (simplified):
   // - 1-30 characters
   // - Only letters, numbers, periods, and underscores
-  // - Cannot start or end with a period
-  // - Cannot have consecutive periods
-  const instagramRegex = /^(?!.*\.\.)(?!^\.)(?!.*\.$)[a-zA-Z0-9._]{1,30}$/;
+  const instagramRegex = /^[a-zA-Z0-9._]{1,30}$/;
   
-  return instagramRegex.test(handle);
+  const isValid = instagramRegex.test(handle);
+  return { 
+    valid: isValid, 
+    cleaned: isValid ? handle : '' 
+  };
 }
 
 // Submit plain form data
@@ -77,16 +99,21 @@ router.post('/submit-plain-form', async (req, res) => {
       });
     }
     
-    // Validate Instagram handle if provided
-    if (instagramProfile && !validateInstagramHandle(instagramProfile)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid Instagram handle. Please use only letters, numbers, periods, and underscores (1-30 characters)'
-      });
+    // Validate and clean Instagram input if provided
+    let cleanedInstagram = '';
+    if (instagramProfile) {
+      console.log('Instagram input received:', instagramProfile);
+      const instagramResult = validateInstagramInput(instagramProfile);
+      console.log('Instagram validation result:', instagramResult);
+      if (!instagramResult.valid) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid Instagram handle or URL. Please provide a valid Instagram username or profile link.'
+        });
+      }
+      cleanedInstagram = instagramResult.cleaned;
+      console.log('Cleaned Instagram handle:', cleanedInstagram);
     }
-    
-    // Clean Instagram handle (remove @ if present)
-    const cleanedInstagram = instagramProfile ? instagramProfile.replace(/^@/, '') : '';
 
     const db = getDatabase();
     
