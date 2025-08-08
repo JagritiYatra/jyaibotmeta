@@ -202,10 +202,16 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // Only update feedback if provided (preserve existing if not)
+      // Only update feedback if provided (replaces old feedback with new)
       if (feedbackSuggestions && feedbackSuggestions.trim()) {
         updateData['enhancedProfile.feedbackSuggestions'] = feedbackSuggestions.trim();
-        console.log('Adding feedback to update:', feedbackSuggestions.trim());
+        updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
+        console.log('Replacing feedback with new submission:', feedbackSuggestions.trim());
+        
+        // Check if user had previous feedback
+        if (existingUser.enhancedProfile?.feedbackSuggestions) {
+          console.log('Previous feedback was:', existingUser.enhancedProfile.feedbackSuggestions);
+        }
       }
       
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
