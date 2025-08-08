@@ -58,6 +58,9 @@ router.post('/submit-plain-form', async (req, res) => {
   console.log('Plain form submission received');
   console.log('Request body email:', req.body.email);
   console.log('Request body name:', req.body.name);
+  console.log('Request body feedback:', req.body.feedbackSuggestions);
+  console.log('Feedback type:', typeof req.body.feedbackSuggestions);
+  console.log('Full body keys:', Object.keys(req.body));
   
   try {
     const { 

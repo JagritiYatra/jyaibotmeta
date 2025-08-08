@@ -326,19 +326,29 @@ function initializeFormValidation() {
         const feedbackTextarea = document.getElementById('feedbackSuggestions');
         let feedbackValue = '';
         
-        // Try direct element access first (most reliable)
+        // Debug the textarea element
+        console.log('=== FEEDBACK DEBUG ===');
+        console.log('Textarea element found:', !!feedbackTextarea);
+        
         if (feedbackTextarea) {
+            console.log('Textarea value:', feedbackTextarea.value);
+            console.log('Textarea value length:', feedbackTextarea.value ? feedbackTextarea.value.length : 0);
             feedbackValue = feedbackTextarea.value || '';
-            console.log('Got feedback from textarea element:', feedbackValue.length, 'chars');
-        } else {
-            // Fallback to FormData
-            feedbackValue = formData.get('feedbackSuggestions') || '';
-            console.log('Got feedback from FormData:', feedbackValue.length, 'chars');
+        }
+        
+        // Also check FormData
+        const formDataFeedback = formData.get('feedbackSuggestions');
+        console.log('FormData feedback:', formDataFeedback);
+        
+        // Use whichever has a value
+        if (!feedbackValue && formDataFeedback) {
+            feedbackValue = formDataFeedback;
         }
         
         // Ensure it's a string
-        feedbackValue = String(feedbackValue).trim();
-        console.log('Final feedback to send:', feedbackValue || '(empty)');
+        feedbackValue = String(feedbackValue || '').trim();
+        console.log('FINAL feedback to send:', feedbackValue ? `"${feedbackValue}"` : '(empty)');
+        console.log('=== END FEEDBACK DEBUG ===');
         
         const data = {
             email: verifiedEmail,
@@ -362,6 +372,8 @@ function initializeFormValidation() {
         };
         
         console.log('Sending data with feedback:', data.feedbackSuggestions ? 'YES' : 'NO');
+        console.log('Actual feedback being sent:', data.feedbackSuggestions);
+        console.log('Full data object:', JSON.stringify(data, null, 2));
         
         // Submit form
         const submitBtn = document.getElementById('submitBtn');
