@@ -322,33 +322,49 @@ function initializeFormValidation() {
             communityGives.push(cb.value);
         });
         
-        // Get feedback value - ALWAYS capture it
-        const feedbackTextarea = document.getElementById('feedbackSuggestions');
+        // CRITICAL: Get feedback value - try multiple methods
         let feedbackValue = '';
         
-        // Debug the textarea element
-        console.log('=== FEEDBACK DEBUG ===');
-        console.log('Textarea element found:', !!feedbackTextarea);
-        
-        if (feedbackTextarea) {
-            console.log('Textarea value:', feedbackTextarea.value);
-            console.log('Textarea value length:', feedbackTextarea.value ? feedbackTextarea.value.length : 0);
-            feedbackValue = feedbackTextarea.value || '';
+        // Method 1: Direct element access by ID
+        try {
+            const feedbackById = document.getElementById('feedbackSuggestions');
+            if (feedbackById && feedbackById.value !== undefined) {
+                feedbackValue = feedbackById.value;
+                console.log('✅ Got feedback via getElementById:', feedbackValue.length, 'chars');
+            }
+        } catch (e) {
+            console.error('getElementById failed:', e);
         }
         
-        // Also check FormData
-        const formDataFeedback = formData.get('feedbackSuggestions');
-        console.log('FormData feedback:', formDataFeedback);
-        
-        // Use whichever has a value
-        if (!feedbackValue && formDataFeedback) {
-            feedbackValue = formDataFeedback;
+        // Method 2: Query selector as backup
+        if (!feedbackValue) {
+            try {
+                const feedbackByQuery = document.querySelector('textarea[name="feedbackSuggestions"]');
+                if (feedbackByQuery && feedbackByQuery.value !== undefined) {
+                    feedbackValue = feedbackByQuery.value;
+                    console.log('✅ Got feedback via querySelector:', feedbackValue.length, 'chars');
+                }
+            } catch (e) {
+                console.error('querySelector failed:', e);
+            }
         }
         
-        // Ensure it's a string
-        feedbackValue = String(feedbackValue || '').trim();
-        console.log('FINAL feedback to send:', feedbackValue ? `"${feedbackValue}"` : '(empty)');
-        console.log('=== END FEEDBACK DEBUG ===');
+        // Method 3: FormData as last resort
+        if (!feedbackValue) {
+            try {
+                const formDataValue = formData.get('feedbackSuggestions');
+                if (formDataValue !== null && formDataValue !== undefined) {
+                    feedbackValue = formDataValue;
+                    console.log('✅ Got feedback via FormData:', feedbackValue.length, 'chars');
+                }
+            } catch (e) {
+                console.error('FormData failed:', e);
+            }
+        }
+        
+        // Ensure it's a string and log result
+        feedbackValue = String(feedbackValue || '');
+        console.log('📝 FINAL FEEDBACK VALUE:', feedbackValue ? `"${feedbackValue}"` : '(empty string)');
         
         const data = {
             email: verifiedEmail,

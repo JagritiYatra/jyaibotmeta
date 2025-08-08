@@ -261,19 +261,22 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // FORCE feedback field update - ALWAYS, NO MATTER WHAT
-      // Even if undefined, null, or empty - ALWAYS update to clear old data
-      let feedbackValue = '';
-      if (feedbackSuggestions !== undefined && feedbackSuggestions !== null) {
-        feedbackValue = String(feedbackSuggestions).trim();
-      }
+      // ABSOLUTELY ENSURE feedback is saved - NO EXCEPTIONS
+      // Default to empty string if not provided
+      const feedbackValue = feedbackSuggestions ? String(feedbackSuggestions).trim() : '';
       
-      // EXPLICITLY SET FEEDBACK - This MUST happen
+      // FORCE these fields into updateData
       updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
       updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
       
-      // Log to ensure it's in updateData
-      console.log('FEEDBACK WILL BE SAVED AS:', updateData['enhancedProfile.feedbackSuggestions']);
+      // Critical logging
+      console.log('📝 FEEDBACK HANDLING:');
+      console.log('  - Received from frontend:', feedbackSuggestions === undefined ? 'UNDEFINED' : 
+                                              feedbackSuggestions === null ? 'NULL' : 
+                                              feedbackSuggestions === '' ? 'EMPTY STRING' : 
+                                              `"${String(feedbackSuggestions).substring(0, 50)}..."`);
+      console.log('  - Will save to database:', feedbackValue || '(empty string)');
+      console.log('  - UpdateData has feedback:', 'enhancedProfile.feedbackSuggestions' in updateData);
       
       console.log('Feedback update:', {
         received: feedbackSuggestions,
@@ -303,18 +306,26 @@ router.post('/submit-plain-form', async (req, res) => {
         });
       }
       
+      // Verify feedback was actually saved
+      const updatedUser = await db.collection('users').findOne({ _id: existingUser._id });
+      const savedFeedback = updatedUser?.enhancedProfile?.feedbackSuggestions;
+      
+      console.log('✅ VERIFICATION: Feedback in DB after update:', savedFeedback || '(empty)');
+      
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
         email: normalizedEmail,
         whatsappNumber: cleanedPhone,
-        wasPreCreated: existingUser.metadata?.preCreated || false
+        wasPreCreated: existingUser.metadata?.preCreated || false,
+        feedbackSaved: savedFeedback === feedbackValue
       });
 
       return res.json({
         success: true,
         message: 'Profile updated successfully',
         userId: existingUser._id,
-        isNewUser: false
+        isNewUser: false,
+        feedbackSaved: savedFeedback || '(empty)'
       });
     } catch (updateError) {
       console.error('Error updating profile:', updateError);

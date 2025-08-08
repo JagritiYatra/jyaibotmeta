@@ -15,7 +15,8 @@
       "Bash(npm start)",
       "Bash(curl:*)",
       "Bash(cat:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(MONGODB_URI=\"mongodb+srv://jy_bot_user:JY2025Bot@cluster0.1tbvvum.mongodb.net/jagriti_yatra_community?retryWrites=true&w=majority\" node check-all-feedback.js)"
     ],
     "deny": []
   }
