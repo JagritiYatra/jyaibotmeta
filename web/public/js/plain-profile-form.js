@@ -322,6 +322,10 @@ function initializeFormValidation() {
             communityGives.push(cb.value);
         });
         
+        // Get feedback value explicitly
+        const feedbackValue = formData.get('feedbackSuggestions') || '';
+        console.log('Feedback textarea value:', feedbackValue ? `"${feedbackValue.substring(0, 50)}..."` : '(empty)');
+        
         const data = {
             email: verifiedEmail,
             sessionToken: sessionToken,
@@ -340,8 +344,10 @@ function initializeFormValidation() {
             yatraImpact,
             communityAsks,
             communityGives,
-            feedbackSuggestions: formData.get('feedbackSuggestions')
+            feedbackSuggestions: feedbackValue
         };
+        
+        console.log('Sending data with feedback:', data.feedbackSuggestions ? 'YES' : 'NO');
         
         // Submit form
         const submitBtn = document.getElementById('submitBtn');

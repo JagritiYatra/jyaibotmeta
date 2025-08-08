@@ -259,16 +259,21 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // Only update feedback if provided (replaces old feedback with new)
-      if (feedbackSuggestions && feedbackSuggestions.trim()) {
-        updateData['enhancedProfile.feedbackSuggestions'] = feedbackSuggestions.trim();
+      // Always update feedback field (even if empty, to clear old test data)
+      if (feedbackSuggestions !== undefined) {
+        const feedbackValue = feedbackSuggestions ? feedbackSuggestions.trim() : '';
+        updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
         updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
-        console.log('Replacing feedback with new submission:', feedbackSuggestions.trim());
+        
+        console.log('Feedback field received:', feedbackSuggestions ? `"${feedbackSuggestions.substring(0, 50)}..."` : '(empty)');
+        console.log('Setting feedback to:', feedbackValue ? `"${feedbackValue.substring(0, 50)}..."` : '(empty)');
         
         // Check if user had previous feedback
         if (existingUser.enhancedProfile?.feedbackSuggestions) {
-          console.log('Previous feedback was:', existingUser.enhancedProfile.feedbackSuggestions);
+          console.log('Previous feedback was:', existingUser.enhancedProfile.feedbackSuggestions.substring(0, 50) + '...');
         }
+      } else {
+        console.log('WARNING: feedbackSuggestions field not received in request');
       }
       
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
