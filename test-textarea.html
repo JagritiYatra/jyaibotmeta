@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Feedback Textarea</title>
+</head>
+<body>
+    <h1>Test Feedback Field</h1>
+    
+    <textarea 
+        id="feedbackSuggestions" 
+        name="feedbackSuggestions" 
+        rows="4"
+        style="width: 500px; border: 2px solid blue; padding: 10px;"
+        placeholder="Type your feedback here..."></textarea>
+    
+    <br><br>
+    
+    <button onclick="testTextarea()">Test Textarea Value</button>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+        Result will appear here...
+    </div>
+    
+    <script>
+    function testTextarea() {
+        const textarea = document.getElementById('feedbackSuggestions');
+        const value = textarea.value;
+        const result = document.getElementById('result');
+        
+        result.innerHTML = `
+            <h3>Textarea Test Results:</h3>
+            <p>Element found: ${!!textarea}</p>
+            <p>Value: "${value}"</p>
+            <p>Value length: ${value.length}</p>
+            <p>Value type: ${typeof value}</p>
+            <p>Trimmed value: "${value.trim()}"</p>
+        `;
+        
+        // Also test FormData
+        const form = document.createElement('form');
+        form.appendChild(textarea.cloneNode(true));
+        const formData = new FormData(form);
+        const formDataValue = formData.get('feedbackSuggestions');
+        
+        result.innerHTML += `
+            <h3>FormData Test:</h3>
+            <p>FormData value: "${formDataValue}"</p>
+            <p>FormData type: ${typeof formDataValue}</p>
+        `;
+    }
+    </script>
+</body>
+</html>

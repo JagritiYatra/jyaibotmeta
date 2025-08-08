@@ -261,11 +261,19 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // ALWAYS update feedback field - NO CONDITIONS
-      // Convert to string and trim, or use empty string if null/undefined
-      const feedbackValue = (feedbackSuggestions || '').toString().trim();
+      // FORCE feedback field update - ALWAYS, NO MATTER WHAT
+      // Even if undefined, null, or empty - ALWAYS update to clear old data
+      let feedbackValue = '';
+      if (feedbackSuggestions !== undefined && feedbackSuggestions !== null) {
+        feedbackValue = String(feedbackSuggestions).trim();
+      }
+      
+      // EXPLICITLY SET FEEDBACK - This MUST happen
       updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
       updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
+      
+      // Log to ensure it's in updateData
+      console.log('FEEDBACK WILL BE SAVED AS:', updateData['enhancedProfile.feedbackSuggestions']);
       
       console.log('Feedback update:', {
         received: feedbackSuggestions,
