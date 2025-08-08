@@ -28,7 +28,7 @@ import {
   Chat,
   Search
 } from '@mui/icons-material';
-import { getSessions } from '../services/api';
+import { sessionAPI } from '../services/enhancedApi';
 import { Session } from '../types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -50,9 +50,10 @@ const Sessions: React.FC = () => {
 
   const fetchSessions = async () => {
     try {
-      const response = await getSessions();
-      setSessions(response.sessions);
-      calculateStats(response.sessions);
+      const response = await sessionAPI.getActiveSessions();
+      const sessionsData = response.data || [];
+      setSessions(sessionsData);
+      calculateStats(sessionsData);
     } catch (error) {
       console.error('Failed to fetch sessions:', error);
     } finally {

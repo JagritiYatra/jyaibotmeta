@@ -36,7 +36,8 @@ router.post('/submit-plain-form', async (req, res) => {
       industryDomain,
       yatraImpact,
       communityAsks,
-      communityGives
+      communityGives,
+      feedbackSuggestions
     } = req.body;
 
     // Validate required fields
@@ -148,6 +149,7 @@ router.post('/submit-plain-form', async (req, res) => {
       yatraImpact: Array.isArray(yatraImpact) ? yatraImpact : [yatraImpact].filter(Boolean),
       communityAsks: Array.isArray(communityAsks) ? communityAsks : [communityAsks].filter(Boolean),
       communityGives: Array.isArray(communityGives) ? communityGives : [communityGives].filter(Boolean),
+      feedbackSuggestions: feedbackSuggestions || '',
       formFilledVia: 'plain_link',
       formFilledAt: new Date(),
       profileComplete: true,

@@ -261,7 +261,8 @@ function initializeFormValidation() {
             industryDomain: formData.get('industryDomain'),
             yatraImpact,
             communityAsks,
-            communityGives
+            communityGives,
+            feedbackSuggestions: formData.get('feedbackSuggestions')
         };
         
         // Submit form

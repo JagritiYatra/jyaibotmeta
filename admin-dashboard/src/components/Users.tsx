@@ -37,9 +37,11 @@ import {
   CheckCircle,
   Cancel
 } from '@mui/icons-material';
-import { getUsers, deleteUser, getUserDetails } from '../services/api';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/admin';
 
 const Users: React.FC = () => {
   const navigate = useNavigate();
@@ -62,14 +64,16 @@ const Users: React.FC = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await getUsers({
-        page: page + 1,
-        limit: rowsPerPage,
-        search: search || undefined,
-        filter: filter === 'all' ? undefined : filter
+      const response = await axios.get(`${API_BASE}/users`, {
+        params: {
+          page: page + 1,
+          limit: rowsPerPage,
+          search: search || undefined,
+          filter: filter === 'all' ? undefined : filter
+        }
       });
-      setUsers(response.users);
-      setTotalUsers(response.pagination.total);
+      setUsers(response.data.users);
+      setTotalUsers(response.data.total);
     } catch (error) {
       console.error('Failed to fetch users:', error);
     } finally {
@@ -81,7 +85,7 @@ const Users: React.FC = () => {
     if (!deleteDialog.user) return;
     
     try {
-      await deleteUser(deleteDialog.user.whatsappNumber);
+      await axios.delete(`${API_BASE}/users/${deleteDialog.user.whatsappNumber}`);
       fetchUsers();
       setDeleteDialog({ open: false, user: null });
     } catch (error) {
@@ -99,8 +103,8 @@ const Users: React.FC = () => {
 
   const exportUsers = async () => {
     try {
-      const allUsers = await getUsers({ limit: 10000 });
-      const csvContent = convertToCSV(allUsers.users);
+      const response = await axios.get(`${API_BASE}/users`, { params: { limit: 10000 } });
+      const csvContent = convertToCSV(response.data.users);
       downloadCSV(csvContent, 'users-export.csv');
     } catch (error) {
       console.error('Failed to export users:', error);

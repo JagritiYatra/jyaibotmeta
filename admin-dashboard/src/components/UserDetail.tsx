@@ -44,8 +44,10 @@ import {
   ContentCopy
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getUserDetails, getConversations } from '../services/api';
 import { format } from 'date-fns';
+import axios from 'axios';
+
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/admin';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -79,8 +81,8 @@ const UserDetail: React.FC = () => {
 
   const fetchUserData = async () => {
     try {
-      const data = await getUserDetails(whatsappNumber!);
-      setUserData(data);
+      const response = await axios.get(`${API_BASE}/users/${whatsappNumber}`);
+      setUserData(response.data);
     } catch (error) {
       console.error('Failed to fetch user details:', error);
     } finally {
@@ -90,10 +92,14 @@ const UserDetail: React.FC = () => {
 
   const fetchConversations = async () => {
     try {
-      const data = await getConversations(whatsappNumber!, { limit: 50 });
-      setConversations(data.conversations);
+      const response = await axios.get(`${API_BASE}/conversations/${whatsappNumber}`, {
+        params: { limit: 50 }
+      });
+      setConversations(response.data.conversations || []);
     } catch (error) {
       console.error('Failed to fetch conversations:', error);
+      // Set empty array if endpoint doesn't exist
+      setConversations([]);
     }
   };
 

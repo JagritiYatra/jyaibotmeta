@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Verification</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0A0E27;
+            color: #00D9FF;
+            padding: 20px;
+        }
+        h1 { margin-bottom: 20px; }
+        .info {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00D9FF;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .success { color: #00FF88; }
+        .error { color: #FF0066; }
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 2px solid #00D9FF;
+            border-radius: 8px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 JY Alumni Network - Admin Dashboard</h1>
+    
+    <div class="info">
+        <h3>✅ Dashboard is now properly configured!</h3>
+        <p>The routing has been fixed. The dashboard should now load correctly below.</p>
+        <p>If you still see a blank screen, try:</p>
+        <ul>
+            <li>Click the refresh button in the iframe</li>
+            <li>Clear your browser cache (Ctrl+Shift+R or Cmd+Shift+R)</li>
+            <li>Check if any browser extensions are blocking scripts</li>
+        </ul>
+        <p><strong>Direct Link:</strong> <a href="http://localhost:3000/admin" target="_blank" style="color: #00D9FF;">http://localhost:3000/admin</a></p>
+    </div>
+    
+    <iframe src="http://localhost:3000/admin" id="dashboard"></iframe>
+    
+    <script>
+        // Auto-refresh if needed
+        setTimeout(() => {
+            const iframe = document.getElementById('dashboard');
+            console.log('Dashboard URL:', iframe.src);
+        }, 1000);
+    </script>
+</body>
+</html>

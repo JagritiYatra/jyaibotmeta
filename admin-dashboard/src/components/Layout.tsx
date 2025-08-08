@@ -99,7 +99,7 @@ const Layout: React.FC = () => {
     { 
       text: 'User Behavior', 
       icon: <TrendingUp />, 
-      path: '/user-behavior',
+      path: '/behavior',
       description: 'Behavior Analytics',
       color: '#ef4444'
     },
