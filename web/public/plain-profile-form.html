@@ -123,22 +123,133 @@
             position: absolute;
             z-index: 9999 !important;
             max-height: 300px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            border-radius: 8px;
             margin-top: 4px;
-            border: 1px solid #e5e7eb;
-            background: white;
+            border: 2px solid #e5e7eb;
+            background: white !important;
+            background-color: #ffffff !important;
             overflow-y: auto;
             overflow-x: hidden;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            padding-bottom: 5px; /* Extra padding for last items */
+        }
+        
+        /* Ensure country items have solid background */
+        .iti__country {
+            background-color: white !important;
+            background: white !important;
+            opacity: 1 !important;
+            position: relative;
+            z-index: 10000;
+        }
+        
+        /* Fix for last items in dropdown */
+        .iti__country-list .iti__country:last-child {
+            margin-bottom: 5px;
+        }
+        
+        /* Ensure scrollbar doesn't hide content */
+        .iti__country-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .iti__country-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .iti__country-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .iti__country-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
         
         .iti__country {
             padding: 8px 10px;
             transition: all 0.2s ease;
+            background-color: white !important;
+            opacity: 1 !important;
         }
         
         .iti__country:hover {
-            background: linear-gradient(90deg, #f3f4f6 0%, #f9fafb 100%);
+            background: #f3f4f6 !important;
+            background-color: #f3f4f6 !important;
+        }
+        
+        /* Fix dropdown container opacity */
+        .iti__dropdown-content {
+            background-color: white !important;
+            opacity: 1 !important;
+        }
+        
+        /* Ensure the flag dropdown has higher z-index than other form elements */
+        .iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag,
+        .iti--allow-dropdown .iti__flag-container:focus-within .iti__selected-flag {
+            z-index: 10000;
+        }
+        
+        /* Make sure dropdown is above everything */
+        .iti--container {
+            z-index: 10001 !important;
+        }
+        
+        /* Create a backdrop when dropdown is open */
+        .iti--allow-dropdown.iti--open::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 9998;
+        }
+        
+        /* Ensure list has solid white background with no transparency */
+        .iti__country-list,
+        .iti__country-list *,
+        .iti__divider,
+        .iti__preferred,
+        .iti__standard {
+            background-color: white !important;
+            opacity: 1 !important;
+        }
+        
+        /* Remove any glass effects from parent that might affect dropdown */
+        .iti__flag-container,
+        .iti__country-container {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        
+        /* Fix dropdown positioning to prevent cutoff */
+        .iti__country-list.iti__country-list--dropup {
+            bottom: 100%;
+            margin-bottom: 4px;
+            margin-top: 0;
+        }
+        
+        /* Ensure dropdown is visible even near bottom of viewport */
+        .iti--container {
+            position: static !important;
+        }
+        
+        /* Fix highlight/hover state */
+        .iti__country.iti__highlight {
+            background-color: #f3f4f6 !important;
+        }
+        
+        /* Ensure proper spacing for divider */
+        .iti__divider {
+            padding: 0 !important;
+            margin: 5px 0 !important;
+            background: #e5e7eb !important;
+            height: 1px !important;
         }
         
         .iti__selected-flag {
@@ -368,6 +479,18 @@
                 width: calc(100vw - 20px);
                 left: 10px !important;
                 right: 10px !important;
+                position: fixed !important;
+                top: 50% !important;
+                transform: translateY(-50%) !important;
+                margin: 0 !important;
+                padding-bottom: 10px;
+                border: 3px solid #6366f1;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            }
+            
+            /* Ensure last items are visible on mobile */
+            .iti__country-list .iti__country:last-child {
+                padding-bottom: 10px;
             }
             
             .iti input[type="tel"] {
