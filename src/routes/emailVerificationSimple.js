@@ -81,12 +81,49 @@ router.post('/verify-otp', async (req, res) => {
     if (result.valid) {
       console.log('OTP verified for:', normalizedEmail);
       
-      // Just return success - no complex session management
+      // Create a proper session in database
+      const { getDatabase } = require('../config/database');
+      const db = getDatabase();
+      const crypto = require('crypto');
+      
+      // Generate unique session token
+      const sessionToken = crypto.randomBytes(32).toString('hex');
+      const sessionData = {
+        token: sessionToken,
+        email: normalizedEmail,
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 3600000) // 1 hour
+      };
+      
+      // Update or create user with session
+      await db.collection('users').updateOne(
+        {
+          $or: [
+            { 'basicProfile.email': normalizedEmail },
+            { 'enhancedProfile.email': normalizedEmail },
+            { 'metadata.email': normalizedEmail }
+          ]
+        },
+        {
+          $set: {
+            plainFormSession: sessionData,
+            'basicProfile.email': normalizedEmail
+          },
+          $setOnInsert: {
+            'metadata.createdAt': new Date(),
+            'metadata.preCreated': true
+          }
+        },
+        { upsert: true }
+      );
+      
+      console.log('Session created for:', normalizedEmail);
+      
       return res.json({
         success: true,
         message: 'Email verified successfully!',
         email: normalizedEmail,
-        sessionToken: 'verified' // Simple token that frontend expects
+        sessionToken: sessionToken // Return the actual token
       });
     } else {
       return res.status(400).json({
