@@ -81,50 +81,91 @@ router.post('/verify-otp', async (req, res) => {
     if (result.valid) {
       console.log('OTP verified for:', normalizedEmail);
       
-      // Create a proper session in database
-      const { getDatabase } = require('../config/database');
-      const db = getDatabase();
-      const crypto = require('crypto');
-      
-      // Generate unique session token
-      const sessionToken = crypto.randomBytes(32).toString('hex');
-      const sessionData = {
-        token: sessionToken,
-        email: normalizedEmail,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000) // 1 hour
-      };
-      
-      // Update or create user with session
-      await db.collection('users').updateOne(
-        {
-          $or: [
-            { 'basicProfile.email': normalizedEmail },
-            { 'enhancedProfile.email': normalizedEmail },
-            { 'metadata.email': normalizedEmail }
-          ]
-        },
-        {
-          $set: {
-            plainFormSession: sessionData,
-            'basicProfile.email': normalizedEmail
+      try {
+        // Create a proper session in database
+        const { getDatabase, isDbConnected } = require('../config/database');
+        
+        // Check if database is connected
+        if (!isDbConnected()) {
+          console.error('Database not connected, attempting to connect...');
+          const { connectDatabase } = require('../config/database');
+          await connectDatabase();
+        }
+        
+        const db = getDatabase();
+        const crypto = require('crypto');
+        
+        // Generate unique session token
+        const sessionToken = crypto.randomBytes(32).toString('hex');
+        const sessionData = {
+          token: sessionToken,
+          email: normalizedEmail,
+          createdAt: new Date(),
+          expiresAt: new Date(Date.now() + 3600000) // 1 hour
+        };
+        
+        console.log('Creating session with token:', sessionToken.substring(0, 20) + '...');
+        
+        // Update or create user with session
+        const updateResult = await db.collection('users').updateOne(
+          {
+            $or: [
+              { 'basicProfile.email': normalizedEmail },
+              { 'enhancedProfile.email': normalizedEmail },
+              { 'metadata.email': normalizedEmail }
+            ]
           },
-          $setOnInsert: {
-            'metadata.createdAt': new Date(),
-            'metadata.preCreated': true
-          }
-        },
-        { upsert: true }
-      );
-      
-      console.log('Session created for:', normalizedEmail);
-      
-      return res.json({
-        success: true,
-        message: 'Email verified successfully!',
-        email: normalizedEmail,
-        sessionToken: sessionToken // Return the actual token
-      });
+          {
+            $set: {
+              plainFormSession: sessionData,
+              'basicProfile.email': normalizedEmail,
+              'metadata.sessionUpdatedAt': new Date()
+            },
+            $setOnInsert: {
+              'metadata.createdAt': new Date(),
+              'metadata.preCreated': true,
+              'metadata.awaitingFormSubmission': true,
+              'metadata.source': 'otp_verification'
+            }
+          },
+          { upsert: true }
+        );
+        
+        console.log('Session update result:', {
+          matched: updateResult.matchedCount,
+          modified: updateResult.modifiedCount,
+          upserted: updateResult.upsertedCount
+        });
+        
+        // Verify session was created
+        const verifyUser = await db.collection('users').findOne({
+          'basicProfile.email': normalizedEmail,
+          'plainFormSession.token': sessionToken
+        });
+        
+        if (verifyUser) {
+          console.log('✅ Session verified in database for:', normalizedEmail);
+        } else {
+          console.error('⚠️ Session creation may have failed for:', normalizedEmail);
+        }
+        
+        return res.json({
+          success: true,
+          message: 'Email verified successfully!',
+          email: normalizedEmail,
+          sessionToken: sessionToken // Return the actual token
+        });
+      } catch (dbError) {
+        console.error('Database error during session creation:', dbError);
+        // Still return success but with a warning
+        return res.json({
+          success: true,
+          message: 'Email verified but session creation had issues. Please try again.',
+          email: normalizedEmail,
+          sessionToken: 'error',
+          warning: 'Session creation failed - ' + dbError.message
+        });
+      }
     } else {
       return res.status(400).json({
         success: false,
