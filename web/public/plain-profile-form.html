@@ -108,165 +108,271 @@
             100% { transform: scale(1); opacity: 1; }
         }
         
-        /* Fix International Tel Input Overlapping Issues */
+        /* Modern Phone Input Redesign with Portal-based Dropdown */
         .iti {
             width: 100%;
             position: relative;
+            margin-bottom: 2rem; /* Extra space to prevent overlap */
+        }
+        
+        /* Flag button styling */
+        .iti__flag-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding-right: 8px;
+        }
+        
+        .iti__selected-flag {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 12px;
+            background: linear-gradient(to right, #f9fafb 0%, #ffffff 100%);
+            border-right: 2px solid #e5e7eb;
+            border-radius: 12px 0 0 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .iti__selected-flag:hover {
+            background: linear-gradient(to right, #ede9fe 0%, #f3f1ff 100%);
+            border-right-color: var(--primary);
+        }
+        
+        .iti__selected-flag:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: -2px;
+        }
+        
+        .iti__arrow {
+            margin-left: 6px;
+            transition: transform 0.3s ease;
+        }
+        
+        .iti__arrow--up {
+            transform: rotate(180deg);
+        }
+        
+        /* Phone input field */
+        .iti input[type="tel"] {
+            width: 100%;
+            height: 52px;
+            padding: 0 16px 0 90px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+        
+        .iti input[type="tel"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+        
+        .iti input[type="tel"].error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+        
+        /* Country List Dropdown - Portal Style */
+        .iti__country-list {
+            position: fixed !important;
+            z-index: 999999 !important;
+            max-height: 48vh;
+            min-width: 300px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Search box inside dropdown */
+        .iti__search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-bottom: 2px solid #e5e7eb;
+            font-size: 14px;
+            background: #f9fafb;
+            position: sticky;
+            top: 0;
             z-index: 10;
         }
         
-        .iti__flag-container {
-            z-index: 11;
+        .iti__search-input:focus {
+            outline: none;
+            background: white;
+            border-bottom-color: var(--primary);
         }
         
-        .iti__country-list {
-            position: absolute;
-            z-index: 9999 !important;
-            max-height: 300px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-            border-radius: 8px;
-            margin-top: 4px;
-            border: 2px solid #e5e7eb;
-            background: white !important;
-            background-color: #ffffff !important;
+        /* Country list container */
+        .iti__country-list-box {
+            max-height: calc(48vh - 50px);
             overflow-y: auto;
             overflow-x: hidden;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            padding-bottom: 5px; /* Extra padding for last items */
+            padding: 4px;
         }
         
-        /* Ensure country items have solid background */
+        /* Custom scrollbar */
+        .iti__country-list-box::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .iti__country-list-box::-webkit-scrollbar-track {
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+        
+        .iti__country-list-box::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid #f9fafb;
+        }
+        
+        .iti__country-list-box::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Country items */
         .iti__country {
-            background-color: white !important;
-            background: white !important;
-            opacity: 1 !important;
-            position: relative;
-            z-index: 10000;
-        }
-        
-        /* Fix for last items in dropdown */
-        .iti__country-list .iti__country:last-child {
-            margin-bottom: 5px;
-        }
-        
-        /* Ensure scrollbar doesn't hide content */
-        .iti__country-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .iti__country-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-        
-        .iti__country-list::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-        
-        .iti__country-list::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        
-        .iti__country {
-            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin: 2px;
+            border-radius: 8px;
+            cursor: pointer;
             transition: all 0.2s ease;
-            background-color: white !important;
-            opacity: 1 !important;
+            background: white;
+            position: relative;
         }
         
-        .iti__country:hover {
-            background: #f3f4f6 !important;
-            background-color: #f3f4f6 !important;
+        .iti__country:hover,
+        .iti__country.iti__highlight {
+            background: linear-gradient(to right, #f0f9ff 0%, #e0f2fe 100%);
+            transform: translateX(2px);
         }
         
-        /* Fix dropdown container opacity */
-        .iti__dropdown-content {
-            background-color: white !important;
-            opacity: 1 !important;
+        .iti__country.iti__active {
+            background: linear-gradient(to right, #ede9fe 0%, #ddd6fe 100%);
+            font-weight: 600;
         }
         
-        /* Ensure the flag dropdown has higher z-index than other form elements */
-        .iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag,
-        .iti--allow-dropdown .iti__flag-container:focus-within .iti__selected-flag {
-            z-index: 10000;
+        .iti__flag-box {
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
         }
         
-        /* Make sure dropdown is above everything */
-        .iti--container {
-            z-index: 10001 !important;
+        .iti__country-name {
+            flex: 1;
+            font-size: 14px;
+            color: #1f2937;
         }
         
-        /* Create a backdrop when dropdown is open */
-        .iti--allow-dropdown.iti--open::before {
-            content: '';
+        .iti__dial-code {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 500;
+            margin-left: auto;
+            padding-left: 8px;
+        }
+        
+        /* Divider for preferred countries */
+        .iti__divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            margin: 8px 12px;
+        }
+        
+        /* Backdrop overlay */
+        .iti-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.1);
-            z-index: 9998;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            z-index: 999998;
+            animation: backdropFadeIn 0.3s ease;
         }
         
-        /* Ensure list has solid white background with no transparency */
-        .iti__country-list,
-        .iti__country-list *,
-        .iti__divider,
-        .iti__preferred,
-        .iti__standard {
-            background-color: white !important;
-            opacity: 1 !important;
+        @keyframes backdropFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        /* Remove any glass effects from parent that might affect dropdown */
-        .iti__flag-container,
-        .iti__country-container {
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
+        /* Accessibility improvements */
+        .iti__country[aria-selected="true"] {
+            background: #ede9fe;
+            font-weight: 600;
         }
         
-        /* Fix dropdown positioning to prevent cutoff */
-        .iti__country-list.iti__country-list--dropup {
-            bottom: 100%;
-            margin-bottom: 4px;
-            margin-top: 0;
+        .iti__country:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: -2px;
         }
         
-        /* Ensure dropdown is visible even near bottom of viewport */
-        .iti--container {
-            position: static !important;
+        /* Error message styling */
+        .phone-error-message {
+            display: none;
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 6px;
+            padding-left: 4px;
+            animation: errorSlideIn 0.3s ease;
         }
         
-        /* Fix highlight/hover state */
-        .iti__country.iti__highlight {
-            background-color: #f3f4f6 !important;
+        .phone-error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
-        /* Ensure proper spacing for divider */
-        .iti__divider {
-            padding: 0 !important;
-            margin: 5px 0 !important;
-            background: #e5e7eb !important;
-            height: 1px !important;
+        @keyframes errorSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        .iti__selected-flag {
-            background-color: #f9fafb;
-            border-radius: 8px 0 0 8px;
-            transition: background-color 0.2s ease;
-        }
-        
-        .iti__selected-flag:hover,
-        .iti__selected-flag:focus {
-            background-color: #ede9fe;
-        }
-        
-        .iti input[type="tel"] {
-            padding-left: 58px !important;
-            width: 100%;
-            font-size: 16px;
+        /* Loading state */
+        .iti__country-list.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e5e7eb;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
         
         /* Smooth Field Focus Animations */
@@ -475,22 +581,53 @@
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             .iti__country-list {
-                max-height: 50vh;
-                width: calc(100vw - 20px);
+                position: fixed !important;
                 left: 10px !important;
                 right: 10px !important;
-                position: fixed !important;
-                top: 50% !important;
-                transform: translateY(-50%) !important;
+                bottom: 10px !important;
+                top: auto !important;
+                max-height: 70vh;
+                width: auto !important;
                 margin: 0 !important;
-                padding-bottom: 10px;
-                border: 3px solid #6366f1;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                border: 2px solid var(--primary);
+                border-radius: 16px;
+                animation: mobileSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            @keyframes mobileSlideUp {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            .iti__country {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            
+            .iti__dial-code {
+                font-size: 15px;
+            }
+            
+            .iti-backdrop {
+                backdrop-filter: blur(4px);
+                background: rgba(0, 0, 0, 0.5);
             }
             
             /* Ensure last items are visible on mobile */
             .iti__country-list .iti__country:last-child {
-                padding-bottom: 10px;
+                padding-bottom: 20px;
+            }
+            
+            /* Larger touch targets */
+            .iti__selected-flag {
+                min-height: 52px;
+                padding: 0 16px;
             }
             
             .iti input[type="tel"] {
@@ -834,7 +971,7 @@
                         
                         <div class="grid md:grid-cols-2 gap-6">
                             <div class="form-field-wrapper">
-                                <label class="block text-gray-700 font-semibold mb-2">
+                                <label for="whatsappPhone" class="block text-gray-700 font-semibold mb-2">
                                     <i class="fab fa-whatsapp text-green-500 mr-2"></i>
                                     WhatsApp Number *
                                     <div class="tooltip inline-block ml-2">
@@ -842,15 +979,27 @@
                                         <span class="tooltiptext">Must be active on WhatsApp for bot communication</span>
                                     </div>
                                 </label>
-                                <div class="relative">
-                                    <input type="tel" id="whatsappPhone" name="phoneNumber" required 
-                                           class="w-full pr-4 py-3 border-2 border-gray-300 rounded-lg input-focus focus:outline-none"
+                                <div class="relative" role="group" aria-labelledby="phone-label">
+                                    <input type="tel" 
+                                           id="whatsappPhone" 
+                                           name="phoneNumber" 
+                                           required 
+                                           aria-label="WhatsApp phone number"
+                                           aria-describedby="phone-helper phone-error"
+                                           aria-invalid="false"
+                                           autocomplete="tel"
                                            placeholder="98765 43210">
-                                    <small class="text-gray-500 text-sm mt-2 block flex items-center">
-                                        <i class="fas fa-globe mr-1 text-xs"></i>
-                                        Select country flag → Enter mobile number → We'll format it automatically
+                                    <div id="phone-error" class="phone-error-message" role="alert" aria-live="polite">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span id="phone-error-text">Please enter a valid phone number</span>
+                                    </div>
+                                    <small id="phone-helper" class="text-gray-500 text-sm mt-2 block flex items-center">
+                                        <i class="fas fa-check-circle mr-1 text-green-500 text-xs"></i>
+                                        Number will be formatted to E.164 for WhatsApp
                                     </small>
                                 </div>
+                                <!-- Portal container for dropdown -->
+                                <div id="country-dropdown-portal"></div>
                             </div>
                             
                             <div>
@@ -1191,24 +1340,149 @@
         });
         
         const phoneInput = document.querySelector("#whatsappPhone");
+        const phoneError = document.querySelector("#phone-error");
+        const phoneErrorText = document.querySelector("#phone-error-text");
+        
+        // Enhanced ITI configuration with accessibility
         const iti = window.intlTelInput(phoneInput, {
             initialCountry: "in",
-            preferredCountries: ["in", "us", "gb", "ae", "sg", "au", "ca"],
+            preferredCountries: ["in", "us", "gb", "ae", "sg", "au", "ca", "de", "fr"],
             separateDialCode: true,
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-            // Show all countries
-            onlyCountries: [],
-            excludeCountries: [],
             formatOnDisplay: true,
             nationalMode: false,
             placeholderNumberType: "MOBILE",
+            dropdownContainer: document.body, // Portal-like behavior
+            autoPlaceholder: "aggressive",
             customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
                 return selectedCountryPlaceholder.replace(/[0-9]/g, '0');
-            }
+            },
+            // Custom container classes for styling
+            customContainer: "iti-custom-container"
         });
         
         // Store the ITI instance for form submission
         window.phoneITI = iti;
+        
+        // Add search functionality to dropdown
+        let searchTimeout;
+        phoneInput.addEventListener('countrychange', function() {
+            // Clear any existing search
+            clearTimeout(searchTimeout);
+        });
+        
+        // Enhanced validation with E.164 formatting
+        phoneInput.addEventListener('blur', function() {
+            validatePhoneNumber();
+        });
+        
+        phoneInput.addEventListener('input', function() {
+            // Remove error state while typing
+            phoneInput.classList.remove('error');
+            phoneError.classList.remove('show');
+            phoneInput.setAttribute('aria-invalid', 'false');
+        });
+        
+        function validatePhoneNumber() {
+            if (phoneInput.value.trim()) {
+                if (iti.isValidNumber()) {
+                    phoneInput.classList.remove('error');
+                    phoneInput.classList.add('field-valid');
+                    phoneError.classList.remove('show');
+                    phoneInput.setAttribute('aria-invalid', 'false');
+                    
+                    // Get E.164 format
+                    const e164Number = iti.getNumber();
+                    console.log('Valid number in E.164 format:', e164Number);
+                    return true;
+                } else {
+                    const errorCode = iti.getValidationError();
+                    let errorMsg = 'Please enter a valid phone number';
+                    
+                    // Custom error messages based on validation error
+                    switch(errorCode) {
+                        case intlTelInputUtils.validationError.TOO_SHORT:
+                            errorMsg = 'Phone number is too short';
+                            break;
+                        case intlTelInputUtils.validationError.TOO_LONG:
+                            errorMsg = 'Phone number is too long';
+                            break;
+                        case intlTelInputUtils.validationError.INVALID_COUNTRY_CODE:
+                            errorMsg = 'Invalid country code';
+                            break;
+                        case intlTelInputUtils.validationError.NOT_A_NUMBER:
+                            errorMsg = 'Please enter numbers only';
+                            break;
+                    }
+                    
+                    phoneInput.classList.add('error');
+                    phoneInput.classList.remove('field-valid');
+                    phoneError.classList.add('show');
+                    phoneErrorText.textContent = errorMsg;
+                    phoneInput.setAttribute('aria-invalid', 'true');
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // Keyboard navigation for dropdown
+        document.addEventListener('keydown', function(e) {
+            const dropdown = document.querySelector('.iti__country-list');
+            if (dropdown && dropdown.style.display !== 'none') {
+                // ESC key to close dropdown
+                if (e.key === 'Escape') {
+                    iti.setCountry(iti.getSelectedCountryData().iso2);
+                    phoneInput.focus();
+                }
+            }
+        });
+        
+        // Add backdrop when dropdown opens
+        const originalOpen = iti._openDropdown;
+        const originalClose = iti._closeDropdown;
+        
+        iti._openDropdown = function() {
+            originalOpen.call(this);
+            
+            // Create backdrop
+            const backdrop = document.createElement('div');
+            backdrop.className = 'iti-backdrop';
+            backdrop.id = 'iti-backdrop';
+            document.body.appendChild(backdrop);
+            
+            // Close on backdrop click
+            backdrop.addEventListener('click', function() {
+                iti._closeDropdown();
+            });
+            
+            // Add aria attributes
+            phoneInput.setAttribute('aria-expanded', 'true');
+            const dropdown = document.querySelector('.iti__country-list');
+            if (dropdown) {
+                dropdown.setAttribute('role', 'listbox');
+                dropdown.setAttribute('aria-label', 'Select country code');
+                
+                // Focus search if exists
+                const searchInput = dropdown.querySelector('.iti__search-input');
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 100);
+                }
+            }
+        };
+        
+        iti._closeDropdown = function() {
+            originalClose.call(this);
+            
+            // Remove backdrop
+            const backdrop = document.getElementById('iti-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            
+            // Update aria attributes
+            phoneInput.setAttribute('aria-expanded', 'false');
+        };
         
         // Date of Birth Validation (16-90 years)
         const dobInput = document.getElementById('dateOfBirth');

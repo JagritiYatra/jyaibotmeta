@@ -326,25 +326,38 @@ function initializeFormValidation() {
         const suggestionsValue = formData.get('suggestions') || '';
         console.log('Suggestions field value:', suggestionsValue ? 'Has content' : 'Empty');
         
-        // Get phone number from international tel input
+        // Get phone number from international tel input with validation
         let phoneNumber = '';
         if (window.phoneITI) {
-            // Get the full number including country code
-            const fullNumber = window.phoneITI.getNumber();
-            // Remove all non-digit characters (removes +, spaces, dashes)
-            phoneNumber = fullNumber.replace(/[^0-9]/g, '');
-            console.log('Phone number extracted:', phoneNumber);
-            
-            // Validate the phone number
+            // Validate first
             if (!window.phoneITI.isValidNumber()) {
-                alert('Please enter a valid phone number');
+                // Trigger validation to show error
+                const phoneInput = document.getElementById('whatsappPhone');
+                phoneInput.focus();
+                phoneInput.blur();
+                
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Submit Profile';
+                
+                // Scroll to phone field
+                phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
+            
+            // Get E.164 formatted number
+            const e164Number = window.phoneITI.getNumber();
+            // Remove + sign for storage (keep only digits)
+            phoneNumber = e164Number.replace(/[^0-9]/g, '');
+            console.log('E.164 formatted number for WhatsApp:', phoneNumber);
         } else {
             // Fallback if ITI not initialized
             phoneNumber = formData.get('phoneNumber');
+            // Basic cleanup
+            phoneNumber = phoneNumber.replace(/[^0-9]/g, '');
+            // Add 91 if 10 digit Indian number
+            if (phoneNumber.length === 10) {
+                phoneNumber = '91' + phoneNumber;
+            }
         }
         
         const data = {
