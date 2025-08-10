@@ -162,16 +162,33 @@
             box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
         }
         
-        /* Country List Dropdown - Opens upward */
+        /* Country List Dropdown - Simple high z-index solution */
         .iti__country-list {
-            z-index: 9999 !important;
+            z-index: 999999 !important;
             background: white !important;
             background-color: #ffffff !important;
-            border: 1px solid #ddd !important;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
+            border: 2px solid #ddd !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
             max-height: 300px !important;
             overflow-y: auto !important;
             border-radius: 8px !important;
+        }
+        
+        /* Make sure the dropdown container is on top */
+        .iti__dropdown {
+            z-index: 999999 !important;
+        }
+        
+        /* Ensure the flag dropdown trigger is clickable */
+        .iti__selected-flag {
+            z-index: 10 !important;
+            cursor: pointer !important;
+        }
+        
+        /* Parent container positioning */
+        .iti {
+            position: relative !important;
+            z-index: 100 !important;
         }
         
         /* Custom scrollbar for dropdown */
@@ -1217,7 +1234,7 @@
         const phoneError = document.querySelector("#phone-error");
         const phoneErrorText = document.querySelector("#phone-error-text");
         
-        // Simple ITI configuration that works
+        // Simple ITI configuration - just let it work naturally
         const iti = window.intlTelInput(phoneInput, {
             initialCountry: "in",
             preferredCountries: ["in", "us", "gb", "ae", "sg", "au", "ca", "de", "fr"],
@@ -1226,35 +1243,11 @@
             formatOnDisplay: true,
             nationalMode: false,
             placeholderNumberType: "MOBILE",
-            dropdownContainer: document.body, // Attach to body for better positioning control
             autoPlaceholder: "aggressive"
         });
         
         // Store the ITI instance for form submission
         window.phoneITI = iti;
-        
-        // Force dropdown to open upward
-        const originalOpen = iti._openDropdown.bind(iti);
-        iti._openDropdown = function() {
-            originalOpen();
-            
-            // Get the dropdown and position it above the input
-            setTimeout(() => {
-                const dropdown = document.querySelector('.iti__country-list');
-                if (dropdown) {
-                    const inputRect = phoneInput.getBoundingClientRect();
-                    const dropdownHeight = 300; // Max height we set
-                    
-                    // Position above the input
-                    dropdown.style.position = 'fixed';
-                    dropdown.style.left = inputRect.left + 'px';
-                    dropdown.style.width = inputRect.width + 'px';
-                    dropdown.style.bottom = (window.innerHeight - inputRect.top + 5) + 'px';
-                    dropdown.style.top = 'auto';
-                    dropdown.style.maxHeight = '300px';
-                }
-            }, 10);
-        };
         
         // Enhanced validation with E.164 formatting
         phoneInput.addEventListener('blur', function() {
