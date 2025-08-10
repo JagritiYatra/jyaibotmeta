@@ -156,7 +156,8 @@ const authorizedEmails = new Set([
   'classictechnology.com@gmail.com',
   'murali@jagritiyatra.com',
   'karthik@jagritiyatra.com',
-  'test.feedback.stack@jagritiyatra.com' // Test email for feedback stack testing
+  'test.feedback.stack@jagritiyatra.com', // Test email for feedback stack testing
+  'cvresumehelpline@gmail.com' // Added for testing feedback functionality
 ]);
 
 function isEmailAuthorized(email) {

@@ -261,49 +261,48 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // FEEDBACK STACK IMPLEMENTATION - Store as array of feedback entries
-      // Default to empty string if not provided
+      // SIMPLIFIED FEEDBACK IMPLEMENTATION - Same as name field pattern
+      // Store feedback in BOTH places just like name is stored
       const feedbackValue = feedbackSuggestions ? String(feedbackSuggestions).trim() : '';
       
-      // Initialize feedback stack if it doesn't exist
+      // Store feedback in enhancedProfile (primary location)
+      updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
+      updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
+      
+      // ALSO store feedback in basicProfile (for redundancy, like name)
+      updateData['basicProfile.feedbackSuggestions'] = feedbackValue;
+      
+      // Additionally maintain feedback stack for history
       const currentFeedbackStack = existingUser.enhancedProfile?.feedbackStack || [];
       
-      // Only add to stack if there's actual feedback content
       if (feedbackValue) {
-        // Create new feedback entry
+        // Add to stack only if there's content
         const newFeedbackEntry = {
           feedback: feedbackValue,
           submittedAt: new Date(),
           submissionNumber: currentFeedbackStack.length + 1
         };
-        
-        // Update the feedback stack
         updateData['enhancedProfile.feedbackStack'] = [...currentFeedbackStack, newFeedbackEntry];
         updateData['enhancedProfile.latestFeedback'] = feedbackValue;
         updateData['enhancedProfile.totalFeedbackCount'] = currentFeedbackStack.length + 1;
       } else {
-        // Preserve existing stack if no new feedback
+        // Keep existing stack
         updateData['enhancedProfile.feedbackStack'] = currentFeedbackStack;
         updateData['enhancedProfile.latestFeedback'] = currentFeedbackStack.length > 0 ? 
           currentFeedbackStack[currentFeedbackStack.length - 1].feedback : '';
         updateData['enhancedProfile.totalFeedbackCount'] = currentFeedbackStack.length;
       }
       
-      // Keep backward compatibility with single feedback field
-      updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue || 
-        (currentFeedbackStack.length > 0 ? currentFeedbackStack[currentFeedbackStack.length - 1].feedback : '');
-      updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
-      
-      // Critical logging for feedback stack
-      console.log('📝 FEEDBACK STACK HANDLING:');
+      // Critical logging for feedback
+      console.log('📝 FEEDBACK HANDLING (SIMPLIFIED):');
       console.log('  - Received from frontend:', feedbackSuggestions === undefined ? 'UNDEFINED' : 
                                               feedbackSuggestions === null ? 'NULL' : 
                                               feedbackSuggestions === '' ? 'EMPTY STRING' : 
                                               `"${String(feedbackSuggestions).substring(0, 50)}..."`);
+      console.log('  - Will save to enhancedProfile.feedbackSuggestions:', feedbackValue || '(empty)');
+      console.log('  - Will save to basicProfile.feedbackSuggestions:', feedbackValue || '(empty)');
       console.log('  - Current stack size:', currentFeedbackStack.length);
       console.log('  - Will add to stack:', feedbackValue ? 'YES' : 'NO (empty)');
-      console.log('  - New stack size will be:', feedbackValue ? currentFeedbackStack.length + 1 : currentFeedbackStack.length);
-      console.log('  - UpdateData has feedbackStack:', 'enhancedProfile.feedbackStack' in updateData);
       
       console.log('Feedback update:', {
         received: feedbackSuggestions,
@@ -333,23 +332,25 @@ router.post('/submit-plain-form', async (req, res) => {
         });
       }
       
-      // Verify feedback stack was actually saved
+      // Verify feedback was actually saved in BOTH places
       const updatedUser = await db.collection('users').findOne({ _id: existingUser._id });
+      const savedEnhancedFeedback = updatedUser?.enhancedProfile?.feedbackSuggestions;
+      const savedBasicFeedback = updatedUser?.basicProfile?.feedbackSuggestions;
       const savedFeedbackStack = updatedUser?.enhancedProfile?.feedbackStack || [];
-      const latestFeedback = updatedUser?.enhancedProfile?.latestFeedback;
       
-      console.log('✅ VERIFICATION: Feedback stack in DB after update:');
+      console.log('✅ VERIFICATION: Feedback saved in DB:');
+      console.log('  - enhancedProfile.feedbackSuggestions:', savedEnhancedFeedback || '(empty)');
+      console.log('  - basicProfile.feedbackSuggestions:', savedBasicFeedback || '(empty)');
       console.log('  - Stack size:', savedFeedbackStack.length);
-      console.log('  - Latest feedback:', latestFeedback || '(none)');
-      console.log('  - All feedback entries:', savedFeedbackStack.map(f => `[${f.submissionNumber}] ${f.feedback.substring(0, 30)}...`));
+      console.log('  - Feedback matches in both places:', savedEnhancedFeedback === savedBasicFeedback ? 'YES ✅' : 'NO ❌');
       
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
         email: normalizedEmail,
         whatsappNumber: cleanedPhone,
         wasPreCreated: existingUser.metadata?.preCreated || false,
-        feedbackStackSize: savedFeedbackStack.length,
-        newFeedbackAdded: feedbackValue ? true : false
+        feedbackSaved: savedEnhancedFeedback || '(none)',
+        feedbackStackSize: savedFeedbackStack.length
       });
 
       return res.json({
@@ -357,10 +358,10 @@ router.post('/submit-plain-form', async (req, res) => {
         message: 'Profile updated successfully',
         userId: existingUser._id,
         isNewUser: false,
+        feedbackSaved: savedEnhancedFeedback || '(none)',
         feedbackStack: {
           totalCount: savedFeedbackStack.length,
-          latestFeedback: latestFeedback || '(none)',
-          newFeedbackAdded: feedbackValue ? true : false
+          latestFeedback: savedEnhancedFeedback || '(none)'
         }
       });
     } catch (updateError) {
