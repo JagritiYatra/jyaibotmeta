@@ -107,6 +107,277 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); opacity: 1; }
         }
+        
+        /* Fix International Tel Input Overlapping Issues */
+        .iti {
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .iti__flag-container {
+            z-index: 11;
+        }
+        
+        .iti__country-list {
+            position: absolute;
+            z-index: 9999 !important;
+            max-height: 300px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            margin-top: 4px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .iti__country {
+            padding: 8px 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .iti__country:hover {
+            background: linear-gradient(90deg, #f3f4f6 0%, #f9fafb 100%);
+        }
+        
+        .iti__selected-flag {
+            background-color: #f9fafb;
+            border-radius: 8px 0 0 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .iti__selected-flag:hover,
+        .iti__selected-flag:focus {
+            background-color: #ede9fe;
+        }
+        
+        .iti input[type="tel"] {
+            padding-left: 58px !important;
+            width: 100%;
+            font-size: 16px;
+        }
+        
+        /* Smooth Field Focus Animations */
+        .form-field-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-field-wrapper:focus-within {
+            transform: translateY(-2px);
+        }
+        
+        .form-field-wrapper label {
+            transition: color 0.3s ease;
+        }
+        
+        .form-field-wrapper:focus-within label {
+            color: var(--primary);
+        }
+        
+        /* Input Field Enhancements */
+        input:not([type="checkbox"]):not([type="radio"]),
+        select,
+        textarea {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e5e7eb;
+        }
+        
+        input:not([type="checkbox"]):not([type="radio"]):hover,
+        select:hover,
+        textarea:hover {
+            border-color: #d1d5db;
+        }
+        
+        input:not([type="checkbox"]):not([type="radio"]):focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+        
+        /* Real-time Validation Feedback */
+        .field-valid {
+            border-color: var(--success) !important;
+        }
+        
+        .field-invalid {
+            border-color: var(--danger) !important;
+            animation: shake 0.3s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* Progress Step Indicators */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 2rem 0;
+            padding: 0 1rem;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: -1;
+        }
+        
+        .progress-step.active .step-number {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .progress-step.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e5e7eb;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Better Checkbox Cards */
+        .checkbox-card-improved {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .checkbox-card-improved::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .checkbox-card-improved:hover::before {
+            width: 100%;
+        }
+        
+        .checkbox-card-improved:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+        }
+        
+        .checkbox-card-improved input:checked + label {
+            font-weight: 600;
+        }
+        
+        .checkbox-card-improved input:checked ~ .check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .check-icon {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        /* Smooth Scrolling Between Sections */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Auto-save Indicator */
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .save-indicator.show {
+            display: flex;
+            animation: slideInUp 0.4s ease;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .iti__country-list {
+                max-height: 50vh;
+                width: calc(100vw - 20px);
+                left: 10px !important;
+                right: 10px !important;
+            }
+            
+            .iti input[type="tel"] {
+                font-size: 16px !important; /* Prevents zoom on iOS */
+            }
+            
+            input, select, textarea {
+                font-size: 16px !important; /* Prevents zoom on iOS */
+            }
+        }
 
         .tooltip {
             position: relative;
@@ -261,6 +532,30 @@
 
             <!-- Main Form Section (Initially Hidden) -->
             <div id="mainFormSection" class="main-form-section">
+                <!-- Progress Steps Indicator -->
+                <div class="progress-steps mb-8">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="text-xs mt-1 font-medium">Basic Info</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="text-xs mt-1 font-medium">Location</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="text-xs mt-1 font-medium">Contact</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="text-xs mt-1 font-medium">Professional</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="text-xs mt-1 font-medium">Community</div>
+                    </div>
+                </div>
+                
                 <form id="profileForm" class="space-y-8">
                     
                     <!-- Section 1: Basic Information -->
@@ -415,8 +710,9 @@
                         </div>
                         
                         <div class="grid md:grid-cols-2 gap-6">
-                            <div>
+                            <div class="form-field-wrapper">
                                 <label class="block text-gray-700 font-semibold mb-2">
+                                    <i class="fab fa-whatsapp text-green-500 mr-2"></i>
                                     WhatsApp Number *
                                     <div class="tooltip inline-block ml-2">
                                         <i class="fas fa-info-circle text-gray-400 text-sm"></i>
@@ -425,9 +721,12 @@
                                 </label>
                                 <div class="relative">
                                     <input type="tel" id="whatsappPhone" name="phoneNumber" required 
-                                           class="w-full pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                           class="w-full pr-4 py-3 border-2 border-gray-300 rounded-lg input-focus focus:outline-none"
                                            placeholder="98765 43210">
-                                    <small class="text-gray-500 text-sm mt-1 block">Select country and enter your mobile number</small>
+                                    <small class="text-gray-500 text-sm mt-2 block flex items-center">
+                                        <i class="fas fa-globe mr-1 text-xs"></i>
+                                        Select country flag → Enter mobile number → We'll format it automatically
+                                    </small>
                                 </div>
                             </div>
                             
@@ -519,14 +818,17 @@
                                     Yatra Impact
                                     <span class="text-gray-400 text-sm font-normal">(Select all that apply)</span>
                                 </label>
-                                <div class="space-y-3">
-                                    <div class="checkbox-card">
+                                <div class="grid md:grid-cols-2 gap-3">
+                                    <div class="checkbox-card-improved">
                                         <input type="checkbox" name="yatraImpact" value="Started Enterprise Post-Yatra" 
                                                id="impact1" class="hidden">
-                                        <label for="impact1" class="checkbox-label flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition">
+                                        <label for="impact1" class="checkbox-label flex items-center p-4 cursor-pointer relative z-10">
                                             <i class="fas fa-rocket mr-3 text-purple-600"></i>
                                             <span>Started Enterprise Post-Yatra</span>
                                         </label>
+                                        <div class="check-icon">
+                                            <i class="fas fa-check text-xs"></i>
+                                        </div>
                                     </div>
                                     <div class="checkbox-card">
                                         <input type="checkbox" name="yatraImpact" value="Found Clarity on Life Goals" 
@@ -706,6 +1008,65 @@
     <script>
     // Initialize phone input with all countries
     document.addEventListener('DOMContentLoaded', function() {
+        // Progress Step Tracking
+        const updateProgressSteps = () => {
+            const sections = document.querySelectorAll('.form-section');
+            const steps = document.querySelectorAll('.progress-step');
+            
+            let currentSection = 0;
+            const scrollPosition = window.scrollY + 200;
+            
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                const top = rect.top + window.scrollY;
+                
+                if (scrollPosition >= top) {
+                    currentSection = index;
+                }
+            });
+            
+            steps.forEach((step, index) => {
+                if (index <= currentSection) {
+                    step.classList.add('active');
+                    if (index < currentSection) {
+                        step.classList.add('completed');
+                    }
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+        };
+        
+        // Update on scroll
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(updateProgressSteps, 50);
+        });
+        
+        // Initial update
+        updateProgressSteps();
+        
+        // Smooth focus transitions
+        document.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            field.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+                
+                // Add validation feedback
+                if (this.value && this.checkValidity()) {
+                    this.classList.add('field-valid');
+                    this.classList.remove('field-invalid');
+                } else if (this.value && !this.checkValidity()) {
+                    this.classList.add('field-invalid');
+                    this.classList.remove('field-valid');
+                }
+            });
+        });
+        
         const phoneInput = document.querySelector("#whatsappPhone");
         const iti = window.intlTelInput(phoneInput, {
             initialCountry: "in",
