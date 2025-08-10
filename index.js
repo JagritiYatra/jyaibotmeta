@@ -10,7 +10,7 @@ require('dotenv').config();
 // Import only the routes needed for profile form
 const profileFormRoutes = require('./web/routes/profileFormRoutes');
 const emailVerificationRoutes = require('./src/routes/emailVerificationSimple'); // SIMPLE version
-const plainFormRoutes = require('./src/routes/plainFormFinal'); // FINAL simple version
+const plainFormRoutes = require('./src/routes/plainFormSubmission'); // Use the updated version with suggestions
 const { connectDatabase } = require('./src/config/database');
 
 const app = express();
