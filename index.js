@@ -83,6 +83,10 @@ app.use('/api/email-verification', emailVerificationRoutes);
 app.use('/api/plain-form', plainFormRoutes);
 app.use('/', profileFormRoutes);
 
+// Test database connection route
+const testDbRoutes = require('./src/routes/testDb');
+app.use('/api', testDbRoutes);
+
 // Health check endpoint
 app.get('/health', async (req, res) => {
     const { isDbConnected } = require('./src/config/database');

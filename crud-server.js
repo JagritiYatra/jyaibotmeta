@@ -33,6 +33,11 @@ async function connectToDatabase() {
             maxPoolSize: 10,
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000,
+            retryWrites: true,
+            w: 'majority',
+            readPreference: 'primary',
+            readConcern: { level: 'majority' },
+            directConnection: false
         });
 
         await client.connect();
@@ -76,6 +81,58 @@ app.get('/', (req, res) => {
     }
     
     res.sendFile(htmlPath);
+});
+
+// Force refresh endpoint - creates new connection
+app.get('/api/refresh', async (req, res) => {
+    try {
+        console.log('Force refreshing database connection...');
+        
+        // Close existing connection
+        if (client) {
+            await client.close();
+            console.log('Closed existing connection');
+        }
+        
+        // Create new connection
+        const mongoUri = process.env.MONGODB_URI;
+        client = new MongoClient(mongoUri, {
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+            retryWrites: true,
+            w: 'majority',
+            readPreference: 'primaryPreferred',
+            readConcern: { level: 'local' }
+        });
+        
+        await client.connect();
+        db = client.db(process.env.DB_NAME || 'jagriti_yatra_community');
+        
+        console.log('✅ Database connection refreshed');
+        
+        // Test query to verify
+        const testUsers = await db.collection('users').find({
+            $or: [
+                { 'basicProfile.email': 'techakash@jagritiyatra.com' },
+                { 'basicProfile.email': 'cvresumehelpline@gmail.com' }
+            ]
+        }).toArray();
+        
+        res.json({
+            status: 'refreshed',
+            timestamp: new Date().toISOString(),
+            testUsers: testUsers.map(u => ({
+                email: u.basicProfile?.email,
+                name: u.enhancedProfile?.fullName || u.basicProfile?.name,
+                lastUpdated: u.lastUpdated
+            }))
+        });
+        
+    } catch (error) {
+        console.error('Refresh error:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Health check endpoint
