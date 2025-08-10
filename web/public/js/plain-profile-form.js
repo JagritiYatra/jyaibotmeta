@@ -326,6 +326,27 @@ function initializeFormValidation() {
         const suggestionsValue = formData.get('suggestions') || '';
         console.log('Suggestions field value:', suggestionsValue ? 'Has content' : 'Empty');
         
+        // Get phone number from international tel input
+        let phoneNumber = '';
+        if (window.phoneITI) {
+            // Get the full number including country code
+            const fullNumber = window.phoneITI.getNumber();
+            // Remove all non-digit characters (removes +, spaces, dashes)
+            phoneNumber = fullNumber.replace(/[^0-9]/g, '');
+            console.log('Phone number extracted:', phoneNumber);
+            
+            // Validate the phone number
+            if (!window.phoneITI.isValidNumber()) {
+                alert('Please enter a valid phone number');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Profile';
+                return;
+            }
+        } else {
+            // Fallback if ITI not initialized
+            phoneNumber = formData.get('phoneNumber');
+        }
+        
         const data = {
             email: verifiedEmail,
             sessionToken: sessionToken,
@@ -336,7 +357,7 @@ function initializeFormValidation() {
             country: formData.get('country'),
             state: formData.get('state'),
             city: formData.get('city'),
-            phoneNumber: formData.get('phoneNumber'),
+            phoneNumber: phoneNumber,
             additionalEmail: formData.get('additionalEmail'),
             linkedInProfile: formData.get('linkedInProfile'),
             instagramProfile: cleanInstagramInput(formData.get('instagramProfile')),

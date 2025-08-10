@@ -6,6 +6,8 @@
     <title>Join Jagriti Yatra Alumni Network</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- International Telephone Input CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
     <style>
         :root {
             --primary: #6366f1;
@@ -310,11 +312,16 @@
                             <div>
                                 <label class="block text-gray-700 font-semibold mb-2">
                                     Date of Birth *
+                                    <div class="tooltip inline-block ml-2">
+                                        <i class="fas fa-info-circle text-gray-400 text-sm"></i>
+                                        <span class="tooltiptext">You must be between 16 and 90 years old</span>
+                                    </div>
                                 </label>
                                 <div class="relative">
                                     <i class="fas fa-calendar absolute left-3 top-3 text-gray-400"></i>
-                                    <input type="date" name="dateOfBirth" required 
+                                    <input type="date" name="dateOfBirth" id="dateOfBirth" required 
                                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
+                                    <small id="dobError" class="text-red-500 text-sm hidden mt-1"></small>
                                 </div>
                             </div>
                             
@@ -413,14 +420,14 @@
                                     WhatsApp Number *
                                     <div class="tooltip inline-block ml-2">
                                         <i class="fas fa-info-circle text-gray-400 text-sm"></i>
-                                        <span class="tooltiptext">This number will be used for WhatsApp bot communication</span>
+                                        <span class="tooltiptext">Must be active on WhatsApp for bot communication</span>
                                     </div>
                                 </label>
                                 <div class="relative">
-                                    <i class="fas fa-phone absolute left-3 top-3 text-gray-400"></i>
-                                    <input type="tel" name="phoneNumber" required 
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                                           placeholder="+91 9876543210">
+                                    <input type="tel" id="whatsappPhone" name="phoneNumber" required 
+                                           class="w-full pr-4 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                                           placeholder="98765 43210">
+                                    <small class="text-gray-500 text-sm mt-1 block">Select country and enter your mobile number</small>
                                 </div>
                             </div>
                             
@@ -690,7 +697,70 @@
         </div>
     </div>
 
+    <!-- International Telephone Input JS -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    
     <script src="/js/hybrid-locations.js"></script>
     <script src="/js/plain-profile-form.js"></script>
+    
+    <script>
+    // Initialize phone input with all countries
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneInput = document.querySelector("#whatsappPhone");
+        const iti = window.intlTelInput(phoneInput, {
+            initialCountry: "in",
+            preferredCountries: ["in", "us", "gb", "ae", "sg", "au", "ca"],
+            separateDialCode: true,
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+            // Show all countries
+            onlyCountries: [],
+            excludeCountries: [],
+            formatOnDisplay: true,
+            nationalMode: false,
+            placeholderNumberType: "MOBILE",
+            customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                return selectedCountryPlaceholder.replace(/[0-9]/g, '0');
+            }
+        });
+        
+        // Store the ITI instance for form submission
+        window.phoneITI = iti;
+        
+        // Date of Birth Validation (16-90 years)
+        const dobInput = document.getElementById('dateOfBirth');
+        const dobError = document.getElementById('dobError');
+        
+        // Set min and max dates
+        const today = new Date();
+        const minDate = new Date();
+        const maxDate = new Date();
+        
+        minDate.setFullYear(today.getFullYear() - 90); // 90 years ago
+        maxDate.setFullYear(today.getFullYear() - 16); // 16 years ago
+        
+        // Format dates for input element
+        dobInput.max = maxDate.toISOString().split('T')[0];
+        dobInput.min = minDate.toISOString().split('T')[0];
+        
+        // Validate on change
+        dobInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const age = Math.floor((today - selectedDate) / (365.25 * 24 * 60 * 60 * 1000));
+            
+            if (age < 16) {
+                dobError.textContent = 'You must be at least 16 years old to register';
+                dobError.classList.remove('hidden');
+                this.setCustomValidity('You must be at least 16 years old');
+            } else if (age > 90) {
+                dobError.textContent = 'Please enter a valid date of birth (maximum age 90)';
+                dobError.classList.remove('hidden');
+                this.setCustomValidity('Invalid age');
+            } else {
+                dobError.classList.add('hidden');
+                this.setCustomValidity('');
+            }
+        });
+    });
+    </script>
 </body>
 </html>
