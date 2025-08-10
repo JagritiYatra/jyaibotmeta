@@ -216,9 +216,9 @@ router.post('/submit-plain-form', async (req, res) => {
       completed: true // This is the flag the bot checks
     };
     
-    // Add feedback - always update (even empty to clear old data)
+    // Add feedback to stack - always append if provided
     const feedbackValue = feedbackSuggestions != null ? String(feedbackSuggestions).trim() : '';
-    profileData.feedbackSuggestions = feedbackValue;
+    // We'll handle feedback stack in the update section below
 
     // Update the user profile (we already have it from session validation)
     try {
@@ -261,22 +261,49 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // ABSOLUTELY ENSURE feedback is saved - NO EXCEPTIONS
+      // FEEDBACK STACK IMPLEMENTATION - Store as array of feedback entries
       // Default to empty string if not provided
       const feedbackValue = feedbackSuggestions ? String(feedbackSuggestions).trim() : '';
       
-      // FORCE these fields into updateData
-      updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
+      // Initialize feedback stack if it doesn't exist
+      const currentFeedbackStack = existingUser.enhancedProfile?.feedbackStack || [];
+      
+      // Only add to stack if there's actual feedback content
+      if (feedbackValue) {
+        // Create new feedback entry
+        const newFeedbackEntry = {
+          feedback: feedbackValue,
+          submittedAt: new Date(),
+          submissionNumber: currentFeedbackStack.length + 1
+        };
+        
+        // Update the feedback stack
+        updateData['enhancedProfile.feedbackStack'] = [...currentFeedbackStack, newFeedbackEntry];
+        updateData['enhancedProfile.latestFeedback'] = feedbackValue;
+        updateData['enhancedProfile.totalFeedbackCount'] = currentFeedbackStack.length + 1;
+      } else {
+        // Preserve existing stack if no new feedback
+        updateData['enhancedProfile.feedbackStack'] = currentFeedbackStack;
+        updateData['enhancedProfile.latestFeedback'] = currentFeedbackStack.length > 0 ? 
+          currentFeedbackStack[currentFeedbackStack.length - 1].feedback : '';
+        updateData['enhancedProfile.totalFeedbackCount'] = currentFeedbackStack.length;
+      }
+      
+      // Keep backward compatibility with single feedback field
+      updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue || 
+        (currentFeedbackStack.length > 0 ? currentFeedbackStack[currentFeedbackStack.length - 1].feedback : '');
       updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
       
-      // Critical logging
-      console.log('📝 FEEDBACK HANDLING:');
+      // Critical logging for feedback stack
+      console.log('📝 FEEDBACK STACK HANDLING:');
       console.log('  - Received from frontend:', feedbackSuggestions === undefined ? 'UNDEFINED' : 
                                               feedbackSuggestions === null ? 'NULL' : 
                                               feedbackSuggestions === '' ? 'EMPTY STRING' : 
                                               `"${String(feedbackSuggestions).substring(0, 50)}..."`);
-      console.log('  - Will save to database:', feedbackValue || '(empty string)');
-      console.log('  - UpdateData has feedback:', 'enhancedProfile.feedbackSuggestions' in updateData);
+      console.log('  - Current stack size:', currentFeedbackStack.length);
+      console.log('  - Will add to stack:', feedbackValue ? 'YES' : 'NO (empty)');
+      console.log('  - New stack size will be:', feedbackValue ? currentFeedbackStack.length + 1 : currentFeedbackStack.length);
+      console.log('  - UpdateData has feedbackStack:', 'enhancedProfile.feedbackStack' in updateData);
       
       console.log('Feedback update:', {
         received: feedbackSuggestions,
@@ -288,13 +315,13 @@ router.post('/submit-plain-form', async (req, res) => {
         console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
       }
       
-      // Update profile and clear session in one operation
+      // Update profile but keep session for multiple feedback submissions
       const result = await db.collection('users').updateOne(
         { _id: existingUser._id },
         { 
           $set: updateData,
-          $addToSet: { 'basicProfile.linkedEmails': normalizedEmail },
-          $unset: { plainFormSession: 1 } // Clear session token
+          $addToSet: { 'basicProfile.linkedEmails': normalizedEmail }
+          // Note: Not clearing session to allow multiple feedback submissions
         }
       );
       
@@ -306,18 +333,23 @@ router.post('/submit-plain-form', async (req, res) => {
         });
       }
       
-      // Verify feedback was actually saved
+      // Verify feedback stack was actually saved
       const updatedUser = await db.collection('users').findOne({ _id: existingUser._id });
-      const savedFeedback = updatedUser?.enhancedProfile?.feedbackSuggestions;
+      const savedFeedbackStack = updatedUser?.enhancedProfile?.feedbackStack || [];
+      const latestFeedback = updatedUser?.enhancedProfile?.latestFeedback;
       
-      console.log('✅ VERIFICATION: Feedback in DB after update:', savedFeedback || '(empty)');
+      console.log('✅ VERIFICATION: Feedback stack in DB after update:');
+      console.log('  - Stack size:', savedFeedbackStack.length);
+      console.log('  - Latest feedback:', latestFeedback || '(none)');
+      console.log('  - All feedback entries:', savedFeedbackStack.map(f => `[${f.submissionNumber}] ${f.feedback.substring(0, 30)}...`));
       
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
         email: normalizedEmail,
         whatsappNumber: cleanedPhone,
         wasPreCreated: existingUser.metadata?.preCreated || false,
-        feedbackSaved: savedFeedback === feedbackValue
+        feedbackStackSize: savedFeedbackStack.length,
+        newFeedbackAdded: feedbackValue ? true : false
       });
 
       return res.json({
@@ -325,7 +357,11 @@ router.post('/submit-plain-form', async (req, res) => {
         message: 'Profile updated successfully',
         userId: existingUser._id,
         isNewUser: false,
-        feedbackSaved: savedFeedback || '(empty)'
+        feedbackStack: {
+          totalCount: savedFeedbackStack.length,
+          latestFeedback: latestFeedback || '(none)',
+          newFeedbackAdded: feedbackValue ? true : false
+        }
       });
     } catch (updateError) {
       console.error('Error updating profile:', updateError);
