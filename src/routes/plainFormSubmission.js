@@ -58,8 +58,7 @@ router.post('/submit-plain-form', async (req, res) => {
   console.log('Plain form submission received');
   console.log('Request body email:', req.body.email);
   console.log('Request body name:', req.body.name);
-  console.log('Request body feedback:', req.body.feedbackSuggestions);
-  console.log('Feedback type:', typeof req.body.feedbackSuggestions);
+  // Feedback logging removed
   console.log('Full body keys:', Object.keys(req.body));
   
   try {
@@ -80,8 +79,8 @@ router.post('/submit-plain-form', async (req, res) => {
       industryDomain,
       yatraImpact,
       communityAsks,
-      communityGives,
-      feedbackSuggestions
+      communityGives
+      // feedbackSuggestions removed
     } = req.body;
 
     // Validate required fields
@@ -173,7 +172,7 @@ router.post('/submit-plain-form', async (req, res) => {
     }
     
     console.log(`Valid session found for user: ${userWithSession._id}`);
-    console.log('Feedback field received:', feedbackSuggestions ? `"${feedbackSuggestions.substring(0, 50)}..."` : 'None');
+    // Feedback logging removed
     
     // Clean phone number - remove all non-digit characters
     let cleanedPhone = phoneNumber ? phoneNumber.replace(/[^\d]/g, '') : '';
@@ -216,9 +215,7 @@ router.post('/submit-plain-form', async (req, res) => {
       completed: true // This is the flag the bot checks
     };
     
-    // Add feedback to stack - always append if provided
-    const feedbackValue = feedbackSuggestions != null ? String(feedbackSuggestions).trim() : '';
-    // We'll handle feedback stack in the update section below
+    // Feedback handling removed
 
     // Update the user profile (we already have it from session validation)
     try {
@@ -261,54 +258,7 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // SIMPLIFIED FEEDBACK IMPLEMENTATION - Same as name field pattern
-      // Store feedback in BOTH places just like name is stored
-      const feedbackValue = feedbackSuggestions ? String(feedbackSuggestions).trim() : '';
-      
-      // Store feedback in enhancedProfile (primary location)
-      updateData['enhancedProfile.feedbackSuggestions'] = feedbackValue;
-      updateData['enhancedProfile.feedbackUpdatedAt'] = new Date();
-      
-      // ALSO store feedback in basicProfile (for redundancy, like name)
-      updateData['basicProfile.feedbackSuggestions'] = feedbackValue;
-      
-      // Additionally maintain feedback stack for history
-      const currentFeedbackStack = existingUser.enhancedProfile?.feedbackStack || [];
-      
-      if (feedbackValue) {
-        // Add to stack only if there's content
-        const newFeedbackEntry = {
-          feedback: feedbackValue,
-          submittedAt: new Date(),
-          submissionNumber: currentFeedbackStack.length + 1
-        };
-        updateData['enhancedProfile.feedbackStack'] = [...currentFeedbackStack, newFeedbackEntry];
-        updateData['enhancedProfile.latestFeedback'] = feedbackValue;
-        updateData['enhancedProfile.totalFeedbackCount'] = currentFeedbackStack.length + 1;
-      } else {
-        // Keep existing stack
-        updateData['enhancedProfile.feedbackStack'] = currentFeedbackStack;
-        updateData['enhancedProfile.latestFeedback'] = currentFeedbackStack.length > 0 ? 
-          currentFeedbackStack[currentFeedbackStack.length - 1].feedback : '';
-        updateData['enhancedProfile.totalFeedbackCount'] = currentFeedbackStack.length;
-      }
-      
-      // Critical logging for feedback
-      console.log('📝 FEEDBACK HANDLING (SIMPLIFIED):');
-      console.log('  - Received from frontend:', feedbackSuggestions === undefined ? 'UNDEFINED' : 
-                                              feedbackSuggestions === null ? 'NULL' : 
-                                              feedbackSuggestions === '' ? 'EMPTY STRING' : 
-                                              `"${String(feedbackSuggestions).substring(0, 50)}..."`);
-      console.log('  - Will save to enhancedProfile.feedbackSuggestions:', feedbackValue || '(empty)');
-      console.log('  - Will save to basicProfile.feedbackSuggestions:', feedbackValue || '(empty)');
-      console.log('  - Current stack size:', currentFeedbackStack.length);
-      console.log('  - Will add to stack:', feedbackValue ? 'YES' : 'NO (empty)');
-      
-      console.log('Feedback update:', {
-        received: feedbackSuggestions,
-        saving: feedbackValue || '(empty)',
-        previous: existingUser.enhancedProfile?.feedbackSuggestions?.substring(0, 30) || '(none)'
-      });
+      // Feedback handling completely removed
       
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
         console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);
@@ -332,37 +282,19 @@ router.post('/submit-plain-form', async (req, res) => {
         });
       }
       
-      // Verify feedback was actually saved in BOTH places
-      const updatedUser = await db.collection('users').findOne({ _id: existingUser._id });
-      const savedEnhancedFeedback = updatedUser?.enhancedProfile?.feedbackSuggestions;
-      const savedBasicFeedback = updatedUser?.basicProfile?.feedbackSuggestions;
-      const savedFeedbackStack = updatedUser?.enhancedProfile?.feedbackStack || [];
-      
-      console.log('✅ VERIFICATION: Feedback saved in DB:');
-      console.log('  - enhancedProfile.feedbackSuggestions:', savedEnhancedFeedback || '(empty)');
-      console.log('  - basicProfile.feedbackSuggestions:', savedBasicFeedback || '(empty)');
-      console.log('  - Stack size:', savedFeedbackStack.length);
-      console.log('  - Feedback matches in both places:', savedEnhancedFeedback === savedBasicFeedback ? 'YES ✅' : 'NO ❌');
-      
+      // Verification
       logSuccess('plain_form_profile_updated', { 
         userId: existingUser._id,
         email: normalizedEmail,
         whatsappNumber: cleanedPhone,
-        wasPreCreated: existingUser.metadata?.preCreated || false,
-        feedbackSaved: savedEnhancedFeedback || '(none)',
-        feedbackStackSize: savedFeedbackStack.length
+        wasPreCreated: existingUser.metadata?.preCreated || false
       });
 
       return res.json({
         success: true,
         message: 'Profile updated successfully',
         userId: existingUser._id,
-        isNewUser: false,
-        feedbackSaved: savedEnhancedFeedback || '(none)',
-        feedbackStack: {
-          totalCount: savedFeedbackStack.length,
-          latestFeedback: savedEnhancedFeedback || '(none)'
-        }
+        isNewUser: false
       });
     } catch (updateError) {
       console.error('Error updating profile:', updateError);
