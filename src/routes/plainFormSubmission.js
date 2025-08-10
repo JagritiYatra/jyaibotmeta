@@ -79,8 +79,8 @@ router.post('/submit-plain-form', async (req, res) => {
       industryDomain,
       yatraImpact,
       communityAsks,
-      communityGives
-      // feedbackSuggestions removed
+      communityGives,
+      suggestions
     } = req.body;
 
     // Validate required fields
@@ -172,7 +172,7 @@ router.post('/submit-plain-form', async (req, res) => {
     }
     
     console.log(`Valid session found for user: ${userWithSession._id}`);
-    // Feedback logging removed
+    console.log('Suggestions received:', suggestions ? `"${suggestions.substring(0, 50)}..."` : 'None');
     
     // Clean phone number - remove all non-digit characters
     let cleanedPhone = phoneNumber ? phoneNumber.replace(/[^\d]/g, '') : '';
@@ -258,7 +258,13 @@ router.post('/submit-plain-form', async (req, res) => {
         'metadata.profileCompleted': true
       };
       
-      // Feedback handling completely removed
+      // Add suggestions field to both enhanced and basic profiles
+      if (suggestions) {
+        updateData['enhancedProfile.suggestions'] = suggestions;
+        updateData['basicProfile.suggestions'] = suggestions;
+        updateData['enhancedProfile.suggestionsUpdatedAt'] = new Date();
+        console.log('Adding suggestions to profile:', suggestions.substring(0, 50));
+      }
       
       if (!existingUser.whatsappNumber || existingUser.whatsappNumber !== cleanedPhone) {
         console.log(`Setting/Updating WhatsApp number from ${existingUser.whatsappNumber || 'none'} to ${cleanedPhone}`);

@@ -322,7 +322,9 @@ function initializeFormValidation() {
             communityGives.push(cb.value);
         });
         
-        // Feedback field removed - no longer collecting feedback
+        // Get suggestions value
+        const suggestionsValue = formData.get('suggestions') || '';
+        console.log('Suggestions field value:', suggestionsValue ? 'Has content' : 'Empty');
         
         const data = {
             email: verifiedEmail,
@@ -341,8 +343,8 @@ function initializeFormValidation() {
             industryDomain: formData.get('industryDomain'),
             yatraImpact,
             communityAsks,
-            communityGives
-            // feedbackSuggestions removed
+            communityGives,
+            suggestions: suggestionsValue
         };
         
         console.log('Submitting profile data...');
