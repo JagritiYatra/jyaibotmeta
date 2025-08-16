@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { logError } = require('../middleware/logging');
 
 // Configuration
-const MEMORY_BASE_PATH = path.join(__dirname, '../../sessions/memory');
+const MEMORY_BASE_PATH = path.join(__dirname, '../../data/sessions/memory');
 const MAX_MEMORY_ENTRIES = 100;
 const MEMORY_FILE_EXTENSION = '.json';
 

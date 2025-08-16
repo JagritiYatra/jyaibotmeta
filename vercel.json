@@ -37,7 +37,12 @@
     },
     {
       "src": "/profile-setup",
-      "dest": "/index.js"
+      "dest": "/index.js",
+      "headers": {
+        "X-Frame-Options": "ALLOWALL",
+        "Content-Security-Policy": "frame-ancestors 'self' https://*.whatsapp.com https://*.whatsapp.net https://*.facebook.com https://*.facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion",
+        "X-Content-Type-Options": "nosniff"
+      }
     },
     {
       "src": "/api/(.*)",

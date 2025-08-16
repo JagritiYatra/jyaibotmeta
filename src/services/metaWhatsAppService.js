@@ -179,6 +179,119 @@ function isRetryableMetaError(error) {
   );
 }
 
+// Send interactive message with CTA button that opens in webview
+async function sendInteractiveMessage(whatsappNumber, messageContent, options = {}) {
+  const config = getConfig();
+  const maxRetries = options.maxRetries || 3;
+  const retryDelay = options.retryDelay || 2000;
+
+  // Clean phone number (remove whatsapp: prefix and any non-digits)
+  let cleanNumber = whatsappNumber.replace(/[^\d]/g, '');
+  
+  // If number is too short, it's likely just the last digits - prepend country code
+  if (cleanNumber.length < 10) {
+    // Assuming Indian number, prepend 91
+    cleanNumber = '91' + cleanNumber.padStart(10, '0');
+  }
+  
+  const sanitizedNumber = cleanNumber.slice(-4);
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`📤 Sending interactive message to ***${sanitizedNumber} (Attempt ${attempt}/${maxRetries})`);
+
+      const messagePayload = {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: cleanNumber,
+        type: 'interactive',
+        interactive: {
+          type: 'cta_url',
+          header: messageContent.header ? {
+            type: 'text',
+            text: messageContent.header
+          } : undefined,
+          body: {
+            text: messageContent.body
+          },
+          footer: messageContent.footer ? {
+            text: messageContent.footer
+          } : undefined,
+          action: {
+            name: 'cta_url',
+            parameters: {
+              display_text: messageContent.buttonText || 'Complete Profile',
+              url: messageContent.url
+            }
+          }
+        }
+      };
+
+      const response = await axios.post(
+        `${META_API_URL}/${config.meta.phoneNumberId}/messages`,
+        messagePayload,
+        {
+          headers: {
+            Authorization: `Bearer ${config.meta.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      logSuccess('meta_interactive_message_sent', {
+        messageId: response.data.messages[0].id,
+        to: sanitizedNumber,
+        attempt,
+      });
+
+      console.log(`✅ Interactive message sent successfully: ${response.data.messages[0].id}`);
+      return {
+        success: true,
+        messageId: response.data.messages[0].id,
+        attempt,
+      };
+    } catch (error) {
+      const errorInfo = handleMetaError(error, sanitizedNumber);
+      
+      console.error(
+        `❌ Meta interactive attempt ${attempt} failed for ***${sanitizedNumber}:`,
+        errorInfo.message
+      );
+
+      // Check if error is retryable
+      const isRetryable = isRetryableMetaError(error);
+
+      if (attempt === maxRetries || !isRetryable) {
+        logError(error, {
+          operation: 'meta_send_interactive_failure',
+          whatsappNumber: sanitizedNumber,
+          attempts: attempt,
+          isRetryable,
+        });
+
+        return {
+          success: false,
+          error: errorInfo.message,
+          errorCode: errorInfo.code,
+          attempts: attempt,
+          isRetryable,
+        };
+      }
+
+      // Wait before retry with exponential backoff
+      const delay = retryDelay * Math.pow(2, attempt - 1);
+      console.log(`🔄 Waiting ${delay}ms before retry...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+
+  return {
+    success: false,
+    error: 'All retry attempts failed',
+    attempts: maxRetries,
+  };
+}
+
 // Send bulk messages with rate limiting
 async function sendBulkMessages(recipients, messageText, options = {}) {
   const results = [];
@@ -435,8 +548,100 @@ function validateWhatsAppNumber(phoneNumber) {
   };
 }
 
+// Send WebView button message for profile forms
+async function sendWebViewButton(whatsappNumber, title, body, buttonText, webUrl, options = {}) {
+  const config = getConfig();
+  const maxRetries = options.maxRetries || 3;
+  
+  // Clean phone number
+  let cleanNumber = whatsappNumber.replace(/[^\d]/g, '');
+  if (cleanNumber.length < 10) {
+    cleanNumber = '91' + cleanNumber.padStart(10, '0');
+  }
+  
+  const sanitizedNumber = cleanNumber.slice(-4);
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`📤 Sending WebView button to ***${sanitizedNumber} (Attempt ${attempt}/${maxRetries})`);
+
+      // Send interactive message with CTA URL
+      const response = await axios.post(
+        `${META_API_URL}/${config.meta.phoneNumberId}/messages`,
+        {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: cleanNumber,
+          type: 'interactive',
+          interactive: {
+            type: 'cta_url',
+            header: {
+              type: 'text',
+              text: title
+            },
+            body: {
+              text: body
+            },
+            footer: {
+              text: '⏱️ Link expires in 15 minutes'
+            },
+            action: {
+              name: 'cta_url',
+              parameters: {
+                display_text: buttonText,
+                url: webUrl
+              }
+            }
+          }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${config.meta.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 30000,
+        }
+      );
+
+      if (response.data?.messages?.[0]?.id) {
+        logSuccess('webview_button_sent', { 
+          whatsappNumber: sanitizedNumber, 
+          messageId: response.data.messages[0].id,
+          url: webUrl.substring(0, 50) + '...'
+        });
+        return {
+          success: true,
+          messageId: response.data.messages[0].id,
+          attempt
+        };
+      }
+
+      throw new Error('No message ID in response');
+    } catch (error) {
+      console.error(`❌ WebView button send failed (Attempt ${attempt}/${maxRetries}):`, {
+        error: error.response?.data || error.message,
+        status: error.response?.status,
+        fullError: JSON.stringify(error.response?.data, null, 2)
+      });
+
+      if (attempt === maxRetries) {
+        logError(error, { 
+          operation: 'sendWebViewButton', 
+          whatsappNumber: sanitizedNumber,
+          finalAttempt: true 
+        });
+        return { success: false, error: error.message };
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+    }
+  }
+}
+
 module.exports = {
   sendMetaMessage,
+  sendWebViewButton,
+  sendInteractiveMessage,
   sendBulkMessages,
   verifyWebhook,
   parseMetaWebhookMessage,

@@ -272,21 +272,39 @@ Return as JSON format.`;
     }
   }
 
-  // Generate profile completion message
-  generateProfileCompletionMessage(user) {
-    const { generateProfileFormLink } = require('../controllers/profileFormController');
-    const linkData = generateProfileFormLink(user?.whatsappNumber || '');
-    
-    return `📋 **Complete Your Profile First**
+  // Generate profile completion message with WebView
+  async generateProfileCompletionMessage(user) {
+    try {
+      const { sendProfileFormWebView } = require('../controllers/profileFormController');
+      const whatsappNumber = user?.whatsappNumber || user?.basicProfile?.whatsappNumber || '';
+      
+      if (!whatsappNumber) {
+        return `📋 **Complete Your Profile First**
 
-To access search and connect with 9000+ alumni, please complete your profile:
+To access search and connect with 9000+ alumni, please complete your profile.
 
-🔗 **Click here:** ${linkData?.url || 'https://jyaibot-profile-form.vercel.app/profile-setup'}
+Please contact support for assistance.`;
+      }
 
-⏱️ Takes only 5 minutes
-✨ All fields in one simple form
+      const webViewResult = await sendProfileFormWebView(whatsappNumber, user, []);
+      
+      if (webViewResult.success) {
+        // WebView button sent successfully - no text response needed
+        return null;
+      } else {
+        // Fallback to text message
+        return webViewResult.fallbackMessage || webViewResult.message;
+      }
+    } catch (error) {
+      const { logError } = require('../middleware/logging');
+      logError(error, { operation: 'generateProfileCompletionMessage', user: user?.basicProfile?.name });
+      
+      return `📋 **Complete Your Profile First**
 
-Once complete, I can help you find and connect with relevant alumni!`;
+To access our alumni network, please complete your profile.
+
+Please say "hi" to get your profile form link.`;
+    }
   }
 
   // Generate conversational response

@@ -1,6 +1,7 @@
-// Simple controller for profile form link generation
+// Profile form controller with WebView support
 const crypto = require('crypto');
 const { logError, logSuccess } = require('../middleware/logging');
+const { sendWebViewButton } = require('../services/metaWhatsAppService');
 
 // Generate simple profile form link
 function generateProfileFormLink(whatsappNumber) {
@@ -23,40 +24,85 @@ function generateProfileFormLink(whatsappNumber) {
   }
 }
 
-// Handle greeting and send form link
-async function handleGreetingWithFormLink(user, incompleteFields, whatsappNumber) {
-  const linkData = generateProfileFormLink(whatsappNumber);
-  
-  if (!linkData) {
-    return `Hello! There was an error generating your profile form link. Please try again.`;
-  }
-  
-  const firstName = user?.enhancedProfile?.fullName?.split(' ')[0] || 
-                   user?.basicProfile?.name?.split(' ')[0] || 
-                   'there';
-  
-  return `Hello ${firstName}! 👋
+// Send WebView button for profile completion
+async function sendProfileFormWebView(whatsappNumber, user, incompleteFields) {
+  try {
+    const linkData = generateProfileFormLink(whatsappNumber);
+    
+    if (!linkData) {
+      return { 
+        success: false, 
+        message: `Hello! There was an error generating your profile form. Please try again.` 
+      };
+    }
+    
+    const firstName = user?.enhancedProfile?.fullName?.split(' ')[0] || 
+                     user?.basicProfile?.name?.split(' ')[0] || 
+                     'there';
+    
+    const title = '📋 Complete Your Profile';
+    const body = `Hello ${firstName}! 👋
+
+To access our alumni network and search features, please complete your profile using the form below.
+
+✨ Quick form with:
+• Personal & professional details
+• Location dropdowns  
+• Contact information
+• Community preferences
+
+Once completed, you'll have full access to connect with 9000+ alumni!`;
+
+    const result = await sendWebViewButton(
+      whatsappNumber,
+      title,
+      body,
+      'Complete Profile',
+      linkData.url
+    );
+
+    if (result.success) {
+      logSuccess('profile_webview_sent', { 
+        whatsappNumber, 
+        messageId: result.messageId,
+        token: linkData.token 
+      });
+      return { success: true, messageId: result.messageId };
+    } else {
+      // Fallback to text message if WebView fails
+      return {
+        success: false,
+        fallbackMessage: `Hello ${firstName}! 👋
 
 📋 **Complete Your Profile**
 
-I notice your profile needs some information. You can complete it quickly using our web form:
+Complete your profile here: ${linkData.url}
 
-🔗 **Profile Form Link:**
-${linkData.url}
+⏱️ Link expires in 15 minutes`
+      };
+    }
+  } catch (error) {
+    logError(error, { operation: 'sendProfileFormWebView', whatsappNumber });
+    return { 
+      success: false, 
+      message: `Hello! Please complete your profile by saying "profile" again.` 
+    };
+  }
+}
 
-⏱️ This link expires in 15 minutes
-
-✨ The form includes all fields:
-• Personal details (Name, DOB, Gender)
-• Professional information
-• Location (with easy dropdowns)
-• Contact details
-• Community preferences
-
-Click the link above to get started!`;
+// Handle greeting and send form link (legacy support)
+async function handleGreetingWithFormLink(user, incompleteFields, whatsappNumber) {
+  const result = await sendProfileFormWebView(whatsappNumber, user, incompleteFields);
+  
+  if (result.success) {
+    return null; // WebView button sent successfully
+  } else {
+    return result.fallbackMessage || result.message;
+  }
 }
 
 module.exports = {
   generateProfileFormLink,
-  handleGreetingWithFormLink
+  handleGreetingWithFormLink,
+  sendProfileFormWebView
 };

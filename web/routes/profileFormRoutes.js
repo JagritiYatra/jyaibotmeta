@@ -459,6 +459,34 @@ router.post('/api/submit-profile', async (req, res) => {
             // For testing, we'll continue even if save fails
             console.log('Continuing despite save error for testing...');
         }
+
+        // Send confirmation message to WhatsApp
+        try {
+            const { sendMetaMessage } = require('../../src/services/metaWhatsAppService');
+            const firstName = user.enhancedProfile?.fullName?.split(' ')[0] || 'there';
+            
+            const confirmationMessage = `🎉 **Profile Completed Successfully!**
+
+Welcome to the JY Alumni Network, ${firstName}! 
+
+✅ Your profile has been saved
+🌟 You now have full access to our alumni community
+🔍 Ready to search and connect with 9000+ fellow Yatris
+
+**What's next?**
+• Type your query to search for alumni
+• Find professionals in your field
+• Connect with Yatris in your city
+• Explore opportunities and collaborations
+
+*What would you like to search for today?*`;
+
+            await sendMetaMessage(whatsappNumber, confirmationMessage);
+            console.log('Confirmation message sent to WhatsApp');
+        } catch (whatsappError) {
+            console.error('Error sending WhatsApp confirmation:', whatsappError);
+            // Don't fail the profile submission if WhatsApp message fails
+        }
         
         res.json({ 
             success: true, 

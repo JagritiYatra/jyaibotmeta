@@ -6,6 +6,7 @@ const { generateAndSendOTP, verifyOTP } = require('../services/otpService');
 const { validateEmail, validateYesNo } = require('../utils/validation');
 const { logUserActivity, logError } = require('../middleware/logging');
 const { handleCasualConversation } = require('./conversationController');
+const { sendProfileFormWebView } = require('./profileFormController');
 
 // Main handler for new user interactions
 async function handleNewUser(userMessage, intent, userSession, whatsappNumber) {
@@ -302,7 +303,6 @@ Support: support@jagritiyatra.com`;
 
     // Check profile completion immediately after verification
     const incompleteFields = getIncompleteFields(userData);
-    const { generateProfileFormLink } = require('./profileFormController');
 
     if (incompleteFields.length === 0) {
       // Profile is complete
@@ -315,24 +315,22 @@ Your profile is complete. Ready to connect with 9000+ fellow Yatris?
 What expertise are you looking for today?`;
     }
     
-    // Profile incomplete - send web form link instead of manual capture
-    const linkData = generateProfileFormLink(whatsappNumber);
+    // Profile incomplete - send WebView form
+    const webViewResult = await sendProfileFormWebView(whatsappNumber, userData, incompleteFields);
     
-    return `✅ Verification successful!
+    if (webViewResult.success) {
+      // WebView button sent successfully - no text response needed
+      return null;
+    } else {
+      // Fallback to text message
+      return `✅ Verification successful!
 
 Welcome ${userName}! 👋
 
-📋 *Complete Your Profile First*
-
-Please complete your profile using our web form:
-
-🔗 *Click here:* ${linkData?.url || 'https://jyaibot-profile-form.vercel.app/profile-setup'}
-
-⏱️ This link expires in 15 minutes
-
-The form includes all required fields with easy dropdowns for location selection.
+${webViewResult.fallbackMessage || webViewResult.message}
 
 Once you complete your profile, you can access all features!`;
+    }
   } catch (error) {
     logError(error, { operation: 'handleOTPVerification', whatsappNumber });
     return `❌ Verification failed due to technical issue.

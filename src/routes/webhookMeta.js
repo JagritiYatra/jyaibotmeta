@@ -22,6 +22,63 @@ const { checkAdvancedRateLimit } = require('../services/rateLimiter');
 const MongoMemoryService = require('../services/mongoMemoryService');
 const { logUserQuery } = require('../services/analyticsService');
 
+// Message deduplication cache (in-memory for performance)
+const processedMessages = new Map();
+const recentResponses = new Map(); // Track recent responses to prevent duplicate sends
+const MAX_CACHE_SIZE = 1000;
+const CACHE_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+const RESPONSE_DUPLICATE_WINDOW = 10 * 1000; // 10 seconds
+
+// Clean expired messages from cache
+function cleanMessageCache() {
+  const now = Date.now();
+  
+  // Clean processed messages
+  for (const [messageId, timestamp] of processedMessages.entries()) {
+    if (now - timestamp > CACHE_EXPIRY_MS) {
+      processedMessages.delete(messageId);
+    }
+  }
+  
+  // Clean recent responses
+  for (const [responseKey, timestamp] of recentResponses.entries()) {
+    if (now - timestamp > RESPONSE_DUPLICATE_WINDOW) {
+      recentResponses.delete(responseKey);
+    }
+  }
+  
+  // Limit cache size
+  if (processedMessages.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(processedMessages.entries());
+    const toDelete = entries.slice(0, entries.length - MAX_CACHE_SIZE);
+    toDelete.forEach(([messageId]) => processedMessages.delete(messageId));
+  }
+}
+
+// Check if message was already processed
+function isMessageProcessed(messageId) {
+  cleanMessageCache();
+  return processedMessages.has(messageId);
+}
+
+// Mark message as processed
+function markMessageProcessed(messageId) {
+  processedMessages.set(messageId, Date.now());
+}
+
+// Check if similar response was recently sent
+function isDuplicateResponse(whatsappNumber, responseMessage) {
+  cleanMessageCache();
+  const responseKey = `${whatsappNumber}:${responseMessage.substring(0, 100)}`; // First 100 chars as key
+  return recentResponses.has(responseKey);
+}
+
+// Mark response as sent
+function markResponseSent(whatsappNumber, responseMessage) {
+  const responseKey = `${whatsappNumber}:${responseMessage.substring(0, 100)}`;
+  recentResponses.set(responseKey, Date.now());
+}
+
 // Webhook verification endpoint (GET request from Meta)
 router.get('/', (req, res) => {
   const mode = req.query['hub.mode'];
@@ -82,6 +139,15 @@ router.post(
       profileName: userName,
       messageType 
     } = parsedData;
+
+    // Check for duplicate messages
+    if (isMessageProcessed(messageId)) {
+      console.log(`🔄 Duplicate message ignored: ${messageId} from ${whatsappNumber.slice(-4)}`);
+      return;
+    }
+
+    // Mark this message as processed
+    markMessageProcessed(messageId);
 
     // Mark message as read with typing indicator
     await markMessageAsRead(messageId, true);
@@ -172,6 +238,17 @@ router.post(
           `🔍 Profile completion: ${existingUser.enhancedProfile?.completed ? 'COMPLETE' : 'INCOMPLETE'}`
         );
 
+        // Check if profile was just completed (within last 30 seconds)
+        const profileJustCompleted = existingUser.metadata?.profileCompletedAt &&
+          (Date.now() - new Date(existingUser.metadata.profileCompletedAt).getTime()) < 30000;
+        
+        if (profileJustCompleted && (sanitizedMessage.toLowerCase().includes('profile') || 
+                                    sanitizedMessage.toLowerCase().includes('completed') ||
+                                    sanitizedMessage.toLowerCase().includes('successfully'))) {
+          console.log(`🔄 Ignoring profile completion echo message from ${whatsappNumber.slice(-4)}`);
+          return; // Skip processing this message
+        }
+
         responseMessage = await handleAuthenticatedUser(
           sanitizedMessage,
           intent,
@@ -182,6 +259,14 @@ router.post(
         // Handle new user registration flow
         console.log(`🆕 New user detected: ${whatsappNumber.slice(-4)}`);
         responseMessage = await handleNewUser(sanitizedMessage, intent, userSession, whatsappNumber);
+      }
+
+      // Check if response is null (webview button was sent)
+      if (responseMessage === null) {
+        console.log(`📱 WebView button sent for ${whatsappNumber.slice(-4)}, no text response needed`);
+        // Save session and return early
+        await saveUserSession(whatsappNumber, userSession);
+        return;
       }
 
       // Validate response
@@ -198,6 +283,15 @@ router.post(
 
       // Send response via Meta WhatsApp
       if (responseMessage) {
+        // Check for duplicate response
+        if (isDuplicateResponse(whatsappNumber, responseMessage)) {
+          console.log(`🔄 Duplicate response prevented for ${whatsappNumber.slice(-4)}: ${responseMessage.substring(0, 50)}...`);
+          return;
+        }
+
+        // Mark response as being sent
+        markResponseSent(whatsappNumber, responseMessage);
+
         const messageSent = await sendMetaMessage(whatsappNumber, responseMessage, {
           maxRetries: 3,
           retryDelay: 1000,

@@ -2,13 +2,23 @@
 .env
 .env.local
 .env.production
+.env.production.local
 
 # Dependencies
 node_modules/
+admin-dashboard/node_modules/
 
 # Logs
 *.log
+logs/
 npm-debug.log*
+
+# Session data (contains user data)
+data/sessions/
+
+# Build outputs
+admin-dashboard/build/
+dist/
 
 # Runtime data
 pids
@@ -22,6 +32,20 @@ pids
 # Output of 'npm pack'
 *.tgz
 
-# dotenv environment variables file
-.env
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Deployment
 .vercel

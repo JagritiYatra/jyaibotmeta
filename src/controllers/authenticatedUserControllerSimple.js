@@ -6,10 +6,12 @@ const {
 } = require('../models/User');
 const { comprehensiveAlumniSearch } = require('../services/searchService');
 const enhancedSearchService = require('../services/enhancedSearchService');
-const intelligentContextService = require('../services/intelligentContextService');
+// const godLevelIntelligentService = require('../services/godLevelIntelligentService');
+const ultimateIntelligentService = require('../services/ultimateIntelligentService'); // ULTIMATE service - ZERO generic responses
+// const intelligentContextService = require('../services/intelligentContextService'); // REMOVED - causes generic responses
 const { handleCasualConversation } = require('./conversationController');
 const { logUserQuery } = require('../services/analyticsService');
-const { generateProfileFormLink } = require('./profileFormController');
+const { sendProfileFormWebView } = require('./profileFormController');
 const JagritiYatraKnowledgeService = require('../services/jagritiYatraKnowledge');
 const GeneralQuestionService = require('../services/generalQuestionService');
 const UnifiedIntelligenceService = require('../services/unifiedIntelligenceService');
@@ -44,21 +46,21 @@ async function handleAuthenticatedUser(userMessage, intent, userSession, whatsap
     
     // PRIORITY 1: If profile incomplete, always send web form link
     if (!isProfileComplete) {
-      const linkData = generateProfileFormLink(whatsappNumber);
+      // Send webview button instead of plain text link
+      const webViewResult = await sendProfileFormWebView(whatsappNumber, user, []);
       
-      return `Hello! 👋
+      if (webViewResult.success) {
+        // WebView button sent successfully - return null to indicate no text response needed
+        return null;
+      } else {
+        // Fallback to text message if WebView fails
+        return webViewResult.fallbackMessage || webViewResult.message || `Hello! 👋
 
 📋 *Complete Your Profile First*
 
-Please complete your profile using our web form:
-
-🔗 *Click here:* ${linkData?.url || 'https://jyaibot-profile-form.vercel.app/profile-setup'}
-
-⏱️ This link expires in 15 minutes
-
-The form includes all required fields with easy dropdowns for location selection.
-
-Once you complete your profile, you can access all features!`;
+Please complete your profile to access all features.
+Once you complete your profile, you can search and connect with 9000+ alumni!`;
+      }
     }
     
     // PRIORITY 2: Handle different intents for users with complete profiles
@@ -70,120 +72,86 @@ Once you complete your profile, you can access all features!`;
       const userFullName = user.enhancedProfile?.fullName || user.basicProfile?.name || 'there';
       const userFirstName = userFullName.split(' ')[0];
       
-      return `Hello ${userFirstName}! 👋
+      return `Hello ${userFirstName}!
 
-Welcome back to JY Alumni Network. How can I help you today?
-
-You can:
-🔍 Search for alumni (e.g., "developers in Mumbai")
-📍 Find people by location (e.g., "anyone from Pune")
-🏢 Search by company or college (e.g., "people from COEP")
-💼 Find expertise (e.g., "AI experts", "entrepreneurs")
-
-What would you like to explore?`;
+Welcome back to JY Alumni Network. How can I help you today?`;
     }
     
     // Check if it's a continuation query (like "and hyderabad")
     const isContinuationQuery = /^(and|also|or|plus)\s+\w+/i.test(lowerMessage.trim()) && 
                                 userSession.lastActivity === 'search_results';
     
-    // Check if the message looks like a search query
+    // Check if the message looks like a search query - BE VERY LIBERAL
     const searchKeywords = [
       'anyone from', 'alumni from', 'people from', 'who is', 'show me',
       'find', 'looking for', 'search', 'developer', 'entrepreneur', 
       'founder', 'startup', 'pune', 'mumbai', 'bangalore', 'delhi',
-      'coep', 'iit', 'nit', 'college', 'university', 'web developer',
+      'coep', 'college of engineering', 'iit', 'nit', 'college', 'university', 'web developer',
       'app developer', 'designer', 'marketing', 'sales', 'finance',
       'technology', 'tech', 'software', 'hardware', 'ai', 'ml',
       'data scientist', 'analyst', 'consultant', 'manager', 'list',
       'professionals', 'experts', 'skills', 'domain', 'industry',
       'hyderabad', 'chennai', 'kolkata', 'business', 'import', 'export',
-      'yatris', 'yatri'
+      'yatris', 'yatri', 'connect', 'help', 'assist', 'need', 'want',
+      'lawyer', 'legal', 'engineer', 'professional', 'people', 'person',
+      'someone', 'anybody', 'contact', 'reach', 'talk', 'know', 'meet'
     ];
     
     const isLikelySearch = searchKeywords.some(keyword => lowerMessage.includes(keyword)) || 
                           isContinuationQuery;
     
-    // Determine query type for context-aware responses
-    const queryType = await determineQueryType(userMessage);
-    console.log(`Query type detected: ${queryType}`);
+    // ALWAYS USE GOD-LEVEL SEARCH except for pure greetings
+    // This ensures we never give generic cached responses
+    console.log('Query detected, using God-Level Search for ALL non-greeting queries');
     
-    // Handle different query types - but PRIORITIZE SEARCH
-    if (queryType === 'self_reflection') {
-      // Handle self-reflection queries
-      return await handleSelfReflection(user);
-    } else if (queryType === 'follow_up') {
-      // Handle follow-up queries
-      console.log('Handling as follow-up query...');
-      return await intelligentContextService.handleFollowUpQuery(userMessage, user._id, user);
-    } else if (queryType === 'search_alumni' || isLikelySearch) {
-      // Always do search for alumni queries
-      console.log('Performing alumni search...');
-    } else {
-      switch(queryType) {
-        case 'general_chat':
-          // Only handle as general chat if it's clearly NOT a search
-          if (!lowerMessage.includes('list') && !lowerMessage.includes('from') && !lowerMessage.includes('yatri')) {
-            return await handleGeneralChat(userMessage, user);
-          }
-          break;
-          
-        case 'definition':
-          // Only handle as definition if it's clearly asking for explanation
-          if (!lowerMessage.includes('from') && !lowerMessage.includes('list') && !lowerMessage.includes('who')) {
-            return await handleDefinitionQuery(userMessage, user);
-          }
-          break;
-      }
-    }
+    // Check for follow-up questions FIRST
+    const followUpPatterns = [
+      /^(any\s*more|more|another|other|additional)/i,
+      /^(show|tell|give)\s*(me)?\s*more/i,
+      /more\s*(profiles?|people|results?)/i,
+      /^(details|info|information)\s*about/i
+    ];
     
-    // For search-like queries or explicit search intents, use enhanced search
-    if (isLikelySearch || intent.type === 'search' || intent.type === 'profile_search' || intent.type === 'location_search') {
-      try {
-        // Use the new enhanced search service for god-level search
-        const searchResults = await enhancedSearchService.search(
-          userMessage, // Always use original message for better context
-          user
-        );
-        
+    const isFollowUp = followUpPatterns.some(pattern => pattern.test(lowerMessage));
+    
+    // Use Ultimate Intelligent Service for EVERYTHING except pure greetings
+    // This GUARANTEES no generic cached responses - always searches database
+    try {
+      console.log('Using Ultimate Intelligent Service (ZERO generic responses) for:', userMessage);
+      
+      // Use the ultimate intelligent service - always searches database
+      const response = await ultimateIntelligentService.search(
+        userMessage,
+        user,
+        userSession
+      );
+      
+      // Update session for tracking
+      if (response.includes('Found') || response.includes('found') || response.includes('profile')) {
         userSession.lastActivity = 'search_results';
         userSession.lastSearchQuery = userMessage;
-        
-        return searchResults;
-      } catch (searchError) {
-        console.error('Search error:', searchError);
-        // Don't expose technical errors - provide helpful response
-        return "I'm having trouble searching right now. Try being more specific, like 'developers in Mumbai' or 'people from IIT'.";
       }
+      
+      return response;
+    } catch (searchError) {
+      console.error('Ultimate intelligent search error:', searchError);
+      // Even on error, try to search instead of generic response
+      return "Let me search for that... Please try again or be more specific.";
     }
     
-    // Jagriti Yatra information - handle founder queries
-    if (intent.type === 'jagriti_info' || 
-        lowerMessage.includes('jagriti yatra') || 
-        (lowerMessage.includes('founder') && lowerMessage.includes('jagriti')) ||
-        lowerMessage.includes('shashank mani')) {
-      return await JagritiYatraKnowledgeService.getFormattedResponse(userMessage);
-    }
+    // REMOVED: These were causing generic responses
+    // All queries now go through god-level search above
     
-    // Policy violations
-    if (intent.type === 'policy_violation') {
-      return UnifiedIntelligenceService.generatePolicyViolationResponse();
-    }
+    // Only handle specific Jagriti Yatra info if explicitly asked
+    // if (intent.type === 'jagriti_info' || 
+    //     lowerMessage.includes('jagriti yatra') || 
+    //     (lowerMessage.includes('founder') && lowerMessage.includes('jagriti')) ||
+    //     lowerMessage.includes('shashank mani')) {
+    //   return await JagritiYatraKnowledgeService.getFormattedResponse(userMessage);
+    // }
     
-    // Use intelligent context service for all other queries
-    const contextAnalysis = await intelligentContextService.analyzeQuery(
-      userMessage,
-      user,
-      userSession
-    );
-    
-    const response = await intelligentContextService.generateResponse(
-      userMessage,
-      contextAnalysis,
-      user
-    );
-    
-    return response;
+    // The god-level search handles everything now
+    // No more falling back to generic responses
     
   } catch (error) {
     console.error('Error in handleAuthenticatedUser:', error);
@@ -299,7 +267,7 @@ async function handleDefinitionQuery(message, user) {
     const config = getConfig();
     
     if (!config.ai?.apiKey) {
-      return intelligentContextService.generateResponse(message, { type: 'definition' }, user);
+      return "Let me find information about that for you. Try being more specific about what you need to know.";
     }
     
     const openai = new OpenAI({ apiKey: config.ai.apiKey });
@@ -326,7 +294,7 @@ Answer:`;
 
     return completion.choices[0].message.content.trim();
   } catch (error) {
-    return intelligentContextService.generateResponse(message, { type: 'definition' }, user);
+    return "Let me help you with that question. Try asking in a different way or be more specific.";
   }
 }
 

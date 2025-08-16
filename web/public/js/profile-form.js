@@ -360,7 +360,7 @@ document.getElementById('profileForm').addEventListener('submit', async function
             
             // Redirect after 2 seconds
             setTimeout(() => {
-                window.location.href = 'https://wa.me/919967744904?text=Profile%20completed%20successfully!';
+                window.location.href = 'https://wa.me/918522068158?text=Profile%20completed%20successfully!';
             }, 2000);
         } else {
             throw new Error(result.error || 'Failed to submit profile');

@@ -516,7 +516,13 @@ document.getElementById('profileForm').addEventListener('submit', async function
             // Clear timer
             clearInterval(timerInterval);
             
-            // Show success modal
+            // Check if custom success handler exists (for WebView)
+            if (typeof window.handleFormSuccess === 'function') {
+                window.handleFormSuccess(result);
+                return;
+            }
+            
+            // Default behavior - show success modal
             document.getElementById('successModal').classList.remove('hidden');
             
             // Countdown and redirect
@@ -527,7 +533,7 @@ document.getElementById('profileForm').addEventListener('submit', async function
                 
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
-                    window.location.href = 'https://wa.me/919967744904?text=Profile%20completed%20successfully!%20Ready%20to%20connect%20with%20alumni.';
+                    window.location.href = 'https://wa.me/918522068158?text=Profile%20completed%20successfully!%20Ready%20to%20connect%20with%20alumni.';
                 }
             }, 1000);
             

@@ -417,7 +417,7 @@ Return as JSON format:
   async formatSearchResults(users, query, intent, currentUserId) {
     try {
       if (users.length === 0) {
-        return "No alumni found matching your search criteria. Try different keywords or broaden your search.";
+        return "No alumni found matching your search. Try different keywords.";
       }
 
       // Import cache service
@@ -427,7 +427,7 @@ Return as JSON format:
       const newUsers = resultsCacheService.filterNewProfiles(currentUserId, users);
       
       if (newUsers.length === 0 && users.length > 0) {
-        return "All matching profiles have been shown today. Try a different search or check back tomorrow.";
+        return "You've seen all matching profiles today. Try a different search.";
       }
 
       // Sort by relevance score
@@ -436,20 +436,8 @@ Return as JSON format:
         score: this.calculateRelevanceScore(user, intent)
       })).sort((a, b) => b.score - a.score);
 
-      // Smart result selection based on query type
-      let resultCount = 2; // default
-      
-      // Determine how many to show
-      if (users.length === 1 || /who is|tell.*about|^[a-z]+ [a-z]+$/i.test(query)) {
-        resultCount = 1; // Show only 1 for specific person queries or exact names
-      } else if (intent.intent === 'person_search' && scoredUsers[0].score > 20) {
-        resultCount = 1; // High confidence person match
-      } else if (users.length > 10 && scoredUsers[0].score > 15) {
-        resultCount = 3; // Show 3 when we have many good matches
-      } else if (users.length > 20) {
-        resultCount = Math.min(4, scoredUsers.filter(s => s.score > 5).length); // Show up to 4 good matches
-      }
-      
+      // Always show exactly 2 profiles (or 1 if only 1 available)
+      const resultCount = Math.min(2, scoredUsers.length);
       const topResults = scoredUsers.slice(0, resultCount);
       
       // Ensure we have at least some results to show if available
@@ -481,51 +469,17 @@ Return as JSON format:
       // Check if user wants WhatsApp numbers
       const wantsWhatsApp = intent.wantsContact || /whatsapp|phone|number|contact.*number/i.test(query);
       
-      // Format results professionally with AI rewriting
+      // Format results with clean structure
       const formattedResults = await Promise.all(topResults.map(async (result, index) => {
         const user = result.user;
         const profile = this.extractProfileData(user);
         
-        // Add WhatsApp if requested
-        if (wantsWhatsApp && user.whatsappNumber) {
-          profile.whatsapp = user.whatsappNumber;
-        }
-        
-        // Generate AI-powered professional summary
-        const summary = await this.generateIntelligentSummary(
-          profile, 
-          query, 
-          intent, 
-          true,  // Always show email/LinkedIn
-          'normal',
-          wantsWhatsApp
-        );
-        
-        return `${index + 1}. ${summary}`;
+        // Clean, structured format
+        return this.formatProfileClean(profile, index + 1);
       }));
       
-      // Format based on number of results
-      let finalMessage;
-      
-      if (topResults.length === 1) {
-        // Single result - clean format
-        finalMessage = formattedResults[0];
-      } else {
-        // Multiple results - compact format with separator
-        finalMessage = formattedResults.join('\n---\n');
-      }
-      
-      // Add count info only if many results
-      if (users.length > topResults.length && users.length > 5) {
-        finalMessage += `\n\n[+${users.length - topResults.length} more matches]`;
-      }
-      
-      // Strict length enforcement
-      if (finalMessage.length > 1400) {
-        // Reduce to fewer results
-        const reduced = Math.max(1, topResults.length - 1);
-        finalMessage = formattedResults.slice(0, reduced).join('\n---\n');
-      }
+      // Join results with clear separator
+      const finalMessage = formattedResults.join('\n\n---\n\n');
       
       return finalMessage;
 
@@ -533,6 +487,54 @@ Return as JSON format:
       logError(error, { operation: 'formatSearchResults' });
       return this.simpleFormatResults(users.slice(0, 2), query);
     }
+  }
+
+  // Format profile in clean structure
+  formatProfileClean(profile, index) {
+    const lines = [];
+    
+    // Profile number and name
+    lines.push(`👤 Profile ${index}:`);
+    lines.push(`Name: ${profile.name}`);
+    
+    // Location
+    if (profile.location) {
+      lines.push(`Location: ${profile.location}`);
+    }
+    
+    // Professional info
+    if (profile.headline || profile.company) {
+      const professional = [];
+      if (profile.headline) professional.push(profile.headline);
+      if (profile.company) professional.push(`at ${profile.company}`);
+      lines.push(`Role: ${professional.join(' ')}`);
+    }
+    
+    // Skills - clean and concise
+    if (profile.skills && profile.skills.length > 0) {
+      const topSkills = profile.skills.slice(0, 5).join(', ');
+      lines.push(`Skills: ${topSkills}`);
+    }
+    
+    // About - brief excerpt
+    if (profile.about) {
+      const aboutBrief = profile.about.substring(0, 100).replace(/\n/g, ' ').trim();
+      lines.push(`About: ${aboutBrief}${profile.about.length > 100 ? '...' : ''}`);
+    }
+    
+    // Contact information
+    const contacts = [];
+    if (profile.email) contacts.push(`📧 ${profile.email}`);
+    if (profile.linkedin) {
+      const linkedinClean = profile.linkedin.replace(/https?:\/\/(www\.)?linkedin\.com\/in\//g, '');
+      contacts.push(`🔗 linkedin.com/in/${linkedinClean}`);
+    }
+    
+    if (contacts.length > 0) {
+      lines.push(`Contact: ${contacts.join(' | ')}`);
+    }
+    
+    return lines.join('\n');
   }
 
   // Generate intelligent AI-powered profile summary

@@ -218,7 +218,7 @@ router.delete(
       // Delete session files
       const sessionDir = path.join(
         __dirname,
-        '../../sessions/memory',
+        '../../data/sessions/memory',
         whatsappNumber.replace(/[^\d]/g, '')
       );
       try {
@@ -243,7 +243,7 @@ router.get(
   '/sessions',
   asyncHandler(async (req, res) => {
     try {
-      const sessionDir = path.join(__dirname, '../../sessions/memory');
+      const sessionDir = path.join(__dirname, '../../data/sessions/memory');
       const userDirs = await fs.readdir(sessionDir);
 
       const sessions = [];
