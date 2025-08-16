@@ -9,7 +9,8 @@ const enhancedSearchService = require('../services/enhancedSearchService');
 // const godLevelIntelligentService = require('../services/godLevelIntelligentService');
 // const ultimateIntelligentService = require('../services/ultimateIntelligentService'); // ULTIMATE service - ZERO generic responses
 // const perfectMatchService = require('../services/perfectMatchService'); // PERFECT matching with god-level relevance
-const aiPoweredSearchService = require('../services/aiPoweredSearchService'); // AI-POWERED with GPT-4 understanding
+// const aiPoweredSearchService = require('../services/aiPoweredSearchService'); // AI-POWERED with GPT-4 understanding
+const ultimatePerfectService = require('../services/ultimatePerfectService'); // ULTIMATE PERFECT - God-level accuracy
 // const intelligentContextService = require('../services/intelligentContextService'); // REMOVED - causes generic responses
 const { handleCasualConversation } = require('./conversationController');
 const { logUserQuery } = require('../services/analyticsService');
@@ -116,13 +117,13 @@ Welcome back to JY Alumni Network. How can I help you today?`;
     
     const isFollowUp = followUpPatterns.some(pattern => pattern.test(lowerMessage));
     
-    // Use AI-Powered Search Service for EVERYTHING except pure greetings
-    // This uses GPT-4 to understand intent and deliver perfect matches
+    // Use Ultimate Perfect Service for EVERYTHING except pure greetings
+    // This provides GOD-LEVEL accuracy with perfect relevance
     try {
-      console.log('Using AI-Powered Search Service (GPT-4 intelligence) for:', userMessage);
+      console.log('Using Ultimate Perfect Service (GOD-LEVEL accuracy) for:', userMessage);
       
-      // Use the AI-powered service - GPT-4 understanding
-      const response = await aiPoweredSearchService.search(
+      // Use the ultimate perfect service - God-level accuracy
+      const response = await ultimatePerfectService.search(
         userMessage,
         user,
         userSession
@@ -136,7 +137,7 @@ Welcome back to JY Alumni Network. How can I help you today?`;
       
       return response;
     } catch (searchError) {
-      console.error('AI-powered search error:', searchError);
+      console.error('Ultimate perfect search error:', searchError);
       // Even on error, try to search instead of generic response
       return "Let me search for that... Please try again or be more specific.";
     }
