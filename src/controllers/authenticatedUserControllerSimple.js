@@ -103,9 +103,8 @@ Welcome back to JY Alumni Network. How can I help you today?`;
     const isLikelySearch = searchKeywords.some(keyword => lowerMessage.includes(keyword)) || 
                           isContinuationQuery;
     
-    // ALWAYS USE GOD-LEVEL SEARCH except for pure greetings
-    // This ensures we never give generic cached responses
-    console.log('Query detected, using God-Level Search for ALL non-greeting queries');
+    // INTELLIGENT INTENT DETECTION - Handle different types of queries appropriately
+    console.log('Analyzing query type for:', userMessage);
     
     // Check for follow-up questions FIRST
     const followUpPatterns = [
@@ -117,29 +116,84 @@ Welcome back to JY Alumni Network. How can I help you today?`;
     
     const isFollowUp = followUpPatterns.some(pattern => pattern.test(lowerMessage));
     
-    // Use Ultimate Perfect Service for EVERYTHING except pure greetings
-    // This provides GOD-LEVEL accuracy with perfect relevance
-    try {
-      console.log('Using Ultimate Perfect Service (GOD-LEVEL accuracy) for:', userMessage);
-      
-      // Use the ultimate perfect service - God-level accuracy
-      const response = await ultimatePerfectService.search(
-        userMessage,
-        user,
-        userSession
-      );
-      
-      // Update session for tracking
-      if (response.includes('Found') || response.includes('found') || response.includes('profile')) {
-        userSession.lastActivity = 'search_results';
-        userSession.lastSearchQuery = userMessage;
-      }
-      
-      return response;
-    } catch (searchError) {
-      console.error('Ultimate perfect search error:', searchError);
-      // Even on error, try to search instead of generic response
-      return "Let me search for that... Please try again or be more specific.";
+    // Determine query type more intelligently
+    const queryType = await determineQueryType(userMessage);
+    console.log('Detected query type:', queryType);
+    
+    // Handle different types of queries appropriately
+    switch (queryType) {
+      case 'jagriti_info':
+        console.log('Handling Jagriti Yatra information query');
+        try {
+          const { JagritiYatraKnowledgeService } = require('../services/jagritiYatraKnowledge');
+          return await JagritiYatraKnowledgeService.getFormattedResponse(userMessage);
+        } catch (error) {
+          console.error('Jagriti knowledge error:', error);
+          return "Let me help you with Jagriti Yatra information. Please try asking again.";
+        }
+        
+      case 'founder_info':
+        console.log('Handling founder/management team query');
+        try {
+          return await handleFounderAndTeamQueries(userMessage);
+        } catch (error) {
+          console.error('Founder info error:', error);
+          return "Let me help you with leadership information. Please try asking again.";
+        }
+        
+      case 'general_chat':
+        console.log('Handling general ChatGPT-like query');
+        try {
+          return await handleGeneralChat(userMessage, user);
+        } catch (error) {
+          console.error('General chat error:', error);
+          return "I can help with general questions and alumni searches. What would you like to know?";
+        }
+        
+      case 'definition':
+        console.log('Handling definition/explanation query');
+        try {
+          const definitionResponse = await handleDefinitionQuery(userMessage, user);
+          // Try to add relevant profiles if any
+          const enhancedResponse = await addRelevantProfiles(definitionResponse, userMessage, user);
+          return enhancedResponse;
+        } catch (error) {
+          console.error('Definition query error:', error);
+          return "Let me help you understand that. Please try asking in a different way.";
+        }
+        
+      case 'self_reflection':
+        console.log('Handling self-reflection query');
+        try {
+          return await handleSelfReflection(user);
+        } catch (error) {
+          console.error('Self-reflection error:', error);
+          return "You're an amazing member of our Jagriti Yatra community! Keep making an impact.";
+        }
+        
+      case 'search_alumni':
+      case 'follow_up':
+      default:
+        console.log('Using Ultimate Perfect Service for alumni search');
+        try {
+          // Use the ultimate perfect service for actual alumni searches
+          const response = await ultimatePerfectService.search(
+            userMessage,
+            user,
+            userSession
+          );
+          
+          // Update session for tracking
+          if (response.includes('Found') || response.includes('found') || response.includes('profile')) {
+            userSession.lastActivity = 'search_results';
+            userSession.lastSearchQuery = userMessage;
+          }
+          
+          return response;
+        } catch (searchError) {
+          console.error('Ultimate perfect search error:', searchError);
+          return "Let me search for that... Please try again or be more specific.";
+        }
     }
     
     // REMOVED: These were causing generic responses
@@ -166,18 +220,17 @@ Welcome back to JY Alumni Network. How can I help you today?`;
   }
 }
 
-// Determine query type using AI
+// Determine query type using AI and enhanced pattern matching
 async function determineQueryType(message) {
   try {
     const lowerMessage = message.toLowerCase();
     
-    // Quick pattern matching for common types
-    if (/what is|define|explain|how does|what are|tell me about/i.test(message) && 
-        !/anyone|people|alumni|find|looking|list|from/i.test(message)) {
-      return 'definition';
+    // Check for greetings first
+    if (/^(hi|hello|hey|good morning|good afternoon|good evening)$/i.test(lowerMessage.trim())) {
+      return 'greeting';
     }
     
-    // Check for self-reflection queries first
+    // Check for self-reflection queries
     if (/about me|who am i|what.*know.*about me|remember.*me|my profile|myself/i.test(message)) {
       return 'self_reflection';
     }
@@ -187,8 +240,18 @@ async function determineQueryType(message) {
       return 'follow_up';
     }
     
-    // Check for "tell me about X" as a search query
-    if (/tell me (about|something about) (?!her|him|them)/i.test(message)) {
+    // PRIORITY: Check for Jagriti Yatra related queries
+    if (/jagriti|yatra|shashank mani|founder.*jagriti|what.*jagriti|jecp|purvanchal|enterprise.*center|jagriti.*enterprise/i.test(message)) {
+      return 'jagriti_info';
+    }
+    
+    // Check for founder/management team queries
+    if (/(who.*founder|founder.*of|management.*team|executive.*team|leadership.*team|ceo.*of|director.*of)(?!.*jagriti)/i.test(message)) {
+      return 'founder_info';
+    }
+    
+    // Check for specific name queries that are alumni searches (excluding "tell me about" for now)
+    if (/^(do you know|who is|find|profile of)\s+[a-z]+/i.test(message)) {
       return 'search_alumni';
     }
     
@@ -197,28 +260,44 @@ async function determineQueryType(message) {
       return 'search_alumni';
     }
     
-    // Check for "about X" pattern
-    if (/^about\s+[a-z]+/i.test(message.trim())) {
-      return 'search_alumni';
-    }
-    
-    // Check for "do you know X" pattern
-    if (/do you know\s+[a-z]+/i.test(message)) {
-      return 'search_alumni';
-    }
-    
     // PRIORITIZE search for any alumni-related queries
-    if (/anyone|any one|people|alumni|find|search|looking|developers|professionals|experts|list|yatris|from\s+(COEP|IIT|NIT|BITS)|in.*business|working in|based in|about.*[a-z]+\s+[a-z]+|information about|tell.*about.*person|contact.*number.*of|whatsapp.*of|phone.*of|know.*about.*[a-z]+|content creators?|best.*candidate|top.*yatri|^any\s+(content|developer|designer|founder|entrepreneur|professional|expert)/i.test(message)) {
+    if (/anyone|any one|people|alumni|find|search|looking|developers|professionals|experts|list|yatris|from\s+(COEP|IIT|NIT|BITS)|in.*business|working in|working at|based in|contact.*number.*of|whatsapp.*of|phone.*of|content creators?|best.*candidate|top.*yatri|^any\s+(content|developer|designer|founder|entrepreneur|professional|expert)/i.test(message)) {
       return 'search_alumni';
     }
     
-    if (/hi|hello|hey|good morning|how are you/i.test(lowerMessage) && lowerMessage.length < 20) {
-      return 'greeting';
+    // Check for definition/explanation queries that aren't searches
+    if (/^(what is|define|explain|how does|what are|tell me about)\s+(?!.*\b(anyone|people|alumni|who|person|someone|name)\b)/i.test(message)) {
+      // Additional check for technology/concept terms vs people names
+      const topicWords = message.toLowerCase().match(/\b(computing|intelligence|learning|technology|science|engineering|development|programming|software|algorithm|blockchain|data|analytics|ai|ml|quantum|neural|deep|machine|artificial|cyber|cloud|iot|fintech|biotech|nanotech|robotics|automation)\b/);
+      if (topicWords) {
+        return 'definition';
+      }
     }
     
-    // Only use general chat if it's clearly not a search
+    // Check for "tell me about X" - determine if it's about technology/concepts or people
+    if (/tell me (about|something about)\s+[a-z]+/i.test(message) && !/her|him|them|it/i.test(message)) {
+      // Check if it's about a technology/concept - key tech terms
+      const techKeywords = ['computing', 'technology', 'science', 'engineering', 'programming', 'software', 
+                           'algorithm', 'blockchain', 'data', 'analytics', 'ai', 'ml', 'quantum', 'neural', 
+                           'deep', 'machine', 'artificial', 'cyber', 'cloud', 'iot', 'robotics', 'automation',
+                           'physics', 'chemistry', 'biology', 'mathematics', 'economics', 'finance', 
+                           'business', 'marketing', 'design', 'medicine', 'healthcare', 'cryptocurrency',
+                           'bitcoin', 'ethereum', 'startup', 'entrepreneurship', 'investing', 'trading'];
+      
+      const messageLower = message.toLowerCase();
+      const isTechTopic = techKeywords.some(keyword => messageLower.includes(keyword));
+      
+      if (isTechTopic) {
+        return 'definition';
+      }
+      
+      return 'search_alumni';
+    }
+    
+    // Default to general chat for other queries
     return 'general_chat';
   } catch (error) {
+    console.error('Error in determineQueryType:', error);
     return 'general_chat';
   }
 }
@@ -361,6 +440,82 @@ Write an inspiring message:`;
   } catch (error) {
     const name = user.basicProfile?.name || user.enhancedProfile?.fullName || 'Friend';
     return `${name}, you're an extraordinary individual with immense potential! Your journey through Jagriti Yatra has equipped you with unique perspectives and connections. Your skills and dedication are your superpowers - use them to create the impact you envision. The best is yet to come!`;
+  }
+}
+
+// Handle founder and management team queries with AI
+async function handleFounderAndTeamQueries(message) {
+  try {
+    const OpenAI = require('openai');
+    const { getConfig } = require('../config/environment');
+    
+    const config = getConfig();
+    if (!config.ai?.apiKey) {
+      return "I can help you find information about leadership teams. For specific company leadership, please try asking with more details.";
+    }
+    
+    const openai = new OpenAI({ apiKey: config.ai.apiKey });
+    
+    // Use AI to provide current information about founders and teams
+    const prompt = `Answer this leadership/founder question with current, accurate information: "${message}"
+
+Instructions:
+1. Provide exactly 4-5 lines with factual information
+2. Focus on current leadership, roles, and achievements  
+3. Be specific with names and positions when possible
+4. If about Jagriti Yatra leadership, redirect to jagriti_info
+5. Keep it professional and informative
+
+Answer:`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: 'You are an expert business researcher with access to current information. Provide accurate, up-to-date information about company founders and leadership teams. Be factual and specific.' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.2,
+      max_tokens: 200
+    });
+
+    return completion.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('Founder query error:', error);
+    return "I can help you find information about leadership and founding teams. Please try asking with more specific details about the company or organization.";
+  }
+}
+
+// Add relevant profiles to definition responses
+async function addRelevantProfiles(definitionResponse, originalQuery, user) {
+  try {
+    // Extract keywords from the query to find related profiles
+    const keywords = originalQuery.toLowerCase().match(/\b\w{4,}\b/g) || [];
+    
+    if (keywords.length === 0) {
+      return definitionResponse;
+    }
+    
+    // Try to find 1-2 relevant profiles
+    const ultimatePerfectService = require('../services/ultimatePerfectService');
+    const searchQuery = keywords.join(' ') + ' expert professional';
+    
+    const searchResults = await ultimatePerfectService.search(searchQuery, user, {});
+    
+    // If we found profiles, add them
+    if (searchResults.includes('Found') && !searchResults.includes('No exact matches')) {
+      const profileSection = searchResults.split('\n\n')[1]; // Get first profile
+      if (profileSection && profileSection.includes('*')) {
+        const profileName = profileSection.match(/\*([^*]+)\*/)?.[1];
+        if (profileName) {
+          return `${definitionResponse}\n\n💡 *Related Alumni*: ${profileName} from our community might be able to help with this topic. Type "more" to see profiles.`;
+        }
+      }
+    }
+    
+    return definitionResponse;
+  } catch (error) {
+    console.error('Error adding relevant profiles:', error);
+    return definitionResponse;
   }
 }
 

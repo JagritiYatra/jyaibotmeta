@@ -16,9 +16,12 @@ class UltimatePerfectService {
       'data': ['data', 'data science', 'data analysis', 'analytics', 'machine learning', 'ml', 'ai'],
       'marketing': ['marketing', 'digital marketing', 'growth', 'seo', 'content', 'social media'],
       'design': ['design', 'ui', 'ux', 'user interface', 'user experience', 'graphic'],
-      'lawyer': ['lawyer', 'legal', 'advocate', 'law', 'attorney'],
+      'legal': ['legal', 'lawyer', 'advocate', 'law', 'attorney', 'legal advisor', 'legal counsel'],
+      'lawyer': ['lawyer', 'legal', 'advocate', 'law', 'attorney', 'legal advisor', 'legal counsel'],
+      'law': ['law', 'legal', 'lawyer', 'advocate', 'attorney', 'legal advisor'],
       'doctor': ['doctor', 'medical', 'physician', 'healthcare', 'medicine'],
-      'finance': ['finance', 'financial', 'accounting', 'investment', 'banking']
+      'finance': ['finance', 'financial', 'accounting', 'investment', 'banking'],
+      'help': ['help', 'assistance', 'support', 'advice', 'guidance', 'consultation']
     };
   }
 
@@ -52,7 +55,7 @@ class UltimatePerfectService {
       
       // STEP 2: Deep search with verification
       const searchResults = await this.deepSearchWithVerification(intent);
-      console.log(`📊 Found ${searchResults.length} VERIFIED matches`);
+      console.log(`📊 Found ${searchResults.length} initial search matches`);
       
       // STEP 3: Rank by ACTUAL relevance
       const rankedResults = this.rankByRelevance(searchResults, intent);
@@ -190,15 +193,29 @@ Return JSON only. Be very precise about what the user is actually looking for.`;
       }
     }
     
-    // Extract skills
+    // Extract skills and handle special cases
     Object.keys(this.skillExpansions).forEach(skill => {
       if (lowerQuery.includes(skill)) {
         intent.skills.push(skill);
       }
     });
     
+    // Handle "legal matters" specifically
+    if (lowerQuery.includes('legal matters') || lowerQuery.includes('legal help')) {
+      intent.skills.push('legal');
+    }
+    
+    // Handle "help me in X" pattern
+    const helpMatch = lowerQuery.match(/help.*(?:in|with|for)\s+([\w\s]+)/);
+    if (helpMatch) {
+      const helpArea = helpMatch[1].trim();
+      if (helpArea.includes('legal')) {
+        intent.skills.push('legal');
+      }
+    }
+    
     // Extract locations with word boundaries
-    const locations = ['pune', 'mumbai', 'bangalore', 'delhi', 'hyderabad', 'chennai', 'kolkata'];
+    const locations = ['pune', 'mumbai', 'bangalore', 'delhi', 'hyderabad', 'chennai', 'kolkata', 'jaipur', 'ahmedabad', 'surat'];
     locations.forEach(loc => {
       const regex = new RegExp(`\\b${loc}\\b`, 'i');
       if (regex.test(query)) {
@@ -506,49 +523,115 @@ Return JSON only. Be very precise about what the user is actually looking for.`;
     }).sort((a, b) => b.relevanceScore - a.relevanceScore);
   }
 
-  // Verify relevance - CRITICAL
+  // Verify relevance - CRITICAL but not too strict
   verifyRelevance(results, intent) {
     // Filter out profiles with zero relevance
     const verified = results.filter(user => {
-      // Must have minimum score
-      if (user.relevanceScore < 5) return false;
+      // Must have minimum score (lower threshold for better results)
+      if (user.relevanceScore < 3) return false;
       
       // For name search, must have name match
-      if (intent.is_name_search) {
+      if (intent.is_name_search && intent.person_name) {
         const userName = (user.basicProfile?.name || user.enhancedProfile?.fullName || '').toLowerCase();
-        return userName.includes(intent.person_name.toLowerCase());
+        const searchName = intent.person_name.toLowerCase();
+        return userName.includes(searchName) || searchName.includes(userName);
       }
       
-      // For skill search, must have skill match
-      if (intent.skills.length > 0) {
-        const userContent = [
-          user.basicProfile?.linkedinScrapedData?.headline || '',
-          user.basicProfile?.about || ''
-        ].join(' ').toLowerCase();
+      // For combination searches OR single criterion searches, at least one criterion must match
+      if (intent.search_type === 'combination' || intent.search_type === 'company' || intent.search_type === 'skill' || intent.search_type === 'location' || intent.search_type === 'education') {
+        let hasMatch = false;
         
-        const hasSkillMatch = intent.skills.some(skill => {
-          const expansions = this.skillExpansions[skill] || [skill];
-          return expansions.some(e => userContent.includes(e.toLowerCase()));
-        });
+        // Check skills
+        if (intent.skills.length > 0) {
+          const userContent = [
+            user.basicProfile?.linkedinScrapedData?.headline || '',
+            user.basicProfile?.about || '',
+            user.basicProfile?.linkedinScrapedData?.about || '',
+            ...(user.basicProfile?.linkedinScrapedData?.experience || []).map(e => e.title || '')
+          ].join(' ').toLowerCase();
+          
+          hasMatch = intent.skills.some(skill => {
+            const expansions = this.skillExpansions[skill] || [skill];
+            return expansions.some(e => userContent.includes(e.toLowerCase()));
+          });
+        }
         
-        if (!hasSkillMatch) return false;
+        // Check location
+        if (!hasMatch && intent.locations.length > 0) {
+          const userLocation = (
+            user.basicProfile?.linkedinScrapedData?.location || 
+            user.enhancedProfile?.city || ''
+          ).toLowerCase();
+          
+          hasMatch = intent.locations.some(loc => {
+            const variations = this.getLocationVariations(loc);
+            return variations.some(v => userLocation.includes(v));
+          });
+        }
+        
+        // Check company - ULTRA STRICT verification
+        if (!hasMatch && intent.companies.length > 0) {
+          const currentCompany = (user.basicProfile?.linkedinScrapedData?.currentCompany || '').toLowerCase();
+          const headline = (user.basicProfile?.linkedinScrapedData?.headline || '').toLowerCase();
+          const experience = user.basicProfile?.linkedinScrapedData?.experience || [];
+          const userName = user.basicProfile?.name || 'Unknown';
+          
+          hasMatch = intent.companies.some(company => {
+            const companyLower = company.toLowerCase();
+            
+            // STRICT: Must match current company field exactly
+            if (currentCompany.includes(companyLower)) {
+              return true;
+            }
+            
+            // OR match in ANY experience (but prioritize recent ones)
+            for (let i = 0; i < Math.min(experience.length, 3); i++) {
+              const job = experience[i];
+              const expCompany = (job.company || '').toLowerCase();
+              if (expCompany.includes(companyLower)) {
+                // If this is current job (first entry), definitely include
+                if (i === 0) return true;
+                // For older jobs, only include if no current company set or current company also matches
+                if (!currentCompany || currentCompany.includes(companyLower)) {
+                  return true;
+                }
+              }
+            }
+            
+            // OR headline must explicitly mention working AT the company
+            if (headline.includes('at ' + companyLower) || 
+                headline.includes('@ ' + companyLower) ||
+                (headline.includes(companyLower) && headline.includes('engineer')) ||
+                (headline.includes(companyLower) && headline.includes('developer')) ||
+                (headline.includes(companyLower) && headline.includes('consultant'))) {
+              return true;
+            }
+            
+            return false;
+          });
+          
+          // FINAL SAFETY CHECK: If they have a different current company, be extra careful
+          if (hasMatch && currentCompany && currentCompany.trim() !== '') {
+            const searchCompany = intent.companies[0].toLowerCase();
+            // If current company is clearly different, exclude unless they currently work there
+            if (!currentCompany.includes(searchCompany)) {
+              // Only allow if:
+              // 1. Their most recent job (experience[0]) is at the searched company
+              // 2. OR headline explicitly says they work AT the company
+              const hasCurrentExperience = experience.length > 0 && 
+                (experience[0].company || '').toLowerCase().includes(searchCompany);
+              const hasStrongHeadline = headline.includes('at ' + searchCompany) || 
+                                      headline.includes('@ ' + searchCompany) ||
+                                      (headline.includes(searchCompany) && currentCompany.includes(searchCompany));
+              hasMatch = hasCurrentExperience || hasStrongHeadline;
+            }
+          }
+        }
+        
+        return hasMatch;
       }
       
-      // For location search, must have location match
-      if (intent.locations.length > 0) {
-        const userLocation = (
-          user.basicProfile?.linkedinScrapedData?.location || 
-          user.enhancedProfile?.city || ''
-        ).toLowerCase();
-        
-        const hasLocationMatch = intent.locations.some(loc => {
-          const variations = this.getLocationVariations(loc);
-          return variations.some(v => userLocation.includes(v));
-        });
-        
-        if (!hasLocationMatch) return false;
-      }
-      
+      // For single criterion searches, be more lenient
       return true;
     });
     
@@ -636,7 +719,7 @@ Return JSON only. Be very precise about what the user is actually looking for.`;
     
     // Add headline (rewritten if AI available)
     if (headline) {
-      const rewrittenHeadline = await this.rewriteContent(headline, 'headline');
+      const rewrittenHeadline = await this.rewriteContent(headline, 'headline', name, intent);
       response += `   💼 ${rewrittenHeadline}\n`;
     }
     
@@ -662,10 +745,10 @@ Return JSON only. Be very precise about what the user is actually looking for.`;
       response += `   🎓 ${eduName}\n`;
     }
     
-    // Add about section - COMPLETE and rewritten
+    // Add about section - COMPLETE and rewritten with context
     if (about) {
       response += '\n   About:\n';
-      const rewrittenAbout = await this.rewriteContent(about, 'about', name);
+      const rewrittenAbout = await this.rewriteContent(about, 'about', name, intent);
       // Show complete content, no truncation
       response += `   ${rewrittenAbout.replace(/\n/g, '\n   ')}\n`;
     }
@@ -746,39 +829,51 @@ Return JSON only. Be very precise about what the user is actually looking for.`;
     return matches;
   }
 
-  // Rewrite content with AI
-  async rewriteContent(content, type, name = '') {
+  // Rewrite content with AI - context-aware
+  async rewriteContent(content, type, name = '', context = {}) {
     if (!openai || !content) return content;
     
     try {
       let prompt = '';
       
       if (type === 'headline') {
-        prompt = `Rewrite this professional headline to be impressive and engaging:
+        prompt = `Rewrite this professional headline to be concise and impactful:
 "${content}"
 
-Make it powerful, achievement-focused, and impactful in one line. Keep it professional but exciting.`;
+Make it clear, professional, and achievement-focused in one line.`;
       } else if (type === 'about') {
-        prompt = `Rewrite this professional about section to be impressive and engaging:
+        // Include search context for relevance
+        let contextInfo = '';
+        if (context.skills?.length > 0) {
+          contextInfo += `User is looking for: ${context.skills.join(', ')} expertise\n`;
+        }
+        if (context.locations?.length > 0) {
+          contextInfo += `Location focus: ${context.locations.join(', ')}\n`;
+        }
+        if (context.companies?.length > 0) {
+          contextInfo += `Company interest: ${context.companies.join(', ')}\n`;
+        }
+        
+        prompt = `Rewrite this about section to be relevant and impressive:
 
 Name: ${name}
-About: ${content}
+${contextInfo}
+Original: ${content}
 
-Create a compelling narrative that:
-1. Highlights their expertise and achievements
-2. Shows their passion and drive
-3. Demonstrates their value and impact
-4. Tells their professional story engagingly
-5. Makes them sound exceptional
+Write a 2-3 line professional summary that:
+1. Highlights relevant expertise
+2. Shows their value proposition
+3. Sounds professional and credible
+${contextInfo ? '4. Emphasizes aspects relevant to what the user is looking for' : ''}
 
-Write 3-4 lines that flow naturally. No bullet points. Make it inspiring and memorable.`;
+Keep it concise, professional, and relevant. No flowery language.`;
       }
       
       const response = await openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 200
+        temperature: 0.5, // Lower temperature for more consistent output
+        max_tokens: 150
       });
       
       return response.choices[0].message.content.trim();
