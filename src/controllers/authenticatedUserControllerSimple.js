@@ -8,7 +8,8 @@ const { comprehensiveAlumniSearch } = require('../services/searchService');
 const enhancedSearchService = require('../services/enhancedSearchService');
 // const godLevelIntelligentService = require('../services/godLevelIntelligentService');
 // const ultimateIntelligentService = require('../services/ultimateIntelligentService'); // ULTIMATE service - ZERO generic responses
-const perfectMatchService = require('../services/perfectMatchService'); // PERFECT matching with god-level relevance
+// const perfectMatchService = require('../services/perfectMatchService'); // PERFECT matching with god-level relevance
+const aiPoweredSearchService = require('../services/aiPoweredSearchService'); // AI-POWERED with GPT-4 understanding
 // const intelligentContextService = require('../services/intelligentContextService'); // REMOVED - causes generic responses
 const { handleCasualConversation } = require('./conversationController');
 const { logUserQuery } = require('../services/analyticsService');
@@ -115,13 +116,13 @@ Welcome back to JY Alumni Network. How can I help you today?`;
     
     const isFollowUp = followUpPatterns.some(pattern => pattern.test(lowerMessage));
     
-    // Use Perfect Match Service for EVERYTHING except pure greetings
-    // This provides GOD-LEVEL relevance matching and intelligent responses
+    // Use AI-Powered Search Service for EVERYTHING except pure greetings
+    // This uses GPT-4 to understand intent and deliver perfect matches
     try {
-      console.log('Using Perfect Match Service (GOD-LEVEL relevance) for:', userMessage);
+      console.log('Using AI-Powered Search Service (GPT-4 intelligence) for:', userMessage);
       
-      // Use the perfect match service - perfect relevance scoring
-      const response = await perfectMatchService.search(
+      // Use the AI-powered service - GPT-4 understanding
+      const response = await aiPoweredSearchService.search(
         userMessage,
         user,
         userSession
@@ -135,7 +136,7 @@ Welcome back to JY Alumni Network. How can I help you today?`;
       
       return response;
     } catch (searchError) {
-      console.error('Perfect match search error:', searchError);
+      console.error('AI-powered search error:', searchError);
       // Even on error, try to search instead of generic response
       return "Let me search for that... Please try again or be more specific.";
     }
