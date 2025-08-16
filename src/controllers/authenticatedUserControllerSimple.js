@@ -7,7 +7,8 @@ const {
 const { comprehensiveAlumniSearch } = require('../services/searchService');
 const enhancedSearchService = require('../services/enhancedSearchService');
 // const godLevelIntelligentService = require('../services/godLevelIntelligentService');
-const ultimateIntelligentService = require('../services/ultimateIntelligentService'); // ULTIMATE service - ZERO generic responses
+// const ultimateIntelligentService = require('../services/ultimateIntelligentService'); // ULTIMATE service - ZERO generic responses
+const perfectMatchService = require('../services/perfectMatchService'); // PERFECT matching with god-level relevance
 // const intelligentContextService = require('../services/intelligentContextService'); // REMOVED - causes generic responses
 const { handleCasualConversation } = require('./conversationController');
 const { logUserQuery } = require('../services/analyticsService');
@@ -114,13 +115,13 @@ Welcome back to JY Alumni Network. How can I help you today?`;
     
     const isFollowUp = followUpPatterns.some(pattern => pattern.test(lowerMessage));
     
-    // Use Ultimate Intelligent Service for EVERYTHING except pure greetings
-    // This GUARANTEES no generic cached responses - always searches database
+    // Use Perfect Match Service for EVERYTHING except pure greetings
+    // This provides GOD-LEVEL relevance matching and intelligent responses
     try {
-      console.log('Using Ultimate Intelligent Service (ZERO generic responses) for:', userMessage);
+      console.log('Using Perfect Match Service (GOD-LEVEL relevance) for:', userMessage);
       
-      // Use the ultimate intelligent service - always searches database
-      const response = await ultimateIntelligentService.search(
+      // Use the perfect match service - perfect relevance scoring
+      const response = await perfectMatchService.search(
         userMessage,
         user,
         userSession
@@ -134,7 +135,7 @@ Welcome back to JY Alumni Network. How can I help you today?`;
       
       return response;
     } catch (searchError) {
-      console.error('Ultimate intelligent search error:', searchError);
+      console.error('Perfect match search error:', searchError);
       // Even on error, try to search instead of generic response
       return "Let me search for that... Please try again or be more specific.";
     }
