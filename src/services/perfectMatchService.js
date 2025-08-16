@@ -38,13 +38,13 @@ class PerfectMatchService {
         return await this.showMoreResults(userSession);
       }
       
-      // Check if name search
+      // Check if name search FIRST (priority)
       const nameSearch = this.extractNameSearch(cleanQuery);
       if (nameSearch) {
         return await this.perfectNameSearch(nameSearch);
       }
       
-      // Extract search parameters
+      // Extract search parameters for non-name queries
       const params = this.extractSearchParams(cleanQuery);
       console.log('📊 Extracted params:', JSON.stringify(params, null, 2));
       
@@ -93,21 +93,40 @@ class PerfectMatchService {
 
   // Extract name search
   extractNameSearch(query) {
-    // Check various name patterns
-    for (const pattern of this.namePatterns) {
+    // PRIORITY patterns - these ALWAYS indicate name search
+    const priorityPatterns = [
+      /^(?:do you know about|do you know|who is|tell me about|what about|information on|details about|profile of)\s+(.+?)$/i,
+      /^about\s+(.+?)$/i,
+      /^find\s+([a-z]+(?:\s+[a-z]+){0,2})$/i // find followed by 1-3 words
+    ];
+    
+    // Check priority patterns first
+    for (const pattern of priorityPatterns) {
       const match = query.match(pattern);
-      if (match) {
-        // Extract the name part
-        const name = match[2] || match[1];
-        // Check if it looks like a name (not too many words, not common keywords)
-        if (name && name.split(' ').length <= 3 && !this.isKeyword(name)) {
-          // Check if first letter is capital or if it's a simple query
-          if (/^[a-z]+(\s+[a-z]+)?$/i.test(name) && name.length > 2 && name.length < 30) {
-            return name;
-          }
+      if (match && match[1]) {
+        const name = match[1].trim();
+        // For "do you know" patterns, ALWAYS treat as name, don't check keywords
+        if (query.startsWith('do you know')) {
+          return name; // Return full name including "mittal", "kumar", etc.
+        }
+        // For other patterns, do basic validation
+        if (name && name.length > 2 && name.length < 50) {
+          return name;
         }
       }
     }
+    
+    // Check if it's just a name with optional ?
+    const simpleNamePattern = /^([a-z]+(?:\s+[a-z]+){0,2})\s*\??$/i;
+    const simpleMatch = query.match(simpleNamePattern);
+    if (simpleMatch && simpleMatch[1]) {
+      const potentialName = simpleMatch[1].trim();
+      // Check if it's not a common keyword
+      if (potentialName.length > 2 && potentialName.length < 30 && !this.isKeyword(potentialName)) {
+        return potentialName;
+      }
+    }
+    
     return null;
   }
 
@@ -116,9 +135,10 @@ class PerfectMatchService {
     const keywords = [
       'developer', 'engineer', 'designer', 'manager', 'founder', 'alumni',
       'people', 'someone', 'anyone', 'expert', 'professional', 'specialist',
-      'pune', 'mumbai', 'bangalore', 'delhi', 'hyderabad', 'chennai'
+      'pune', 'mumbai', 'bangalore', 'delhi', 'hyderabad', 'chennai',
+      'from', 'in', 'at', 'working', 'based', 'located'
     ];
-    return keywords.includes(word.toLowerCase());
+    return keywords.some(keyword => word.toLowerCase().includes(keyword));
   }
 
   // Perfect name search
@@ -194,7 +214,9 @@ class PerfectMatchService {
     ];
     
     locations.forEach(loc => {
-      if (query.includes(loc)) {
+      // Use word boundaries for accurate matching
+      const locRegex = new RegExp(`\\b${loc.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      if (locRegex.test(query)) {
         params.locations.push(loc);
         // Add variations
         if (loc === 'bangalore') params.locations.push('bengaluru');
@@ -215,13 +237,15 @@ class PerfectMatchService {
     ];
     
     companies.forEach(company => {
-      if (query.includes(company)) {
+      // Use word boundaries to avoid partial matches
+      const companyRegex = new RegExp(`\\b${company.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      if (companyRegex.test(query)) {
         params.companies.push(company);
       }
     });
     
     // Education - with COEP special handling
-    if (query.includes('coep')) {
+    if (/\bcoep\b/i.test(query)) {
       params.education.push('COEP', 'College of Engineering Pune', 'College of Engineering, Pune');
     }
     
@@ -231,7 +255,9 @@ class PerfectMatchService {
     ];
     
     education.forEach(edu => {
-      if (query.includes(edu)) {
+      // Use word boundary to avoid matching "mit" in "mittal", "permit", etc.
+      const eduRegex = new RegExp(`\\b${edu}\\b`, 'i');
+      if (eduRegex.test(query)) {
         params.education.push(edu);
         // Add full forms
         if (edu === 'iit') params.education.push('indian institute of technology');
