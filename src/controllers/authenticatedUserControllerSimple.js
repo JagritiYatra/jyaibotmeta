@@ -97,7 +97,10 @@ Welcome back to JY Alumni Network. How can I help you today?`;
       'hyderabad', 'chennai', 'kolkata', 'business', 'import', 'export',
       'yatris', 'yatri', 'connect', 'help', 'assist', 'need', 'want',
       'lawyer', 'legal', 'engineer', 'professional', 'people', 'person',
-      'someone', 'anybody', 'contact', 'reach', 'talk', 'know', 'meet'
+      'someone', 'anybody', 'contact', 'reach', 'talk', 'know', 'meet',
+      'connect me', 'tcs', 'infosys', 'wipro', 'digital marketing', 'ads',
+      'working in', 'working at', 'employed', 'marketers', 'any digital',
+      'can you connect', 'do you know'
     ];
     
     const isLikelySearch = searchKeywords.some(keyword => lowerMessage.includes(keyword)) || 
@@ -260,8 +263,8 @@ async function determineQueryType(message) {
       return 'search_alumni';
     }
     
-    // PRIORITIZE search for any alumni-related queries
-    if (/anyone|any one|people|alumni|find|search|looking|developers|professionals|experts|list|yatris|from\s+(COEP|IIT|NIT|BITS)|in.*business|working in|working at|based in|contact.*number.*of|whatsapp.*of|phone.*of|content creators?|best.*candidate|top.*yatri|^any\s+(content|developer|designer|founder|entrepreneur|professional|expert)/i.test(message)) {
+    // PRIORITIZE search for any alumni-related queries - VERY IMPORTANT
+    if (/anyone|any one|people|alumni|find|search|looking|developers|professionals|experts|list|yatris|from\s+(COEP|IIT|NIT|BITS)|in.*business|working in|working at|based in|contact.*number.*of|whatsapp.*of|phone.*of|content creators?|best.*candidate|top.*yatri|^any\s+(content|developer|designer|founder|entrepreneur|professional|expert)|connect.*me.*with|need.*help.*in|digital.*marketing|marketers|tcs|infosys|wipro|ads.*marketing|any.*digital|can.*you.*connect|do.*you.*know.*any/i.test(message)) {
       return 'search_alumni';
     }
     
@@ -291,6 +294,16 @@ async function determineQueryType(message) {
         return 'definition';
       }
       
+      return 'search_alumni';
+    }
+    
+    // Check again if it looks like a search before defaulting to general chat
+    const searchIndicators = ['connect', 'help', 'need', 'looking', 'find', 'anyone', 'someone', 
+                            'working', 'from', 'alumni', 'profile', 'contact', 'know', 'digital', 
+                            'marketing', 'ads', 'marketers'];
+    const hasSearchIndicator = searchIndicators.some(word => lowerMessage.includes(word));
+    
+    if (hasSearchIndicator) {
       return 'search_alumni';
     }
     

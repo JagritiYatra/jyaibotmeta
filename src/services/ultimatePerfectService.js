@@ -232,11 +232,22 @@ Return JSON only. Be very precise about what the user is actually looking for.`;
       }
     });
     
-    // Extract companies
-    const companies = ['google', 'microsoft', 'amazon', 'facebook', 'infosys', 'tcs', 'wipro'];
-    companies.forEach(company => {
+    // Extract companies with expansions
+    const companyMappings = {
+      'tcs': ['tcs', 'tata consultancy', 'tata consultancy services'],
+      'infosys': ['infosys'],
+      'wipro': ['wipro'],
+      'google': ['google'],
+      'microsoft': ['microsoft'],
+      'amazon': ['amazon'],
+      'facebook': ['facebook', 'meta']
+    };
+    
+    // Check for each company and add all its variations
+    Object.keys(companyMappings).forEach(company => {
       if (lowerQuery.includes(company)) {
-        intent.companies.push(company);
+        // Add all variations of the company name
+        intent.companies.push(...companyMappings[company]);
       }
     });
     
